@@ -29,10 +29,20 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Stage static site
+        run: |
+          mkdir -p _site/docs
+          cp index.html _site/
+          cp CNAME _site/
+          cp .nojekyll _site/
+          cp README.md _site/
+          cp ARCHITECTURE.md _site/
+          cp docs/getting-started.md _site/docs/
+
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
