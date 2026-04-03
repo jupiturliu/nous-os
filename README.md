@@ -4,6 +4,8 @@
 
 NOUS OS is a three-layer architecture that makes every human-AI interaction a learning step — not just a transaction. Each decision sharpens memory. Each override corrects the model. Each run is faster and more accurate than the last.
 
+Aria is part of the architecture, but its implementation is not open-sourced in this repository yet.
+
 ---
 
 ## Architecture

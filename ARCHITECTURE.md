@@ -16,6 +16,8 @@ NOUS OS maps AI cognition to neuroscience:
 
 The problem NOUS OS solves: these three were running independently. Like having a brain, nervous system, and memory but with no wiring between them.
 
+Note: in this repository, Aria is documented as the planned judgment/alignment layer. The open-source code here focuses on TrustMem, Synapse, and their integration points.
+
 ---
 
 ## Flywheel Loop
@@ -67,13 +69,15 @@ Replace file polling with Synapse Event Bus:
 with open('agent-bus/implementation_queue.json', 'w') as f:
     json.dump(queue, f)
 
-# After (event-driven via AriaSynapseBridge)
+# After (event-driven via the planned AriaSynapseBridge)
 from synapse.orchestration.aria_synapse_bridge import AriaSynapseBridge
 bridge = AriaSynapseBridge()
 job_id = bridge.publish_with_memory(task_type='analysis', payload=task)
 ```
 
 **Result:** Zero polling latency, Budget Scheduler auto-selects model, TrustMem context travels with the task.
+
+This bridge is part of the target architecture and may live outside this repository until Aria is publicly released.
 
 ### Phase 2 — TrustMem Embedded in Workers
 
@@ -127,7 +131,7 @@ Human overrides always land in `firsthand-insights/insights.json` with `weight=1
 
 ## Budget Scheduler
 
-Aria sets policy in `budget_policy.yaml`. Scheduler enforces in real-time:
+In the target architecture, Aria sets policy in `budget_policy.yaml`. Scheduler enforces in real-time:
 
 - **Cheap tasks** → MiniMax / Haiku
 - **Important tasks** → Claude Sonnet / Opus
@@ -145,7 +149,7 @@ synapse/
 │   ├── dag_executor.py         # Parallel task execution
 │   └── event_bus.py            # Pub/sub backbone
 ├── orchestration/
-│   ├── aria_synapse_bridge.py  # Aria ↔ Synapse interface (Phase 1)
+│   ├── aria_synapse_bridge.py  # Planned Aria ↔ Synapse interface (Phase 1)
 │   ├── human_override.py       # Override closed-loop handler
 │   └── orchestrator.py         # Main orchestration logic
 └── demo/

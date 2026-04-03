@@ -1,6 +1,6 @@
 # Getting Started with NOUS OS
 
-This guide shows how to connect TrustMem and Synapse using the `AriaSynapseBridge` from Phase 1.
+This guide shows the current TrustMem + Synapse integration path. References to `AriaSynapseBridge` describe the planned Phase 1 interface, not code shipped in this repository.
 
 ---
 
@@ -34,9 +34,9 @@ This shows the full loop:
 
 ---
 
-## Step 2 — Connect TrustMem + Synapse via AriaSynapseBridge
+## Step 2 — Planned AriaSynapseBridge Integration
 
-`AriaSynapseBridge` is the Phase 1 integration point. It automatically injects TrustMem context into every task dispatched to Synapse.
+`AriaSynapseBridge` is the planned Phase 1 integration point. It is part of the target NOUS OS architecture, but Aria itself is not open-sourced in this repository yet.
 
 ```python
 import sys
