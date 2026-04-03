@@ -2,87 +2,77 @@
 
 > **The Cognitive Operating System for Human-AI Co-evolution**
 
-NOUS OS is a three-layer architecture that makes every human-AI interaction a learning step — not just a transaction. Each decision sharpens memory. Each override corrects the model. Each run is faster and more accurate than the last.
-
-Aria is part of the architecture, but its implementation is not open-sourced in this repository yet.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/website-nousos.ai-blue)](https://nousos.ai)
 
 ---
 
-## Architecture
+## What is NOUS OS
+
+NOUS OS is not an app. It's **infrastructure** — a three-layer cognitive system that makes AI agents remember, coordinate, and evolve together with their human partners.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    NOUS OS — Three Layers                   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Aria  (Prefrontal Cortex)                           │  │
-│  │  Intent · Judgment · Human Alignment · Override      │  │
-│  └──────────────────────────────┬───────────────────────┘  │
-│                                 │                           │
-│  ┌──────────────────────────────▼───────────────────────┐  │
-│  │  Synapse  (Nervous System)                           │  │
-│  │  Event Bus · DAG Executor · Budget Scheduler         │  │
-│  │  Worker Pool · Blackboard · Fault Isolation          │  │
-│  └──────────────────────────────┬───────────────────────┘  │
-│                                 │                           │
-│  ┌──────────────────────────────▼───────────────────────┐  │
-│  │  TrustMem  (Hippocampus)                             │  │
-│  │  Episode Store · Confidence · Decay · Promotion      │  │
-│  │  Firsthand Insight · Cross-Agent Verification        │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────┐
+│  Aria  —  Consciousness Layer       │  Human alignment, intent, judgment
+│  (reference impl: github/aria)      │
+├─────────────────────────────────────┤
+│  Synapse  —  Signal Layer           │  Event Bus, DAG, Budget routing
+│  (github/synapse)                   │
+├─────────────────────────────────────┤
+│  TrustMem  —  Memory Layer          │  Knowledge trust, decay, verification
+│  (github/trustmem)                  │
+└─────────────────────────────────────┘
 ```
+
+---
+
+## Components
+
+| Layer | Repo | Role | Status |
+|-------|------|------|--------|
+| 🏛️ **Aria** | [jupiturliu/aria](https://github.com/jupiturliu/aria) *(private)* | Consciousness — intent, coordination, human alignment | Production |
+| ⚡ **Synapse** | [jupiturliu/synapse](https://github.com/jupiturliu/synapse) | Signal — Event Bus, DAG executor, budget routing | Open Source |
+| 🧠 **TrustMem** | [jupiturliu/trustmem](https://github.com/jupiturliu/trustmem) | Memory — trust scores, decay, verification | Open Source |
 
 ---
 
 ## Co-exist Flywheel
 
-The Flywheel is the core loop that makes the system self-improving:
-
 ```
-Intent  →  TrustMem Search  →  Synapse DAG  →  Workers
-   ↑                                                  │
-   │         Episode Log + Quality Eval               │
-   │                    │                             ▼
-   └── Human Override ←─┘←─── promote (quality≥0.8) ─┘
-           (recorded as firsthand insight)
+Human intent
+    → Aria understands + TrustMem recalls relevant memory
+    → Synapse routes tasks to workers (parallel, budget-aware)
+    → Workers complete → TrustMem logs episode → promotes if quality ≥ 0.8
+    → Human feedback/override → highest-weight insight → next run smarter
+    ↑_______________________________________________________↑
+                     compounds over time
 ```
-
-Each cycle:
-- **Without memory**: cold start, baseline quality
-- **With memory**: context-aware, higher quality, faster
-- **After override**: the correction is stored and applied next run
 
 ---
 
-## Quick Links
+## Integration Status
 
-| Component | Description |
-|-----------|-------------|
-| [TrustMem](../trustmem/) | Episodic memory, confidence scoring, decay |
-| [Synapse](../synapse/) | Event bus, DAG executor, budget scheduler |
-| [Demo](../synapse/demo/nous_os_demo.py) | End-to-end Flywheel demo |
-| [Architecture](ARCHITECTURE.md) | Deep architecture doc |
-| [Getting Started](docs/getting-started.md) | Connect TrustMem + Synapse |
+| Phase | Description | Tests |
+|-------|-------------|-------|
+| Phase 1 ✅ | Aria ↔ Synapse Bridge, Event Bus replaces JSON polling | 13/13 |
+| Phase 2 ✅ | AgencyWorker TrustMem hooks, Human Override Flywheel, Quality scoring | 44/44 |
+| Phase 3 ✅ | Demo script, ROI report, pre-publish checks | — |
 
 ---
 
-## Getting Started
+## Documentation
 
-**3 steps to run NOUS OS:**
+- [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
+- [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
+- [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
+- [docs/aria-integration.md](./docs/aria-integration.md) — Aria ↔ Synapse integration guide
+- [docs/getting-started.md](./docs/getting-started.md) — Getting started
 
-```bash
-# 1. Run the Flywheel demo (no real API needed)
-python3 synapse/demo/nous_os_demo.py
+---
 
-# 2. Check Memory ROI
-python3 synapse/reports/nous_os_roi.py
+## Landing Page
 
-# 3. Pre-publish check before releasing components
-bash scripts/pre_publish_check.sh
-```
+**[nousos.ai](https://nousos.ai)**
 
 ---
 
