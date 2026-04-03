@@ -109,3 +109,37 @@ NOUS OS 不是放大器，是砥砺石。在投资决策、战略方向、重大
 ---
 
 *NOUS OS 是 Co-exist 的技术实现。不是工具集合，是共生体。*
+
+---
+
+## 路线图更新（2026-04-02）
+
+### Stage 2：Aria 工具层 MCP 化（近期，1-2周）
+
+**目标：** 把 Aria 对 OpenClaw 的工具依赖抽象为 MCP server，实现运行时可替换。
+
+**`aria-tools` MCP server（新建）：**
+```
+tools/
+├── memory_search()       → TrustMem search
+├── web_search()          → 标准搜索
+├── exec_command()        → 受控执行
+├── send_message()        → 消息发送（Telegram/Signal）
+├── schedule_task()       → Cron 调度
+└── dispatch_to_synapse() → Synapse Event Bus
+```
+
+**交付物：**
+- `aria-tools/` MCP server（Python，FastMCP）
+- 上线 Smithery + MCPize
+- Aria manifest：`aria.manifest.json`
+
+**完成后：** Aria 可在任何 MCP-compatible runtime 运行（Claude Desktop / LangGraph / AutoGen）
+
+### Stage 3：标准化 Agent Manifest（中期，1-2月）
+
+`aria.manifest.json` 定义 Aria 的完整依赖声明，任何平台读取后即可部署。
+
+### 长期：NOUS OS as a Service
+
+TrustMem MCP + Synapse SDK + Aria Manifest = 完整的 Cognitive OS 可部署单元。
