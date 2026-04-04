@@ -1,0 +1,24 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#141728"/>
+      <stop offset="1" stop-color="#090B13"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="18" y1="16" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00D4AA"/>
+      <stop offset="0.55" stop-color="#7B61FF"/>
+      <stop offset="1" stop-color="#FF6B6B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(44 18) rotate(131.186) scale(31.4019)">
+      <stop stop-color="#00D4AA" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#00D4AA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#bg)"/>
+  <rect x="4.5" y="4.5" width="55" height="55" rx="15.5" stroke="#FFFFFF" stroke-opacity="0.08"/>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#glow)"/>
+
+  <path d="M18 46V18H24.5L39.5 37.2V18H46V46H39.8L24.5 26.7V46H18Z" fill="url(#stroke)"/>
+  <circle cx="48" cy="18" r="4" fill="#00D4AA"/>
+</svg>

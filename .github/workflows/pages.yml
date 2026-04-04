@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir -p _site/docs _site/demo _site/examples/runtime
           cp index.html _site/
+          cp favicon.svg _site/
           cp CNAME _site/
           cp .nojekyll _site/
           cp README.md _site/
