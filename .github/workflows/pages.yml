@@ -31,13 +31,15 @@ jobs:
 
       - name: Stage static site
         run: |
-          mkdir -p _site/docs
+          mkdir -p _site/docs _site/demo _site/examples/runtime
           cp index.html _site/
           cp CNAME _site/
           cp .nojekyll _site/
           cp README.md _site/
           cp ARCHITECTURE.md _site/
           cp docs/getting-started.md _site/docs/
+          cp demo/heartbeat-dashboard.html _site/demo/
+          cp examples/runtime/dashboard-data.json _site/examples/runtime/
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3

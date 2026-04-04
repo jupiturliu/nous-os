@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS Interactive Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5efe4;
+    --ink: #162018;
+    --muted: #5b645d;
+    --line: rgba(33, 47, 35, 0.12);
+    --panel: rgba(255, 250, 242, 0.84);
+    --panel-strong: rgba(255, 248, 236, 0.96);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.12);
+    --teal-glow: rgba(15, 118, 110, 0.22);
+    --gold: #b7791f;
+    --gold-soft: rgba(183, 121, 31, 0.14);
+    --red: #b42318;
+    --red-soft: rgba(180, 35, 24, 0.11);
+    --navy: #21406b;
+    --navy-soft: rgba(33, 64, 107, 0.1);
+    --shadow: 0 28px 80px rgba(63, 47, 24, 0.14);
+    --shadow-strong: 0 28px 90px rgba(15, 118, 110, 0.16);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 24%),
+      radial-gradient(circle at 20% 15%, rgba(33, 64, 107, 0.1), transparent 22%),
+      radial-gradient(circle at left 60%, rgba(183, 121, 31, 0.12), transparent 28%),
+      linear-gradient(180deg, #efe4d0 0%, var(--bg) 100%);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(15, 118, 110, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 118, 110, 0.025) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+  }
+
+  .shell {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 18px 56px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.85fr) minmax(420px, 1.35fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.24), transparent 30%);
+  }
+
+  .left {
+    padding: 26px;
+    position: sticky;
+    top: 18px;
+    transition: transform 0.32s ease, opacity 0.32s ease, max-height 0.32s ease, padding 0.32s ease;
+  }
+
+  .eyebrow, .mono {
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(34px, 4vw, 62px);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+  }
+
+  .headline-gradient {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--teal) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .lede {
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 36rem;
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .override-picker {
+    margin-top: 18px;
+  }
+
+  .option-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .override-chip {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: var(--panel-strong);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .override-chip.active {
+    border-color: rgba(180,35,24,0.28);
+    background: linear-gradient(135deg, rgba(180,35,24,0.12), rgba(183,121,31,0.12));
+    box-shadow: 0 12px 28px rgba(180,35,24,0.08);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 16px 18px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  textarea:focus {
+    border-color: rgba(15,118,110,0.35);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.08);
+    transform: translateY(-1px);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+
+  .audience-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: rgba(255, 249, 240, 0.82);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px);
+  }
+
+  .audience-bar .title {
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .audience-bar .goal {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(33,47,35,0.14);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.22s ease;
+  }
+
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fffdf8;
+    box-shadow: 0 6px 18px rgba(22, 32, 24, 0.16);
+    transition: transform 0.22s ease;
+  }
+
+  .switch.active {
+    background: rgba(15,118,110,0.3);
+  }
+
+  .switch.active::after {
+    transform: translateX(20px);
+  }
+
+  .speaker-stack {
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .speaker-card {
+    padding: 16px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at top right, rgba(33,64,107,0.08), transparent 28%),
+      var(--panel-strong);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .speaker-card.live {
+    transform: translateY(-2px);
+    border-color: rgba(33,64,107,0.22);
+    box-shadow: 0 18px 40px rgba(33,64,107,0.1);
+  }
+
+  .speaker-card .small {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .speaker-card .big {
+    font-size: 18px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .speaker-card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .btn {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 11px 16px;
+    background: var(--panel-strong);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(22, 32, 24, 0.08);
+    border-color: rgba(15,118,110,0.2);
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg, #0f766e, #155e75);
+    color: #f7fbfa;
+    border-color: transparent;
+    box-shadow: 0 18px 42px rgba(15, 118, 110, 0.18);
+  }
+
+  .btn.primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    transform: translateX(-120%);
+  }
+
+  .btn.primary:hover::after {
+    animation: sheen 1s ease;
+  }
+
+  @keyframes sheen {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .status {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    min-height: 20px;
+  }
+
+  .mini-metrics {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .metric {
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+  }
+
+  .metric .k {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .metric .v {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .note {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: linear-gradient(135deg, rgba(15,118,110,0.08), rgba(183,121,31,0.08));
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .right {
+    display: grid;
+    gap: 18px;
+  }
+
+  body.audience-mode .hero {
+    grid-template-columns: 1fr;
+  }
+
+  body.audience-mode .left {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    transform: translateY(-14px);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  body.audience-mode .audience-bar {
+    display: flex;
+  }
+
+  .section {
+    padding: 22px;
+  }
+
+  .section h2 {
+    margin: 0 0 14px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .topology-stage {
+    position: relative;
+    min-height: 360px;
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at 18% 24%, rgba(15,118,110,0.09), transparent 22%),
+      radial-gradient(circle at 80% 28%, rgba(33,64,107,0.08), transparent 18%),
+      radial-gradient(circle at 62% 78%, rgba(183,121,31,0.08), transparent 20%),
+      var(--panel-strong);
+    overflow: hidden;
+  }
+
+  .topology-stage svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .flow-dot {
+    opacity: 0;
+    fill: var(--teal);
+    filter: drop-shadow(0 0 8px rgba(15,118,110,0.35));
+  }
+
+  .flow-dot.live {
+    opacity: 1;
+    animation: pulseDot 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.35); opacity: 1; }
+  }
+
+  .topology-node {
+    position: absolute;
+    width: 132px;
+    padding: 12px 12px 10px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: rgba(255,250,242,0.94);
+    box-shadow: 0 18px 40px rgba(22, 32, 24, 0.08);
+    transform: translate(-50%, -50%) scale(0.96);
+    opacity: 0.55;
+    transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+
+  .topology-node.live {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 22px 52px rgba(15,118,110,0.12);
+    border-color: rgba(15,118,110,0.26);
+  }
+
+  .topology-node .node-label {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .topology-node .node-meta {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .topology-node.human { left: 11%; top: 18%; }
+  .topology-node.aria { left: 34%; top: 18%; }
+  .topology-node.synapse { left: 58%; top: 18%; }
+  .topology-node.research { left: 79%; top: 34%; }
+  .topology-node.vibe { left: 79%; top: 68%; }
+  .topology-node.override { left: 26%; top: 72%; }
+  .topology-node.trustmem { left: 52%; top: 72%; }
+  .topology-node.alerts { left: 34%; top: 48%; }
+
+  .edge {
+    stroke: rgba(15,118,110,0.18);
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 9 11;
+    opacity: 0.25;
+    transition: opacity 0.28s ease, stroke 0.28s ease;
+  }
+
+  .edge.live {
+    opacity: 1;
+    stroke: rgba(15,118,110,0.46);
+    animation: dashflow 1.8s linear infinite;
+  }
+
+  .edge.override-line.live {
+    stroke: rgba(180,35,24,0.45);
+  }
+
+  @keyframes dashflow {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -40; }
+  }
+
+  .progress-ribbon {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .milestone {
+    padding: 12px;
+    border-radius: 16px;
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+    opacity: 0.42;
+    transform: translateY(8px);
+    transition: opacity 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+
+  .milestone.live {
+    opacity: 1;
+    transform: translateY(0);
+    border-color: rgba(15,118,110,0.28);
+    box-shadow: 0 16px 34px rgba(15,118,110,0.11);
+  }
+
+  .milestone strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  .milestone span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .live-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .stage {
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 16px;
+    min-height: 185px;
+    transition: transform 0.26s ease, border-color 0.26s ease, box-shadow 0.26s ease, background 0.26s ease;
+  }
+
+  .stage.active {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(15,118,110,0.34);
+    background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(15,118,110,0.04));
+    box-shadow: var(--shadow-strong);
+  }
+
+  .stage .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage h3 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    letter-spacing: -0.04em;
+  }
+
+  .stage p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.62;
+  }
+
+  .stream {
+    display: grid;
+    gap: 12px;
+  }
+
+  .event {
+    opacity: 0.22;
+    transform: translateY(12px) scale(0.98);
+    transition: opacity 0.35s ease, transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 14px 16px;
+  }
+
+  .event.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 16px 32px rgba(15,118,110,0.08);
+  }
+
+  .event header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .event strong {
+    font-size: 15px;
+  }
+
+  .event p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--teal-soft);
+    color: var(--teal);
+  }
+
+  .pill.gold {
+    background: var(--gold-soft);
+    color: var(--gold);
+  }
+
+  .pill.red {
+    background: var(--red-soft);
+    color: var(--red);
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: 14px;
+    padding-left: 30px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 9px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(15,118,110,0.26), rgba(183,121,31,0.28));
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 2px 0 2px 18px;
+    opacity: 0.45;
+    transform: translateX(8px);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 7px rgba(15,118,110,0.08);
+  }
+
+  .timeline-item.override::before {
+    background: var(--red);
+    box-shadow: 0 0 0 7px rgba(180,35,24,0.08);
+  }
+
+  .timeline-item.compound::before {
+    background: var(--gold);
+    box-shadow: 0 0 0 7px rgba(183,121,31,0.08);
+  }
+
+  .timeline-item h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+  }
+
+  .timeline-item p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.62;
+    color: var(--muted);
+  }
+
+  .run-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .run-card {
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    transition: transform 0.24s ease, box-shadow 0.24s ease;
+  }
+
+  .run-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 42px rgba(33, 64, 107, 0.09);
+  }
+
+  .run-card h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    letter-spacing: -0.03em;
+  }
+
+  .run-card p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.58;
+  }
+
+  .delta-banner {
+    margin-top: 14px;
+    padding: 15px 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(15,118,110,0.12), rgba(183,121,31,0.12));
+    border: 1px solid rgba(15,118,110,0.14);
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .delta-banner strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .impact-card {
+    position: relative;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at top right, rgba(15,118,110,0.1), transparent 35%),
+      var(--panel-strong);
+    overflow: hidden;
+  }
+
+  .impact-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -30px -50px auto;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(183,121,31,0.16), transparent 65%);
+    pointer-events: none;
+  }
+
+  .impact-card .small {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .impact-card .big {
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    margin-bottom: 8px;
+  }
+
+  .impact-card .copy {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.58;
+  }
+
+  .impact-card.highlight .big {
+    color: var(--teal);
+  }
+
+  .impact-card.warn .big {
+    color: var(--gold);
+  }
+
+  .impact-card.rose .big {
+    color: var(--red);
+  }
+
+  .benchmark-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 14px;
+  }
+
+  .score-panel {
+    padding: 20px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at top right, rgba(15,118,110,0.12), transparent 34%),
+      var(--panel-strong);
+  }
+
+  .score-panel .small {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .score-panel .big {
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    color: var(--teal);
+    line-height: 0.92;
+    margin-bottom: 10px;
+  }
+
+  .score-panel p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .spec-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .spec-row {
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+  }
+
+  .spec-row header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .spec-row strong {
+    font-size: 14px;
+  }
+
+  .spec-row p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .narration-card {
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at top right, rgba(33,64,107,0.08), transparent 32%),
+      var(--panel-strong);
+  }
+
+  .narration-card .small {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .narration-card .big {
+    font-size: clamp(24px, 3vw, 38px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+  }
+
+  .narration-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.62;
+    color: var(--muted);
+  }
+
+  .finale-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    background: rgba(17, 26, 21, 0.52);
+    backdrop-filter: blur(14px);
+    z-index: 1000;
+    animation: finaleFade 0.42s ease;
+  }
+
+  .finale-overlay.show {
+    display: flex;
+  }
+
+  .finale-card {
+    width: min(920px, 100%);
+    padding: 30px;
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at top right, rgba(15,118,110,0.16), transparent 28%),
+      radial-gradient(circle at left 80%, rgba(183,121,31,0.12), transparent 22%),
+      rgba(255,249,240,0.98);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 50px 120px rgba(12, 23, 17, 0.28);
+    transform: translateY(12px) scale(0.98);
+    animation: finaleRise 0.48s ease forwards;
+  }
+
+  @keyframes finaleFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes finaleRise {
+    from { opacity: 0; transform: translateY(28px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .finale-card h2 {
+    margin: 0 0 10px;
+    font-size: clamp(34px, 4vw, 58px);
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+  }
+
+  .finale-card p {
+    margin: 0 0 20px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  .finale-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .finale-metric {
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(33,47,35,0.08);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: metricReveal 0.42s ease forwards;
+  }
+
+  .finale-metric:nth-child(1) { animation-delay: 0.1s; }
+  .finale-metric:nth-child(2) { animation-delay: 0.18s; }
+  .finale-metric:nth-child(3) { animation-delay: 0.26s; }
+  .finale-metric:nth-child(4) { animation-delay: 0.34s; }
+
+  @keyframes metricReveal {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .finale-metric .small {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .finale-metric .big {
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+  }
+
+  .finale-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1120px) {
+    .hero, .live-grid, .run-grid, .progress-ribbon, .impact-grid, .benchmark-grid { grid-template-columns: 1fr; }
+    .left { position: static; }
+    .finale-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="audience-bar" id="audienceBar">
+      <div>
+        <div class="title">Audience Mode</div>
+        <div class="goal" id="audienceGoal">NOUS OS live demo</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="exitAudienceMode">Exit audience mode</button>
+      </div>
+    </div>
+    <section class="hero">
+      <div class="card left">
+        <div class="eyebrow"><span>INTERACTIVE DEMO</span><span id="generatedAt">No run yet</span></div>
+        <h1><span class="headline-gradient">Intent goes in. Better agents come back out.</span></h1>
+        <p class="lede">
+          Type a goal like a product ask. NOUS OS will replay the full story:
+          Aria interprets it, Synapse fans out work, TrustMem records the first pass, then the second run returns sharper after human correction.
+        </p>
+        <label class="label" for="goalInput">Goal</label>
+        <textarea id="goalInput">Build a demo for multi-agent memory and human override evolution in NOUS OS</textarea>
+        <div class="override-picker">
+          <label class="label">Human Override</label>
+          <div class="option-row">
+            <button class="override-chip active" data-override="risk">Risk was missed</button>
+            <button class="override-chip" data-override="cost">Cost is too high</button>
+            <button class="override-chip" data-override="timing">Timing is wrong</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="runHeartbeat">Run demo</button>
+          <button class="btn" id="replayTimeline">Replay motion</button>
+        </div>
+        <div class="toggle-row">
+          <div class="switch active" id="autoPlaySwitch"></div>
+          <span>Auto keynote mode</span>
+        </div>
+        <div class="toggle-row">
+          <div class="switch active" id="speakerModeSwitch"></div>
+          <span>Speaker mode</span>
+        </div>
+        <div class="toggle-row">
+          <div class="switch" id="audienceModeSwitch"></div>
+          <span>Audience mode</span>
+        </div>
+        <div class="status" id="statusLine">Ready.</div>
+        <div class="mini-metrics" id="metrics"></div>
+        <div class="note">
+          Product framing: this is not a backend monitor. It is a story engine for “human goal -> first pass -> override -> second pass gets stronger”.
+        </div>
+        <div class="speaker-stack">
+          <div class="speaker-card" id="speakerCard">
+            <div class="small">Speaker Mode</div>
+            <div class="big" id="speakerHeadline">Run the demo to get live talking points.</div>
+            <p id="speakerCopy">This card updates as the keynote sequence progresses, so you can present without improvising every transition.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <section class="card section">
+          <h2>Agent Topology</h2>
+          <div class="topology-stage">
+            <svg viewBox="0 0 1000 580" preserveAspectRatio="none">
+              <path class="edge" id="edge-human-aria" d="M130 105 C210 100, 265 100, 335 105"></path>
+              <path class="edge" id="edge-aria-synapse" d="M445 105 C500 100, 545 100, 610 105"></path>
+              <path class="edge" id="edge-synapse-research" d="M700 118 C785 120, 830 155, 865 205"></path>
+              <path class="edge" id="edge-synapse-vibe" d="M700 126 C785 150, 830 290, 865 390"></path>
+              <path class="edge override-line" id="edge-human-override" d="M130 120 C145 250, 160 330, 240 410"></path>
+              <path class="edge override-line" id="edge-override-trustmem" d="M320 430 C390 430, 455 430, 515 430"></path>
+              <path class="edge" id="edge-research-trustmem" d="M820 230 C760 320, 665 385, 575 420"></path>
+              <path class="edge" id="edge-vibe-trustmem" d="M820 400 C735 430, 650 438, 575 430"></path>
+              <path class="edge" id="edge-trustmem-synapse" d="M550 400 C590 320, 620 230, 640 140"></path>
+              <path class="edge" id="edge-synapse-alerts" d="M610 130 C555 180, 475 240, 385 275"></path>
+              <path class="edge" id="edge-alerts-aria" d="M330 245 C310 205, 320 155, 340 120"></path>
+              <circle class="flow-dot" id="dot-human-aria" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-aria-synapse" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-synapse-research" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-synapse-vibe" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-human-override" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-override-trustmem" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-research-trustmem" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-vibe-trustmem" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-trustmem-synapse" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-synapse-alerts" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-alerts-aria" cx="0" cy="0" r="6"></circle>
+            </svg>
+            <div class="topology-node human" id="node-human"><div class="node-label">Human</div><div class="node-meta">sets the goal</div></div>
+            <div class="topology-node aria" id="node-aria"><div class="node-label">Aria</div><div class="node-meta">intent router</div></div>
+            <div class="topology-node synapse" id="node-synapse"><div class="node-label">Synapse</div><div class="node-meta">event bus</div></div>
+            <div class="topology-node research" id="node-research"><div class="node-label">Research</div><div class="node-meta">analysis lane</div></div>
+            <div class="topology-node vibe" id="node-vibe"><div class="node-label">Vibe</div><div class="node-meta">build lane</div></div>
+            <div class="topology-node override" id="node-override"><div class="node-label">Override</div><div class="node-meta">human correction</div></div>
+            <div class="topology-node trustmem" id="node-trustmem"><div class="node-label">TrustMem</div><div class="node-meta">memory recall</div></div>
+            <div class="topology-node alerts" id="node-alerts"><div class="node-label">Alerts</div><div class="node-meta">return to Aria</div></div>
+          </div>
+        </section>
+
+        <section class="card section">
+          <h2>System Motion</h2>
+          <div class="progress-ribbon" id="progressRibbon"></div>
+          <div class="live-grid">
+            <article class="stage" id="stage-intent">
+              <div class="tag">Human Intent</div>
+              <h3 id="intentTitle">No goal yet</h3>
+              <p id="intentDetail">Enter a goal and run the demo.</p>
+            </article>
+            <article class="stage" id="stage-aria">
+              <div class="tag">Aria</div>
+              <h3>Coordination</h3>
+              <p id="ariaDetail">Aria will turn the goal into queueable work.</p>
+            </article>
+            <article class="stage" id="stage-synapse">
+              <div class="tag">Synapse</div>
+              <h3>Execution Bus</h3>
+              <p id="synapseDetail">Synapse will fan work across multiple lanes.</p>
+            </article>
+            <article class="stage" id="stage-trustmem">
+              <div class="tag">TrustMem</div>
+              <h3>Memory Loop</h3>
+              <p id="trustmemDetail">TrustMem will turn round one into reusable context.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section">
+          <h2>Realtime Stream</h2>
+          <div class="stream" id="stream"></div>
+        </section>
+
+        <section class="card section">
+          <h2>Co-evolution Timeline</h2>
+          <div class="timeline" id="timeline"></div>
+          <div class="delta-banner" id="deltaBanner"></div>
+        </section>
+
+        <section class="card section">
+          <h2>Why Round 2 Feels Smarter</h2>
+          <div class="impact-grid" id="impactGrid"></div>
+        </section>
+
+        <section class="card section">
+          <h2>NOUS OS Benchmark Spec</h2>
+          <div class="benchmark-grid">
+            <div class="score-panel" id="clsPanel"></div>
+            <div class="spec-list" id="benchmarkSpec"></div>
+          </div>
+        </section>
+
+        <section class="card section">
+          <h2>Demo Narration</h2>
+          <div class="narration-card" id="narrationCard"></div>
+        </section>
+
+        <section class="card section">
+          <h2>Before / After</h2>
+          <div class="run-grid" id="runs"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <div class="finale-overlay" id="finaleOverlay">
+    <div class="finale-card">
+      <h2 id="finaleTitle">NOUS OS learns across runs.</h2>
+      <p id="finaleCopy"></p>
+      <div class="finale-grid" id="finaleGrid"></div>
+      <div class="finale-actions">
+        <button class="btn" id="closeFinale">Close</button>
+        <button class="btn primary" id="rerunFromFinale">Run again</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const apiDataPath = "/api/dashboard-data";
+const apiRunPath = "/api/run-heartbeat";
+const staticDataPath = "../examples/runtime/dashboard-data.json";
+let progressTimer = null;
+let latestSnapshot = null;
+let selectedOverride = "risk";
+let motionRafs = [];
+let keynoteMode = true;
+let keynoteTimers = [];
+let speakerMode = true;
+let audienceMode = false;
+let staticMode = false;
+
+const progressStages = [
+  { title: "Goal", detail: "Human sets the target" },
+  { title: "Plan", detail: "Aria decomposes work" },
+  { title: "Run 1", detail: "Cold-start execution" },
+  { title: "Override", detail: "Human tightens policy" },
+  { title: "Recall", detail: "TrustMem injects memory" },
+  { title: "Run 2", detail: "Compounded second pass" },
+];
+
+function metricCard(label, value) {
+  return `<div class="metric"><div class="k">${label}</div><div class="v">${value}</div></div>`;
+}
+
+function pill(text, cls = "") {
+  return `<span class="pill ${cls}">${text}</span>`;
+}
+
+function setStatus(message) {
+  document.getElementById("statusLine").textContent = message;
+}
+
+function clearKeynoteTimers() {
+  keynoteTimers.forEach(id => clearTimeout(id));
+  keynoteTimers = [];
+}
+
+function setOverride(kind) {
+  selectedOverride = kind;
+  document.querySelectorAll(".override-chip").forEach(node => {
+    node.classList.toggle("active", node.dataset.override === kind);
+  });
+}
+
+function setKeynoteMode(enabled) {
+  keynoteMode = enabled;
+  document.getElementById("autoPlaySwitch").classList.toggle("active", enabled);
+}
+
+function setSpeakerMode(enabled) {
+  speakerMode = enabled;
+  document.getElementById("speakerModeSwitch").classList.toggle("active", enabled);
+}
+
+function setAudienceMode(enabled) {
+  audienceMode = enabled;
+  document.getElementById("audienceModeSwitch").classList.toggle("active", enabled);
+  document.body.classList.toggle("audience-mode", enabled);
+}
+
+function setSpeakerCard(headline, copy, live = true) {
+  const card = document.getElementById("speakerCard");
+  card.classList.toggle("live", !!live);
+  document.getElementById("speakerHeadline").textContent = headline;
+  document.getElementById("speakerCopy").textContent = copy;
+}
+
+function renderMetrics(metrics = {}) {
+  document.getElementById("metrics").innerHTML = [
+    metricCard("Round 2 quality", metrics.avg_quality ?? 0),
+    metricCard("Quality delta", metrics.quality_delta ?? 0),
+    metricCard("Episodes", metrics.episodes_logged ?? 0),
+    metricCard("Alerts", metrics.alerts_created ?? 0),
+  ].join("");
+}
+
+function renderProgressRibbon() {
+  document.getElementById("progressRibbon").innerHTML = progressStages.map((stage, index) => `
+    <article class="milestone" id="milestone-${index}">
+      <strong>${stage.title}</strong>
+      <span>${stage.detail}</span>
+    </article>
+  `).join("");
+}
+
+function updateHero(snapshot) {
+  document.getElementById("generatedAt").textContent = snapshot.generated_at || "unknown";
+  document.getElementById("intentTitle").textContent = snapshot.goal || "No goal";
+  document.getElementById("intentDetail").textContent = "The human objective becomes the organizing principle of the whole loop.";
+  document.getElementById("ariaDetail").textContent = `Aria moved from ${snapshot.runs?.[0]?.metrics?.tasks_dispatched ?? 0} tasks on round 1 to ${snapshot.runs?.[1]?.metrics?.tasks_dispatched ?? 0} on round 2.`;
+  document.getElementById("synapseDetail").textContent = `Synapse delivered ${snapshot.metrics?.tasks_completed ?? 0} completed tasks in the latest pass.`;
+  document.getElementById("trustmemDetail").textContent = `TrustMem logged ${snapshot.metrics?.episodes_logged ?? 0} episodes and lifted quality by ${snapshot.metrics?.quality_delta ?? 0}.`;
+  document.getElementById("audienceGoal").textContent = snapshot.goal || "NOUS OS live demo";
+}
+
+function renderTopology(snapshot) {
+  const topology = snapshot.topology || {};
+  const nodeMap = Object.fromEntries((topology.nodes || []).map(node => [node.id, node]));
+  for (const [id, node] of Object.entries(nodeMap)) {
+    const el = document.getElementById(`node-${id}`);
+    if (!el) continue;
+    el.querySelector(".node-label").textContent = node.label;
+    el.querySelector(".node-meta").textContent = node.meta || "";
+  }
+}
+
+function renderStream(snapshot) {
+  const stream = document.getElementById("stream");
+  const round1 = snapshot.runs?.[0];
+  const round2 = snapshot.runs?.[1];
+  const events = [];
+
+  events.push({
+    title: "Goal received",
+    text: snapshot.goal,
+    badge: pill("intent")
+  });
+
+  if (round1) {
+    events.push({
+      title: "Round 1 launched",
+      text: `${round1.metrics.tasks_dispatched} tasks dispatched with average quality ${round1.metrics.avg_quality}.`,
+      badge: pill("cold start", "gold")
+    });
+  }
+
+  if (snapshot.override) {
+    events.push({
+      title: "Human override",
+      text: snapshot.override.reason,
+      badge: pill("policy shift", "red")
+    });
+  }
+
+  if (round2) {
+    events.push({
+      title: "TrustMem recall",
+      text: `Round 2 expands to ${round2.metrics.tasks_dispatched} tasks and reuses episode memory.`,
+      badge: pill(`+${snapshot.metrics?.quality_delta ?? 0} quality`)
+    });
+    round2.completed.forEach(item => {
+      events.push({
+        title: `${item.output.agent} finished`,
+        text: `${item.output.summary} Memory hits: ${item.output.memory_hits}.`,
+        badge: pill(`q ${item.output.quality_score}`)
+      });
+    });
+  }
+
+  stream.innerHTML = events.map((event, index) => `
+    <article class="event" id="event-${index}">
+      <header>
+        <strong>${event.title}</strong>
+        ${event.badge}
+      </header>
+      <p>${event.text}</p>
+    </article>
+  `).join("");
+}
+
+function renderTimeline(snapshot) {
+  const timeline = document.getElementById("timeline");
+  timeline.innerHTML = (snapshot.timeline || []).map((item, index) => {
+    const klass = item.accent === "override" ? "override" : item.accent === "compound" ? "compound" : "";
+    return `
+      <article class="timeline-item ${klass}" id="timeline-${index}">
+        <h3>${item.stage} · ${item.title}</h3>
+        <p>${item.detail}</p>
+      </article>
+    `;
+  }).join("");
+
+  document.getElementById("deltaBanner").innerHTML = `
+    <strong>What changed on the second run</strong>
+    Round 1 quality: ${snapshot.runs?.[0]?.metrics?.avg_quality ?? 0}. Round 2 quality: ${snapshot.runs?.[1]?.metrics?.avg_quality ?? 0}.
+    The human correction created a stronger plan, a risk gate, and a memory-backed second pass.
+  `;
+}
+
+function renderImpact(snapshot) {
+  const run1 = snapshot.runs?.[0]?.metrics || {};
+  const run2 = snapshot.runs?.[1]?.metrics || {};
+  const delta = snapshot.metrics?.quality_delta ?? 0;
+  document.getElementById("impactGrid").innerHTML = `
+    <article class="impact-card highlight">
+      <div class="small">Quality Lift</div>
+      <div class="big">+${delta.toFixed(2)}</div>
+      <div class="copy">Round 1 quality ${run1.avg_quality ?? 0} → Round 2 quality ${run2.avg_quality ?? 0}. Memory and override both changed the result.</div>
+    </article>
+    <article class="impact-card warn">
+      <div class="small">Task Expansion</div>
+      <div class="big">${run2.tasks_dispatched ?? 0}</div>
+      <div class="copy">The second pass widens the plan from ${run1.tasks_dispatched ?? 0} to ${run2.tasks_dispatched ?? 0} tasks after Aria sees what the first pass missed.</div>
+    </article>
+    <article class="impact-card rose">
+      <div class="small">Human Policy</div>
+      <div class="big">${(snapshot.override?.kind || "").toUpperCase()}</div>
+      <div class="copy">${snapshot.override?.reason || ""}</div>
+    </article>
+  `;
+}
+
+function renderBenchmark(snapshot) {
+  const benchmark = snapshot.benchmark || {};
+  const cls = benchmark.cls || {};
+  document.getElementById("clsPanel").innerHTML = `
+    <div class="small">Cognitive Loop Score</div>
+    <div class="big">${(cls.score ?? 0).toFixed(3)}</div>
+    <p>
+      CLS compresses four public measures into one score:
+      quality improvement, correction absorption, memory reuse, and repeatability gain.
+      This demo computes it live from baseline round 1 vs treatment round 2.
+    </p>
+  `;
+
+  document.getElementById("benchmarkSpec").innerHTML = (benchmark.public_standard || []).map(item => `
+    <article class="spec-row">
+      <header>
+        <strong>${item.id} · ${item.label}</strong>
+        ${pill(item.value.toFixed(3), item.id === "C" ? "red" : item.id === "R" ? "gold" : "")}
+      </header>
+      <p>${item.detail}</p>
+    </article>
+  `).join("");
+}
+
+function renderNarration(snapshot) {
+  const q = snapshot.metrics?.quality_delta ?? 0;
+  const cls = snapshot.metrics?.cls_score ?? 0;
+  document.getElementById("narrationCard").innerHTML = `
+    <div class="small">What the audience should notice</div>
+    <div class="big">The second run is not just faster. It is structurally wiser.</div>
+    <p>
+      NOUS OS first produces a workable answer, then lets human correction become system policy.
+      The second run reuses memory, expands the task graph, and raises measured quality by ${q.toFixed(2)}.
+      That is why the CLS settles at ${cls.toFixed(3)} instead of staying at a one-shot baseline.
+    </p>
+  `;
+}
+
+function renderRuns(snapshot) {
+  const runs = document.getElementById("runs");
+  runs.innerHTML = (snapshot.runs || []).map(run => `
+    <article class="run-card">
+      <h3>Round ${run.round}</h3>
+      <p>${run.metrics.tasks_dispatched} tasks dispatched</p>
+      <p>${run.metrics.tasks_completed} tasks completed</p>
+      <p>Average quality: ${run.metrics.avg_quality}</p>
+      ${(run.completed || []).map(item => `<p>${item.output.agent}: q=${item.output.quality_score}, memory=${item.output.memory_hits}</p>`).join("")}
+    </article>
+  `).join("");
+}
+
+function resetAnimation() {
+  clearTimeout(progressTimer);
+  clearKeynoteTimers();
+  motionRafs.forEach(id => cancelAnimationFrame(id));
+  motionRafs = [];
+  document.querySelectorAll(".event").forEach(node => node.classList.remove("visible"));
+  document.querySelectorAll(".stage").forEach(node => node.classList.remove("active"));
+  document.querySelectorAll(".timeline-item").forEach(node => node.classList.remove("visible"));
+  document.querySelectorAll(".milestone").forEach(node => node.classList.remove("live"));
+  document.querySelectorAll(".topology-node").forEach(node => node.classList.remove("live"));
+  document.querySelectorAll(".edge").forEach(node => node.classList.remove("live"));
+  document.querySelectorAll(".flow-dot").forEach(node => node.classList.remove("live"));
+}
+
+function animateDot(dotId, pathId, delay = 0, duration = 1700) {
+  const dot = document.getElementById(dotId);
+  const path = document.getElementById(pathId);
+  if (!dot || !path) return;
+  const pathLength = path.getTotalLength();
+  let startTime = null;
+  dot.classList.add("live");
+
+  const step = (timestamp) => {
+    if (startTime === null) startTime = timestamp + delay;
+    if (timestamp < startTime) {
+      motionRafs.push(requestAnimationFrame(step));
+      return;
+    }
+    const elapsed = (timestamp - startTime) % duration;
+    const progress = elapsed / duration;
+    const point = path.getPointAtLength(progress * pathLength);
+    dot.setAttribute("cx", point.x.toFixed(2));
+    dot.setAttribute("cy", point.y.toFixed(2));
+    motionRafs.push(requestAnimationFrame(step));
+  };
+  motionRafs.push(requestAnimationFrame(step));
+}
+
+function openFinale(snapshot) {
+  document.getElementById("finaleTitle").textContent = "NOUS OS is not a workflow. It is a learning loop.";
+  document.getElementById("finaleCopy").textContent =
+    `For "${snapshot.goal}", the first pass created a baseline. Human feedback then changed system policy, TrustMem fed that back into Synapse, and the second pass improved both plan structure and output quality.`;
+  document.getElementById("finaleGrid").innerHTML = `
+    <article class="finale-metric">
+      <div class="small">CLS</div>
+      <div class="big">${(snapshot.metrics?.cls_score ?? 0).toFixed(3)}</div>
+    </article>
+    <article class="finale-metric">
+      <div class="small">Quality Delta</div>
+      <div class="big">+${(snapshot.metrics?.quality_delta ?? 0).toFixed(2)}</div>
+    </article>
+    <article class="finale-metric">
+      <div class="small">Override</div>
+      <div class="big">${(snapshot.override?.kind || "").toUpperCase()}</div>
+    </article>
+    <article class="finale-metric">
+      <div class="small">Episodes</div>
+      <div class="big">${snapshot.metrics?.episodes_logged ?? 0}</div>
+    </article>
+  `;
+  document.getElementById("finaleOverlay").classList.add("show");
+  if (speakerMode) {
+    setSpeakerCard(
+      "Close on the proof, not just the motion.",
+      `Say: “The first run gave us a baseline. The human correction became policy. The second run improved quality by ${(snapshot.metrics?.quality_delta ?? 0).toFixed(2)} and produced a CLS of ${(snapshot.metrics?.cls_score ?? 0).toFixed(3)}.”`
+    );
+  }
+}
+
+function closeFinale() {
+  document.getElementById("finaleOverlay").classList.remove("show");
+}
+
+function playTimeline() {
+  resetAnimation();
+
+  const stageOrder = ["stage-intent", "stage-aria", "stage-synapse", "stage-trustmem"];
+  stageOrder.forEach((id, index) => {
+    setTimeout(() => {
+      document.getElementById(id)?.classList.add("active");
+    }, index * 650);
+  });
+
+  progressStages.forEach((_, index) => {
+    setTimeout(() => {
+      document.getElementById(`milestone-${index}`)?.classList.add("live");
+    }, index * 420);
+  });
+
+  const topologySequence = [
+    { node: "human", edge: "edge-human-aria" },
+    { node: "aria", edge: "edge-aria-synapse" },
+    { node: "synapse", edge: "edge-synapse-research" },
+    { node: "research", edge: "edge-research-trustmem" },
+    { node: "override", edge: "edge-human-override" },
+    { node: "trustmem", edge: "edge-override-trustmem" },
+    { node: "vibe", edge: "edge-synapse-vibe" },
+    { node: "alerts", edge: "edge-synapse-alerts" },
+  ];
+  topologySequence.forEach((item, index) => {
+    setTimeout(() => {
+      document.getElementById(`node-${item.node}`)?.classList.add("live");
+      document.getElementById(item.edge)?.classList.add("live");
+    }, 240 + index * 280);
+  });
+  setTimeout(() => document.getElementById("edge-trustmem-synapse")?.classList.add("live"), 1750);
+  setTimeout(() => document.getElementById("edge-alerts-aria")?.classList.add("live"), 2100);
+
+  animateDot("dot-human-aria", "edge-human-aria", 0);
+  animateDot("dot-aria-synapse", "edge-aria-synapse", 260);
+  animateDot("dot-synapse-research", "edge-synapse-research", 620);
+  animateDot("dot-synapse-vibe", "edge-synapse-vibe", 780);
+  animateDot("dot-human-override", "edge-human-override", 940);
+  animateDot("dot-override-trustmem", "edge-override-trustmem", 1220);
+  animateDot("dot-research-trustmem", "edge-research-trustmem", 1380);
+  animateDot("dot-vibe-trustmem", "edge-vibe-trustmem", 1520);
+  animateDot("dot-trustmem-synapse", "edge-trustmem-synapse", 1820);
+  animateDot("dot-synapse-alerts", "edge-synapse-alerts", 2040);
+  animateDot("dot-alerts-aria", "edge-alerts-aria", 2220);
+
+  document.querySelectorAll(".event").forEach((node, index) => {
+    setTimeout(() => node.classList.add("visible"), 350 + index * 280);
+  });
+
+  document.querySelectorAll(".timeline-item").forEach((node, index) => {
+    setTimeout(() => node.classList.add("visible"), 700 + index * 250);
+  });
+}
+
+function playKeynoteSequence(snapshot) {
+  if (!keynoteMode) return;
+  clearKeynoteTimers();
+  keynoteTimers.push(setTimeout(() => {
+    setStatus("Act I: Aria frames the goal.");
+    if (speakerMode) {
+      setSpeakerCard(
+        "Start with the goal, not the architecture.",
+        `Say: “We begin with a human objective: ${snapshot.goal}.”`
+      );
+    }
+  }, 180));
+  keynoteTimers.push(setTimeout(() => {
+    setStatus("Act II: the first run ships a baseline.");
+    if (speakerMode) {
+      setSpeakerCard(
+        "Round one is intentionally imperfect.",
+        `Say: “The first pass is useful, but it is still a cold start. Here it lands at ${(snapshot.runs?.[0]?.metrics?.avg_quality ?? 0).toFixed(2)}.”`
+      );
+    }
+  }, 1550));
+  keynoteTimers.push(setTimeout(() => {
+    setStatus("Act III: the human corrects the system.");
+    if (speakerMode) {
+      setSpeakerCard(
+        "The human correction is the turning point.",
+        `Say: “The important thing is not that a human disagrees. It is that the disagreement becomes system policy: ${snapshot.override?.reason || ""}”`
+      );
+    }
+  }, 3100));
+  keynoteTimers.push(setTimeout(() => {
+    setStatus("Act IV: TrustMem rewires the second pass.");
+    if (speakerMode) {
+      setSpeakerCard(
+        "Memory turns a one-shot answer into an evolving loop.",
+        `Say: “TrustMem feeds that correction back into Synapse, so the second run expands the plan from ${snapshot.runs?.[0]?.metrics?.tasks_dispatched ?? 0} to ${snapshot.runs?.[1]?.metrics?.tasks_dispatched ?? 0} tasks.”`
+      );
+    }
+  }, 4700));
+  keynoteTimers.push(setTimeout(() => {
+    setStatus("Act V: benchmark reveal.");
+    if (speakerMode) {
+      setSpeakerCard(
+        "End on the benchmark, not the animation.",
+        `Say: “We can measure the loop. CLS is ${(snapshot.metrics?.cls_score ?? 0).toFixed(3)}, and quality improves by ${(snapshot.metrics?.quality_delta ?? 0).toFixed(2)}.”`
+      );
+    }
+  }, 6150));
+  keynoteTimers.push(setTimeout(() => openFinale(snapshot), 7100));
+}
+
+async function renderSnapshot(snapshot) {
+  latestSnapshot = snapshot;
+  renderMetrics(snapshot.metrics || {});
+  renderProgressRibbon();
+  updateHero(snapshot);
+  renderTopology(snapshot);
+  renderStream(snapshot);
+  renderTimeline(snapshot);
+  renderImpact(snapshot);
+  renderBenchmark(snapshot);
+  renderNarration(snapshot);
+  renderRuns(snapshot);
+  playTimeline();
+  playKeynoteSequence(snapshot);
+}
+
+async function loadSnapshot() {
+  try {
+    const response = await fetch(apiDataPath, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    staticMode = false;
+    return response.json();
+  } catch (err) {
+    const fallback = await fetch(staticDataPath, { cache: "no-store" });
+    if (!fallback.ok) throw new Error(`HTTP ${fallback.status}`);
+    staticMode = true;
+    return fallback.json();
+  }
+}
+
+async function boot() {
+  renderProgressRibbon();
+  try {
+    const snapshot = await loadSnapshot();
+    document.getElementById("goalInput").value = snapshot.goal || document.getElementById("goalInput").value;
+    await renderSnapshot(snapshot);
+    setStatus(staticMode ? "Loaded hosted snapshot. Run button replays the story in static mode." : "Loaded latest snapshot.");
+  } catch (err) {
+    setStatus("No snapshot yet. Run the demo.");
+  }
+}
+
+document.getElementById("runHeartbeat").addEventListener("click", async () => {
+  const button = document.getElementById("runHeartbeat");
+  const goal = document.getElementById("goalInput").value.trim();
+  closeFinale();
+  if (staticMode && latestSnapshot) {
+    playTimeline();
+    playKeynoteSequence(latestSnapshot);
+    setStatus("Static hosted demo replayed from the latest published snapshot.");
+    return;
+  }
+  button.disabled = true;
+  setStatus("Running two-round demo...");
+  try {
+    const response = await fetch(apiRunPath, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal, override_kind: selectedOverride }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const snapshot = await response.json();
+    await renderSnapshot(snapshot);
+    setStatus(`Demo completed. Round 2 quality reached ${snapshot.metrics?.avg_quality ?? 0}.`);
+  } catch (err) {
+    setStatus(`Run failed: ${err.message}`);
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.querySelectorAll(".override-chip").forEach(node => {
+  node.addEventListener("click", () => setOverride(node.dataset.override));
+});
+
+document.getElementById("autoPlaySwitch").addEventListener("click", () => {
+  setKeynoteMode(!keynoteMode);
+  setStatus(keynoteMode ? "Auto keynote mode enabled." : "Auto keynote mode disabled.");
+});
+
+document.getElementById("speakerModeSwitch").addEventListener("click", () => {
+  setSpeakerMode(!speakerMode);
+  setStatus(speakerMode ? "Speaker mode enabled." : "Speaker mode disabled.");
+});
+
+document.getElementById("audienceModeSwitch").addEventListener("click", () => {
+  setAudienceMode(!audienceMode);
+  setStatus(audienceMode ? "Audience mode enabled." : "Audience mode disabled.");
+});
+
+document.getElementById("exitAudienceMode").addEventListener("click", () => {
+  setAudienceMode(false);
+  setStatus("Audience mode disabled.");
+});
+
+document.getElementById("replayTimeline").addEventListener("click", () => {
+  if (!latestSnapshot) {
+    setStatus("Run the demo first.");
+    return;
+  }
+  playTimeline();
+  setStatus("Replaying system motion.");
+});
+
+document.getElementById("closeFinale").addEventListener("click", closeFinale);
+document.getElementById("rerunFromFinale").addEventListener("click", () => {
+  closeFinale();
+  document.getElementById("runHeartbeat").click();
+});
+
+setOverride("risk");
+setKeynoteMode(true);
+setSpeakerMode(true);
+setAudienceMode(false);
+boot();
+</script>
+</body>
+</html>

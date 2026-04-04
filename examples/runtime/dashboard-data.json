@@ -1,0 +1,649 @@
+{
+  "generated_at": "2026-04-04T12:07:03",
+  "goal": "Benchmark-driven conference demo for NOUS OS",
+  "current_round": 2,
+  "runs": [
+    {
+      "round": 1,
+      "dispatch_results": {
+        "implementation_queue": [
+          "impl-demo-001"
+        ],
+        "learning_queue": [
+          "learn-demo-001"
+        ]
+      },
+      "completed": [
+        {
+          "job_id": "impl-demo-001",
+          "topic": "implementation_queue",
+          "output": {
+            "agent": "vibe-vpe",
+            "topic": "implementation_queue",
+            "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "quality_score": 0.72,
+            "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "memory_hits": 0,
+            "round": 1,
+            "goal": "Benchmark-driven conference demo for NOUS OS"
+          }
+        },
+        {
+          "job_id": "learn-demo-001",
+          "topic": "learning_queue",
+          "output": {
+            "agent": "research-cto",
+            "topic": "learning_queue",
+            "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "quality_score": 0.76,
+            "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "memory_hits": 0,
+            "round": 1,
+            "goal": "Benchmark-driven conference demo for NOUS OS"
+          }
+        }
+      ],
+      "metrics": {
+        "tasks_dispatched": 2,
+        "tasks_completed": 2,
+        "avg_quality": 0.74,
+        "memory_hit_rate": 0.0
+      },
+      "queues": {
+        "implementation_queue": {
+          "items": [
+            {
+              "id": "impl-demo-001",
+              "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "reason": "Aria wants a visible prototype for: Benchmark-driven conference demo for NOUS OS",
+              "type": "implementation_queue",
+              "priority": "high",
+              "status": "done",
+              "created_at": "2026-04-04T12:07:01",
+              "round": 1,
+              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "synapse_dispatched_at": "2026-04-04T12:07:01.918158",
+              "completed_at": "2026-04-04T12:07:02",
+              "result_path": "runtime://implementation_queue/impl-demo-001",
+              "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "quality_score": 0.72,
+              "memory_hits": 0
+            }
+          ]
+        },
+        "learning_queue": {
+          "items": [
+            {
+              "id": "learn-demo-001",
+              "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "reason": "Aria needs a research narrative for: Benchmark-driven conference demo for NOUS OS",
+              "type": "learning_queue",
+              "priority": "high",
+              "status": "done",
+              "created_at": "2026-04-04T12:07:01",
+              "round": 1,
+              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "synapse_dispatched_at": "2026-04-04T12:07:01.964024",
+              "completed_at": "2026-04-04T12:07:02",
+              "result_path": "runtime://learning_queue/learn-demo-001",
+              "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "quality_score": 0.76,
+              "memory_hits": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2,
+      "dispatch_results": {
+        "implementation_queue": [
+          "impl-demo-002",
+          "risk-demo-002"
+        ],
+        "learning_queue": [
+          "learn-demo-002"
+        ]
+      },
+      "completed": [
+        {
+          "job_id": "impl-demo-002",
+          "topic": "implementation_queue",
+          "output": {
+            "agent": "vibe-vpe",
+            "topic": "implementation_queue",
+            "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "quality_score": 0.9,
+            "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "memory_hits": 2,
+            "round": 2,
+            "goal": "Benchmark-driven conference demo for NOUS OS"
+          }
+        },
+        {
+          "job_id": "learn-demo-002",
+          "topic": "learning_queue",
+          "output": {
+            "agent": "research-cto",
+            "topic": "learning_queue",
+            "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "quality_score": 0.94,
+            "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "memory_hits": 2,
+            "round": 2,
+            "goal": "Benchmark-driven conference demo for NOUS OS"
+          }
+        },
+        {
+          "job_id": "risk-demo-002",
+          "topic": "implementation_queue",
+          "output": {
+            "agent": "vibe-vpe",
+            "topic": "implementation_queue",
+            "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+            "quality_score": 0.94,
+            "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+            "memory_hits": 3,
+            "round": 2,
+            "goal": "Benchmark-driven conference demo for NOUS OS"
+          }
+        }
+      ],
+      "metrics": {
+        "tasks_dispatched": 3,
+        "tasks_completed": 3,
+        "avg_quality": 0.93,
+        "memory_hit_rate": 1.0
+      },
+      "queues": {
+        "implementation_queue": {
+          "items": [
+            {
+              "id": "impl-demo-002",
+              "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "reason": "Aria wants a refined execution path with memory for: Benchmark-driven conference demo for NOUS OS",
+              "type": "implementation_queue",
+              "priority": "high",
+              "status": "done",
+              "created_at": "2026-04-04T12:07:02",
+              "round": 2,
+              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "synapse_dispatched_at": "2026-04-04T12:07:02.258928",
+              "completed_at": "2026-04-04T12:07:02",
+              "result_path": "runtime://implementation_queue/impl-demo-002",
+              "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "quality_score": 0.9,
+              "memory_hits": 2
+            },
+            {
+              "id": "risk-demo-002",
+              "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+              "reason": "TrustMem already contains the previous round and a human correction about risk.",
+              "type": "implementation_queue",
+              "priority": "high",
+              "status": "done",
+              "created_at": "2026-04-04T12:07:02",
+              "round": 2,
+              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "role": "risk_guard",
+              "override_kind": "risk",
+              "synapse_dispatched_at": "2026-04-04T12:07:02.305072",
+              "completed_at": "2026-04-04T12:07:03",
+              "result_path": "runtime://implementation_queue/risk-demo-002",
+              "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+              "quality_score": 0.94,
+              "memory_hits": 3
+            }
+          ]
+        },
+        "learning_queue": {
+          "items": [
+            {
+              "id": "learn-demo-002",
+              "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "reason": "Aria wants the next run to reuse prior learning for: Benchmark-driven conference demo for NOUS OS",
+              "type": "learning_queue",
+              "priority": "high",
+              "status": "done",
+              "created_at": "2026-04-04T12:07:02",
+              "round": 2,
+              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "synapse_dispatched_at": "2026-04-04T12:07:02.354394",
+              "completed_at": "2026-04-04T12:07:02",
+              "result_path": "runtime://learning_queue/learn-demo-002",
+              "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "quality_score": 0.94,
+              "memory_hits": 2
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "stage": "Human Intent",
+      "title": "You set a goal",
+      "detail": "Benchmark-driven conference demo for NOUS OS",
+      "accent": "intent"
+    },
+    {
+      "stage": "Aria Planning",
+      "title": "Aria decomposes the work",
+      "detail": "Round 1 dispatched 2 tasks across implementation and research lanes.",
+      "accent": "aria"
+    },
+    {
+      "stage": "Synapse Execution",
+      "title": "Workers complete the first pass",
+      "detail": "Cold-start quality landed at 0.74.",
+      "accent": "synapse"
+    },
+    {
+      "stage": "Human Override",
+      "title": "The human tightens the policy",
+      "detail": "Human override: add an explicit risk gate before execution.",
+      "accent": "override"
+    },
+    {
+      "stage": "TrustMem Recall",
+      "title": "Memory changes the second run",
+      "detail": "Round 2 recalled episode memory and expanded to 3 tasks.",
+      "accent": "trustmem"
+    },
+    {
+      "stage": "Compounding Loop",
+      "title": "The system gets sharper",
+      "detail": "Average quality improved from 0.74 to 0.93.",
+      "accent": "compound"
+    }
+  ],
+  "topology": {
+    "nodes": [
+      {
+        "id": "human",
+        "label": "Human",
+        "kind": "human",
+        "meta": "Benchmark-driven conference demo for NOUS OS"
+      },
+      {
+        "id": "aria",
+        "label": "Aria",
+        "kind": "aria",
+        "meta": "intent router"
+      },
+      {
+        "id": "synapse",
+        "label": "Synapse",
+        "kind": "synapse",
+        "meta": "3 tasks"
+      },
+      {
+        "id": "research",
+        "label": "Research",
+        "kind": "agent",
+        "meta": "research lane"
+      },
+      {
+        "id": "vibe",
+        "label": "Vibe",
+        "kind": "agent",
+        "meta": "implementation lane"
+      },
+      {
+        "id": "override",
+        "label": "Override",
+        "kind": "override",
+        "meta": "risk"
+      },
+      {
+        "id": "trustmem",
+        "label": "TrustMem",
+        "kind": "trustmem",
+        "meta": "0.93 round2"
+      },
+      {
+        "id": "alerts",
+        "label": "Alerts",
+        "kind": "alerts",
+        "meta": "return to Aria"
+      }
+    ],
+    "edges": [
+      {
+        "from": "human",
+        "to": "aria",
+        "label": "goal"
+      },
+      {
+        "from": "aria",
+        "to": "synapse",
+        "label": "plan"
+      },
+      {
+        "from": "synapse",
+        "to": "research",
+        "label": "r1 2"
+      },
+      {
+        "from": "synapse",
+        "to": "vibe",
+        "label": "r2 3"
+      },
+      {
+        "from": "human",
+        "to": "override",
+        "label": "feedback"
+      },
+      {
+        "from": "override",
+        "to": "trustmem",
+        "label": "policy"
+      },
+      {
+        "from": "research",
+        "to": "trustmem",
+        "label": "episodes"
+      },
+      {
+        "from": "vibe",
+        "to": "trustmem",
+        "label": "episodes"
+      },
+      {
+        "from": "trustmem",
+        "to": "synapse",
+        "label": "recall"
+      },
+      {
+        "from": "synapse",
+        "to": "alerts",
+        "label": "completion"
+      },
+      {
+        "from": "alerts",
+        "to": "aria",
+        "label": "summary"
+      }
+    ]
+  },
+  "override": {
+    "id": "override-1775329622208",
+    "goal": "Benchmark-driven conference demo for NOUS OS",
+    "reason": "Human override: add an explicit risk gate before execution.",
+    "domain": "demo",
+    "created_at": "2026-04-04T12:07:02",
+    "round_1_quality": 0.74,
+    "kind": "risk"
+  },
+  "benchmark": {
+    "baseline": {
+      "quality": 0.74,
+      "tasks": 2,
+      "memory_hit_rate": 0.0
+    },
+    "treatment": {
+      "quality": 0.93,
+      "tasks": 3,
+      "memory_hit_rate": 1.0
+    },
+    "derived": {
+      "quality_improvement_rate": 0.257,
+      "task_expansion_rate": 0.5,
+      "memory_reuse_rate": 1.0,
+      "correction_applied_rate": 1.0,
+      "episodes_logged": 5,
+      "alerts_created": 6
+    },
+    "cls": {
+      "score": 0.603,
+      "components": {
+        "q_quality_improvement": 0.257,
+        "c_correction_absorption": 1.0,
+        "e_memory_reuse": 1.0,
+        "r_repeatability_gain": 0.5
+      }
+    },
+    "public_standard": [
+      {
+        "id": "Q",
+        "label": "Quality Improvement",
+        "detail": "Does the second run improve task quality against the baseline first run?",
+        "value": 0.257
+      },
+      {
+        "id": "C",
+        "label": "Correction Absorption",
+        "detail": "Does one human correction enter the system and alter later behavior?",
+        "value": 1.0
+      },
+      {
+        "id": "E",
+        "label": "Memory Reuse",
+        "detail": "What fraction of second-run tasks actually reuse memory?",
+        "value": 1.0
+      },
+      {
+        "id": "R",
+        "label": "Repeatability Gain",
+        "detail": "Does the loop expand or refine the second-run plan in a measurable way?",
+        "value": 0.5
+      }
+    ]
+  },
+  "metrics": {
+    "tasks_dispatched": 3,
+    "tasks_completed": 3,
+    "avg_quality": 0.93,
+    "episodes_logged": 5,
+    "alerts_created": 6,
+    "quality_delta": 0.19,
+    "cls_score": 0.603
+  },
+  "queues": {
+    "implementation_queue": {
+      "items": [
+        {
+          "id": "impl-demo-002",
+          "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "reason": "Aria wants a refined execution path with memory for: Benchmark-driven conference demo for NOUS OS",
+          "type": "implementation_queue",
+          "priority": "high",
+          "status": "done",
+          "created_at": "2026-04-04T12:07:02",
+          "round": 2,
+          "goal": "Benchmark-driven conference demo for NOUS OS",
+          "synapse_dispatched_at": "2026-04-04T12:07:02.258928",
+          "completed_at": "2026-04-04T12:07:02",
+          "result_path": "runtime://implementation_queue/impl-demo-002",
+          "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "quality_score": 0.9,
+          "memory_hits": 2
+        },
+        {
+          "id": "risk-demo-002",
+          "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "reason": "TrustMem already contains the previous round and a human correction about risk.",
+          "type": "implementation_queue",
+          "priority": "high",
+          "status": "done",
+          "created_at": "2026-04-04T12:07:02",
+          "round": 2,
+          "goal": "Benchmark-driven conference demo for NOUS OS",
+          "role": "risk_guard",
+          "override_kind": "risk",
+          "synapse_dispatched_at": "2026-04-04T12:07:02.305072",
+          "completed_at": "2026-04-04T12:07:03",
+          "result_path": "runtime://implementation_queue/risk-demo-002",
+          "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "quality_score": 0.94,
+          "memory_hits": 3
+        }
+      ]
+    },
+    "learning_queue": {
+      "items": [
+        {
+          "id": "learn-demo-002",
+          "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "reason": "Aria wants the next run to reuse prior learning for: Benchmark-driven conference demo for NOUS OS",
+          "type": "learning_queue",
+          "priority": "high",
+          "status": "done",
+          "created_at": "2026-04-04T12:07:02",
+          "round": 2,
+          "goal": "Benchmark-driven conference demo for NOUS OS",
+          "synapse_dispatched_at": "2026-04-04T12:07:02.354394",
+          "completed_at": "2026-04-04T12:07:02",
+          "result_path": "runtime://learning_queue/learn-demo-002",
+          "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "quality_score": 0.94,
+          "memory_hits": 2
+        }
+      ]
+    },
+    "alerts": {
+      "items": [
+        {
+          "id": "vibe-vpe-1775329623008",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "source": "vibe-vpe",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:03",
+          "metadata": {
+            "job_id": "risk-demo-002",
+            "quality_score": 0.94,
+            "round": 2
+          }
+        },
+        {
+          "id": "research-cto-1775329622721",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "source": "research-cto",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:02",
+          "metadata": {
+            "job_id": "learn-demo-002",
+            "quality_score": 0.94,
+            "round": 2
+          }
+        },
+        {
+          "id": "vibe-vpe-1775329622639",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "source": "vibe-vpe",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:02",
+          "metadata": {
+            "job_id": "impl-demo-002",
+            "quality_score": 0.9,
+            "round": 2
+          }
+        },
+        {
+          "id": "aria-1775329622209",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "Human override recorded for: Benchmark-driven conference demo for NOUS OS",
+          "source": "aria",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:02",
+          "metadata": {
+            "reason": "Human override: add an explicit risk gate before execution.",
+            "round_1_quality": 0.74
+          }
+        },
+        {
+          "id": "research-cto-1775329622208",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "source": "research-cto",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:02",
+          "metadata": {
+            "job_id": "learn-demo-001",
+            "quality_score": 0.76,
+            "round": 1
+          }
+        },
+        {
+          "id": "vibe-vpe-1775329622163",
+          "level": "medium",
+          "type": "task_complete",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "source": "vibe-vpe",
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-04-04T12:07:02",
+          "metadata": {
+            "job_id": "impl-demo-001",
+            "quality_score": 0.72,
+            "round": 1
+          }
+        }
+      ]
+    }
+  },
+  "completed": [
+    {
+      "job_id": "impl-demo-002",
+      "topic": "implementation_queue",
+      "output": {
+        "agent": "vibe-vpe",
+        "topic": "implementation_queue",
+        "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+        "quality_score": 0.9,
+        "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+        "memory_hits": 2,
+        "round": 2,
+        "goal": "Benchmark-driven conference demo for NOUS OS"
+      }
+    },
+    {
+      "job_id": "learn-demo-002",
+      "topic": "learning_queue",
+      "output": {
+        "agent": "research-cto",
+        "topic": "learning_queue",
+        "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+        "quality_score": 0.94,
+        "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+        "memory_hits": 2,
+        "round": 2,
+        "goal": "Benchmark-driven conference demo for NOUS OS"
+      }
+    },
+    {
+      "job_id": "risk-demo-002",
+      "topic": "implementation_queue",
+      "output": {
+        "agent": "vibe-vpe",
+        "topic": "implementation_queue",
+        "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+        "quality_score": 0.94,
+        "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+        "memory_hits": 3,
+        "round": 2,
+        "goal": "Benchmark-driven conference demo for NOUS OS"
+      }
+    }
+  ],
+  "paths": {
+    "implementation_queue": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/implementation_queue.json",
+    "learning_queue": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/learning_queue.json",
+    "alerts": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/alerts.json",
+    "dashboard_data": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/dashboard-data.json"
+  }
+}

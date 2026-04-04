@@ -275,6 +275,27 @@
     transform: translateY(-1px);
   }
 
+  .btn-demo-nav {
+    border-color: rgba(0,212,170,0.35);
+    color: var(--accent-2);
+  }
+  .btn-demo-nav:hover {
+    border-color: rgba(0,212,170,0.55);
+    color: white;
+    background: rgba(0,212,170,0.12);
+  }
+
+  .btn-hero-demo {
+    background: linear-gradient(135deg, var(--accent-2) 0%, #39f0cf 100%);
+    color: #041311;
+    border: none;
+    box-shadow: 0 0 0 1px rgba(0,212,170,0.35), 0 10px 36px rgba(0,212,170,0.22);
+  }
+  .btn-hero-demo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(0,212,170,0.55), 0 14px 42px rgba(0,212,170,0.3);
+  }
+
   /* ── ARCHITECTURE DIAGRAM ── */
   .arch-diagram {
     position: relative;
@@ -546,6 +567,160 @@
     color: var(--text-muted);
   }
 
+  /* ── DEMO STAGE ── */
+  .demo-shell {
+    border-radius: 24px;
+    border: 1px solid rgba(0,212,170,0.18);
+    background:
+      radial-gradient(circle at top left, rgba(123,97,255,0.12), transparent 38%),
+      radial-gradient(circle at top right, rgba(0,212,170,0.12), transparent 34%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.38);
+    overflow: hidden;
+  }
+
+  .demo-shell-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,11,18,0.8);
+  }
+
+  .demo-shell-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .demo-dots {
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  .demo-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .demo-dots span:nth-child(1) { background: #ff6b6b; }
+  .demo-dots span:nth-child(2) { background: #ffcf5a; }
+  .demo-dots span:nth-child(3) { background: #00d4aa; }
+
+  .demo-shell-label {
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .demo-shell-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .demo-chip {
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .demo-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: 20px;
+    margin-top: 28px;
+    align-items: start;
+  }
+
+  .demo-frame {
+    min-height: 760px;
+    border: 0;
+    width: 100%;
+    display: block;
+    background: #070812;
+  }
+
+  .demo-side {
+    display: grid;
+    gap: 16px;
+  }
+
+  .demo-note {
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+
+  .demo-note h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .demo-note p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .demo-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .demo-metric {
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .demo-metric-num {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .demo-metric-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .demo-points {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .demo-point {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
   /* ── WAITLIST ── */
   .waitlist-section {
     text-align: center;
@@ -665,6 +840,9 @@
     .stats-bar { flex-direction: column; }
     .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
     .stat-item:last-child { border-bottom: none; }
+    .demo-grid { grid-template-columns: 1fr; }
+    .demo-frame { min-height: 640px; }
+    .demo-metrics { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 20px; text-align: center; }
     .waitlist-section { padding: 80px 20px; }
   }
@@ -679,12 +857,14 @@
     NOUS OS
   </div>
   <ul class="nav-links">
+    <li><a href="#demo">Demo</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#how">How it works</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
   </ul>
   <div class="nav-cta">
+    <a href="#demo" class="btn-ghost btn-demo-nav">Demo</a>
     <a href="https://github.com/jupiturliu/nous-os" class="btn-ghost">Docs</a>
     <a href="#waitlist" class="btn-primary">Join Waitlist</a>
   </div>
@@ -705,6 +885,10 @@
   </p>
 
   <div class="hero-actions">
+    <a href="#demo" class="btn-hero btn-hero-demo">
+      Launch Demo
+      <span>↗</span>
+    </a>
     <a href="#waitlist" class="btn-hero btn-hero-primary">
       Join the Waitlist
       <span>→</span>
@@ -750,6 +934,70 @@
     </div>
   </div>
 </div>
+
+<!-- DEMO -->
+<section id="demo">
+  <div class="section-label">Live Demo</div>
+  <h2 class="section-title">See the cognitive loop, not just the architecture</h2>
+  <p class="section-sub">The NOUS OS demo shows Aria planning, Synapse dispatch, TrustMem recall, human override, and the benchmark delta between round one and round two in one continuous flow.</p>
+
+  <div class="demo-shell">
+    <div class="demo-shell-top">
+      <div class="demo-shell-meta">
+        <div class="demo-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="demo-shell-label">nousos.ai / live demo / benchmark reveal</div>
+      </div>
+      <div class="demo-shell-actions">
+        <span class="demo-chip">Aria</span>
+        <span class="demo-chip">Synapse</span>
+        <span class="demo-chip">TrustMem</span>
+        <a href="demo/heartbeat-dashboard.html" class="btn-ghost btn-demo-nav">Open Full Demo</a>
+      </div>
+    </div>
+
+    <div style="padding:24px;">
+      <div class="demo-grid">
+        <div>
+          <iframe
+            class="demo-frame"
+            src="demo/heartbeat-dashboard.html"
+            title="NOUS OS demo"
+            loading="lazy">
+          </iframe>
+        </div>
+
+        <div class="demo-side">
+          <div class="demo-note">
+            <h3>What this proves</h3>
+            <p>NOUS OS is not just a workflow. The demo measures whether the second run is actually stronger after memory recall and human correction, using a benchmark spec that tracks quality, correction absorption, efficiency, and repeatability.</p>
+          </div>
+
+          <div class="demo-metrics">
+            <div class="demo-metric">
+              <div class="demo-metric-num">CLS</div>
+              <div class="demo-metric-label">Cognitive Loop Score</div>
+            </div>
+            <div class="demo-metric">
+              <div class="demo-metric-num">Q / C / E / R</div>
+              <div class="demo-metric-label">Public Benchmark Axes</div>
+            </div>
+          </div>
+
+          <div class="demo-points">
+            <div class="demo-point"><strong>Q</strong> measures whether outcome quality improves from baseline to the memory-backed second run.</div>
+            <div class="demo-point"><strong>C</strong> measures whether one human override is actually absorbed by the system rather than lost.</div>
+            <div class="demo-point"><strong>E</strong> measures reuse of memory and shared context instead of restarting from zero.</div>
+            <div class="demo-point"><strong>R</strong> measures whether the second run is stronger in a way that can be repeated and explained.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- STATS -->
 <div style="position:relative;z-index:1;padding:0 40px;max-width:760px;margin:0 auto 80px;">
