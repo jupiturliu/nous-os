@@ -90,7 +90,27 @@
     padding: 26px;
     position: sticky;
     top: 18px;
+    max-height: calc(100vh - 36px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
     transition: transform 0.32s ease, opacity 0.32s ease, max-height 0.32s ease, padding 0.32s ease;
+  }
+
+  .left::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .left::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background: rgba(33, 47, 35, 0.22);
+    background-clip: padding-box;
+  }
+
+  .left::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   .eyebrow, .mono {
@@ -1063,7 +1083,11 @@
 
   @media (max-width: 1120px) {
     .hero, .live-grid, .run-grid, .progress-ribbon, .impact-grid, .benchmark-grid { grid-template-columns: 1fr; }
-    .left { position: static; }
+    .left {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
     .finale-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 </style>
