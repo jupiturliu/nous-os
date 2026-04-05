@@ -2,6 +2,8 @@
 
 This guide shows the current TrustMem + Synapse integration path. References to `AriaSynapseBridge` describe the planned Phase 1 interface, not code shipped in this repository.
 
+This repository also includes a self-contained demo that preserves the NOUS OS layer boundaries without depending on the external component repos.
+
 ---
 
 ## Prerequisites
@@ -21,12 +23,12 @@ cd trustmem && npm install
 The fastest way to see the system in action (no real API needed):
 
 ```bash
-python3 synapse/demo/nous_os_demo.py
+python3 examples/nousos_demo.py
 ```
 
 This shows the full loop:
-1. Intent → TrustMem search
-2. Synapse DAG parallel execution
+1. Intent → TrustMem-style search
+2. Synapse-style parallel execution
 3. Episode log + quality evaluation
 4. Promotion to shared memory
 5. Human override recording

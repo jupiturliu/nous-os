@@ -388,9 +388,10 @@
     max-width: 680px;
     margin: 0 auto;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    background: var(--bg-card);
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+    box-shadow: 0 14px 44px rgba(0,0,0,0.18);
   }
 
   .stat-item {
@@ -463,12 +464,78 @@
     gap: 24px;
   }
 
+  .why-shell {
+    border-radius: 22px;
+    border: 1px solid rgba(123,97,255,0.18);
+    background:
+      radial-gradient(circle at top left, rgba(123,97,255,0.10), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(0,212,170,0.06), transparent 30%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    overflow: hidden;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+  }
+
+  .why-top {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,11,18,0.78);
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .why-col {
+    padding: 26px 24px;
+    border-right: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0));
+  }
+
+  .why-col:last-child {
+    border-right: none;
+  }
+
+  .why-kicker {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .why-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .why-text {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+
+  .why-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
   .ps-card {
     padding: 28px;
-    border-radius: 14px;
+    border-radius: 16px;
     border: 1px solid var(--border);
-    background: var(--bg-card);
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
     transition: all 0.25s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
   }
   .ps-card:hover {
     border-color: var(--border-hover);
@@ -513,6 +580,200 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
+  }
+
+  /* ── TRUSTMEM LOOP ── */
+  .loop-shell {
+    border-radius: 20px;
+    border: 1px solid rgba(255,107,107,0.18);
+    background:
+      radial-gradient(circle at top left, rgba(255,107,107,0.10), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(123,97,255,0.10), transparent 36%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    overflow: hidden;
+    box-shadow: 0 18px 64px rgba(0,0,0,0.24);
+  }
+
+  .loop-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,11,18,0.72);
+  }
+
+  .loop-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ff9f9f;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .loop-top-note {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .loop-body {
+    padding: 24px;
+  }
+
+  .loop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .loop-card {
+    padding: 18px 18px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    min-height: 150px;
+  }
+
+  .loop-kicker {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .loop-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .loop-card p {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  .loop-card strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .loop-arrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0 18px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .loop-arrow-pill {
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .loop-summary {
+    margin-top: 18px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(123,97,255,0.06);
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+
+  .loop-summary strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .loop-diagram {
+    margin: 22px 0 18px;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(8,8,16,0.55);
+  }
+
+  .loop-diagram-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .loop-node {
+    position: relative;
+    padding: 16px 14px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018));
+    min-height: 132px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .loop-node-num {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .loop-node-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .loop-node-desc {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .loop-node-arrow {
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 11px;
+    z-index: 2;
+  }
+
+  .loop-backline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 11px;
+    color: #a99fff;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .fw-step {
@@ -645,6 +906,48 @@
     align-items: start;
   }
 
+  .hero-mini-proof {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 820px;
+    margin: 38px auto 34px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-proof-card {
+    padding: 18px 18px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+    text-align: left;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .hero-proof-kicker {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .hero-proof-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .hero-proof-desc {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
   .demo-frame {
     min-height: 760px;
     border: 0;
@@ -728,6 +1031,16 @@
     padding: 120px 40px;
     position: relative;
     z-index: 1;
+  }
+
+  .proof-strip-label {
+    text-align: center;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
   }
 
   .waitlist-glow {
@@ -827,6 +1140,12 @@
     color: var(--text-muted);
   }
 
+  .footer-links a:first-child,
+  .footer-links a:nth-child(2),
+  .footer-links a:nth-child(3) {
+    color: var(--text-secondary);
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     nav { padding: 16px 20px; }
@@ -844,6 +1163,14 @@
     .demo-grid { grid-template-columns: 1fr; }
     .demo-frame { min-height: 640px; }
     .demo-metrics { grid-template-columns: 1fr; }
+    .hero-mini-proof { grid-template-columns: 1fr; }
+    .loop-grid { grid-template-columns: 1fr; }
+    .loop-diagram-grid { grid-template-columns: 1fr; }
+    .loop-node-arrow { display: none; }
+    .loop-backline { flex-wrap: wrap; }
+    .why-grid { grid-template-columns: 1fr; }
+    .why-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .why-col:last-child { border-bottom: none; }
     footer { flex-direction: column; gap: 20px; text-align: center; }
     .waitlist-section { padding: 80px 20px; }
   }
@@ -878,11 +1205,11 @@
     Cognitive Operating System · Open Source
   </div>
 
-  <h1>Your AI agents deserve<br><em>memory, trust,</em><br>and coordination</h1>
+  <h1>A <em>cognitive operating system</em><br>for human + agent<br>co-evolution</h1>
 
   <p class="hero-tagline">
-    NOUS OS gives your AI agents memory, trust, and coordination —<br>
-    so they get <strong>smarter every day</strong> instead of starting from scratch every time.
+    NOUS OS unifies <strong>consciousness, memory, and coordination</strong> into one evolving system —<br>
+    so agents do not just execute tasks, they <strong>learn from every interaction</strong> and improve over time.
   </p>
 
   <div class="hero-actions">
@@ -890,13 +1217,32 @@
       Launch Demo
       <span>↗</span>
     </a>
-    <a href="#waitlist" class="btn-hero btn-hero-primary">
-      Join the Waitlist
+    <a href="#trustmem-loop" class="btn-hero btn-hero-primary">
+      See the Flywheel
       <span>→</span>
     </a>
-    <a href="https://github.com/jupiturliu/trustmem" class="btn-hero btn-hero-secondary">
+    <a href="https://github.com/jupiturliu/nous-os" class="btn-hero btn-hero-secondary">
       View on GitHub
     </a>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:-6px 0 30px;position:relative;z-index:2;">
+    <span class="demo-chip">Aria = consciousness</span>
+    <span class="demo-chip">TrustMem = learning flywheel</span>
+    <span class="demo-chip">Synapse = coordination fabric</span>
+  </div>
+
+  <div class="hero-mini-proof">
+    <div class="hero-proof-card">
+      <div class="hero-proof-kicker">Why it matters</div>
+      <div class="hero-proof-title">Agents should not restart from zero</div>
+      <div class="hero-proof-desc">NOUS OS gives agents continuity: memory before action, learning after action, and better judgment on the next run.</div>
+    </div>
+    <div class="hero-proof-card">
+      <div class="hero-proof-kicker">Category boundary</div>
+      <div class="hero-proof-title">Not an agent framework. A cognitive runtime.</div>
+      <div class="hero-proof-desc">Aria, TrustMem, and Synapse do not just orchestrate agents. They provide the runtime in which agents can reason, remember, coordinate, and improve.</div>
+    </div>
   </div>
 
   <!-- Architecture Diagram -->
@@ -928,9 +1274,9 @@
         <div class="arch-icon arch-icon-t">🧠</div>
         <div class="arch-info">
           <div class="arch-name">TrustMem</div>
-          <div class="arch-desc">Episodic Memory · Knowledge Trust · Verification</div>
+          <div class="arch-desc">Trusted Recall · Outcome Writeback · Human Override Learning</div>
         </div>
-        <span class="arch-tag tag-t">Memory Layer</span>
+        <span class="arch-tag tag-t">Learning Layer</span>
       </div>
     </div>
   </div>
@@ -940,7 +1286,7 @@
 <section id="demo">
   <div class="section-label">Live Demo</div>
   <h2 class="section-title">See the cognitive loop, not just the architecture</h2>
-  <p class="section-sub">The NOUS OS demo shows Aria planning, Synapse dispatch, TrustMem recall, human override, and the benchmark delta between round one and round two in one continuous flow.</p>
+  <p class="section-sub">The demo shows the full loop in one continuous flow: Aria planning, Synapse dispatch, TrustMem recall, human override, and measurable improvement from one run to the next.</p>
 
   <div class="demo-shell">
     <div class="demo-shell-top">
@@ -974,7 +1320,7 @@
         <div class="demo-side">
           <div class="demo-note">
             <h3>What this proves</h3>
-            <p>NOUS OS is not just a workflow. The demo measures whether the second run is actually stronger after memory recall and human correction, using a benchmark spec that tracks quality, correction absorption, efficiency, and repeatability.</p>
+            <p>NOUS OS is not just a workflow. The demo measures whether the second run is actually better after memory recall and human correction — across quality, correction absorption, efficiency, and repeatability.</p>
           </div>
 
           <div class="demo-metrics">
@@ -1001,7 +1347,8 @@
 </section>
 
 <!-- STATS -->
-<div style="position:relative;z-index:1;padding:0 40px;max-width:760px;margin:0 auto 80px;">
+<div style="position:relative;z-index:1;padding:0 40px;max-width:760px;margin:0 auto 92px;">
+  <div class="proof-strip-label">Proof strip</div>
   <div class="stats-bar">
     <div class="stat-item">
       <div class="stat-num">100%</div>
@@ -1022,11 +1369,39 @@
   </div>
 </div>
 
+<!-- WHY NOUS OS -->
+<section id="why-nous-os">
+  <div class="section-label">Why NOUS OS</div>
+  <h2 class="section-title">Not another agent framework.<br>A cognitive operating system.</h2>
+  <p class="section-sub">NOUS OS is called an operating system because it does more than run agents. It integrates consciousness, trusted memory, coordination, and human correction into one compounding cognitive runtime.</p>
+
+  <div class="why-shell">
+    <div class="why-top">why the name matters</div>
+    <div class="why-grid">
+      <div class="why-col">
+        <div class="why-kicker">Not just automation</div>
+        <div class="why-title">Higher intellect, not just intelligence</div>
+        <div class="why-text">"Nous" refers to higher intellect — the capacity to <strong>perceive, judge, and organize meaning</strong>. That makes it a better name for this system than assistant, copilot, or workflow engine. NOUS OS is designed to enhance human cognition, not replace it.</div>
+      </div>
+      <div class="why-col">
+        <div class="why-kicker">Not just a product</div>
+        <div class="why-title">A runtime, not a feature bundle</div>
+        <div class="why-text">An operating system does not provide one feature. It provides the <strong>runtime that coordinates all features</strong>. Aria, TrustMem, and Synapse are not isolated modules — together they form the cognitive runtime on which agents, workflows, and decisions operate.</div>
+      </div>
+      <div class="why-col">
+        <div class="why-kicker">Not just more memory</div>
+        <div class="why-title">Interaction becomes future intelligence</div>
+        <div class="why-text">Most systems can execute tasks. Few can <strong>turn interaction into future intelligence</strong>. NOUS OS compounds because memory shapes judgment, judgment produces outcomes, human correction updates trust, and the next task starts from a better state.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PROBLEM / SOLUTION -->
 <section id="how">
   <div class="section-label">The Problem</div>
-  <h2 class="section-title">AI agents are powerful.<br>But they don't learn.</h2>
-  <p class="section-sub">Every session starts from zero. Knowledge gets lost. Mistakes repeat. The more agents you add, the worse coordination gets.</p>
+  <h2 class="section-title">Most agent systems can execute.<br>Very few can evolve.</h2>
+  <p class="section-sub">Sessions restart from zero. Corrections disappear. Knowledge accumulates without trust. As agent count grows, coordination degrades and learning stops compounding.</p>
 
   <div class="ps-grid">
     <div class="ps-card">
@@ -1060,42 +1435,155 @@
 <section>
   <div class="section-label">The Flywheel</div>
   <h2 class="section-title">Every interaction makes the system smarter</h2>
-  <p class="section-sub">NOUS OS turns each human-AI exchange into a compounding loop — not just a transaction.</p>
+  <p class="section-sub">This section shows the full NOUS OS loop: intent, trusted recall, coordinated execution, outcome writeback, and human correction.</p>
 
   <div class="flywheel">
     <div class="fw-step">
       <div class="fw-num">01</div>
       <span class="fw-icon">💡</span>
       <div class="fw-title">Intent</div>
-      <div class="fw-desc">You express a goal. The planned Aria layer interprets context.</div>
+      <div class="fw-desc">You express a goal. Aria frames intent and sets the task.</div>
       <div class="fw-arrow">›</div>
     </div>
     <div class="fw-step">
       <div class="fw-num">02</div>
       <span class="fw-icon">🧠</span>
-      <div class="fw-title">Memory Search</div>
-      <div class="fw-desc">TrustMem surfaces relevant verified knowledge.</div>
+      <div class="fw-title">Trusted Recall</div>
+      <div class="fw-desc">TrustMem retrieves trusted memory before the agent acts.</div>
       <div class="fw-arrow">›</div>
     </div>
     <div class="fw-step">
       <div class="fw-num">03</div>
       <span class="fw-icon">⚡</span>
-      <div class="fw-title">Parallel Execution</div>
-      <div class="fw-desc">Synapse routes tasks across agents concurrently.</div>
+      <div class="fw-title">Coordinated Execution</div>
+      <div class="fw-desc">Synapse routes work across agents while memory shapes the decision path.</div>
       <div class="fw-arrow">›</div>
     </div>
     <div class="fw-step">
       <div class="fw-num">04</div>
       <span class="fw-icon">📝</span>
-      <div class="fw-title">Learn & Promote</div>
-      <div class="fw-desc">High-quality results enter shared knowledge.</div>
+      <div class="fw-title">Outcome Writeback</div>
+      <div class="fw-desc">Success, failure, and quality signals are written back into TrustMem.</div>
       <div class="fw-arrow">›</div>
     </div>
     <div class="fw-step">
       <div class="fw-num">05</div>
       <span class="fw-icon">🔁</span>
       <div class="fw-title">Human Override</div>
-      <div class="fw-desc">Your corrections become system intelligence.</div>
+      <div class="fw-desc">Corrections become future system intelligence instead of disappearing with the session.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTMEM LOOP -->
+<section id="trustmem-loop">
+  <div class="section-label">TrustMem Flywheel</div>
+  <h2 class="section-title">TrustMem is not a memory feature. It is the learning loop.</h2>
+  <p class="section-sub">This section zooms into TrustMem specifically. It shows how memory participates before, during, and after every task — so agent behavior is shaped by history, corrected by humans, and improved over time.</p>
+
+  <div class="loop-shell">
+    <div class="loop-top">
+      <div class="loop-label">TrustMem × Agent continuous interaction</div>
+      <div class="loop-top-note">Every task leaves the next task in a better cognitive state.</div>
+    </div>
+
+    <div class="loop-body">
+      <div class="loop-grid">
+        <div class="loop-card">
+          <div class="loop-kicker">Before the task</div>
+          <h3>Trusted retrieval shapes the starting point</h3>
+          <p>When a task arrives, TrustMem retrieves <strong>episodic memory, verified knowledge, user preferences, and prior corrections</strong>. The agent does not start from zero; it starts from a trust-scored cognitive state.</p>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-kicker">During the task</div>
+          <h3>Memory changes the decision path</h3>
+          <p>Retrieved memory is not passive context. It changes <strong>priority, risk judgment, routing, and action selection</strong>. TrustMem influences how the agent thinks, not just what it can quote.</p>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-kicker">After the task</div>
+          <h3>Outcomes become reusable intelligence</h3>
+          <p>Successes, failures, and quality signals are written back as structured episodes. A one-off task becomes a <strong>future advantage</strong> instead of evaporating at the end of the session.</p>
+        </div>
+      </div>
+
+      <div class="loop-diagram">
+        <div class="loop-diagram-grid">
+          <div class="loop-node">
+            <div class="loop-node-num">01</div>
+            <div class="loop-node-title">Task arrives</div>
+            <div class="loop-node-desc">Aria frames intent and asks TrustMem what history matters before acting.</div>
+            <div class="loop-node-arrow">→</div>
+          </div>
+          <div class="loop-node">
+            <div class="loop-node-num">02</div>
+            <div class="loop-node-title">Trusted retrieval</div>
+            <div class="loop-node-desc">TrustMem returns relevant episodes, verified knowledge, and prior corrections.</div>
+            <div class="loop-node-arrow">→</div>
+          </div>
+          <div class="loop-node">
+            <div class="loop-node-num">03</div>
+            <div class="loop-node-title">Decision shaped</div>
+            <div class="loop-node-desc">The agent's reasoning, routing, and risk judgment are conditioned by memory.</div>
+            <div class="loop-node-arrow">→</div>
+          </div>
+          <div class="loop-node">
+            <div class="loop-node-num">04</div>
+            <div class="loop-node-title">Outcome captured</div>
+            <div class="loop-node-desc">Success, failure, quality, and human corrections are logged as structured episodes.</div>
+            <div class="loop-node-arrow">→</div>
+          </div>
+          <div class="loop-node">
+            <div class="loop-node-num">05</div>
+            <div class="loop-node-title">Memory governed</div>
+            <div class="loop-node-desc">Verification, decay, and promotion update what the system should trust next time.</div>
+          </div>
+        </div>
+        <div class="loop-backline">
+          <span>better retrieval</span>
+          <span>→</span>
+          <span>better judgment</span>
+          <span>→</span>
+          <span>better outcome</span>
+          <span>→</span>
+          <span>better next run</span>
+        </div>
+      </div>
+
+      <div class="loop-arrow-row">
+        <span class="loop-arrow-pill">retrieve</span>
+        <span>→</span>
+        <span class="loop-arrow-pill">shape judgment</span>
+        <span>→</span>
+        <span class="loop-arrow-pill">write back</span>
+        <span>→</span>
+        <span class="loop-arrow-pill">improve next run</span>
+      </div>
+
+      <div class="loop-grid">
+        <div class="loop-card">
+          <div class="loop-kicker">Human in the loop</div>
+          <h3>Corrections are training signals</h3>
+          <p>Human override is not treated as an exception. It is the highest-value signal in the system. Every veto, correction, and preference update becomes <strong>future behavioral guidance</strong>.</p>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-kicker">Memory governance</div>
+          <h3>Verification, decay, and promotion keep memory clean</h3>
+          <p>TrustMem does not simply accumulate more data. It uses <strong>verification, confidence scoring, temporal decay, and promotion</strong> so the system learns in the right direction instead of getting noisier over time.</p>
+        </div>
+
+        <div class="loop-card">
+          <div class="loop-kicker">Result</div>
+          <h3>The agent gets better, not just bigger</h3>
+          <p>The result is a compounding loop: <strong>better retrieval → better judgment → better outcomes → better memory → better next judgment</strong>. That is why TrustMem is the learning flywheel of NOUS OS.</p>
+        </div>
+      </div>
+
+      <div class="loop-summary">
+        <strong>TrustMem is the learning flywheel of NOUS OS.</strong> It retrieves trusted memory before each task, shapes reasoning during execution, captures outcomes and human corrections afterward, and updates memory quality through verification, decay, and promotion. It turns every human-agent interaction into trusted, evolving intelligence.
+      </div>
     </div>
   </div>
 </section>
@@ -1104,7 +1592,7 @@
 <section id="projects">
   <div class="section-label">Components</div>
   <h2 class="section-title">Three layers.<br>One cognitive system.</h2>
-  <p class="section-sub">Each layer is independently useful and platform-agnostic. NOUS OS is the integration that connects them.</p>
+  <p class="section-sub">Each layer is independently useful and platform-agnostic. NOUS OS is the compounding integration that connects them.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:60px;">
 
@@ -1228,7 +1716,7 @@
 <section id="roadmap">
   <div class="section-label">Roadmap</div>
   <h2 class="section-title">Where we're going</h2>
-  <p class="section-sub">Building toward a fully portable, platform-agnostic Cognitive OS.</p>
+  <p class="section-sub">Building toward a fully portable, platform-agnostic cognitive OS.</p>
 
   <div style="display:flex;flex-direction:column;gap:12px;max-width:680px;">
 
@@ -1279,7 +1767,7 @@
       Join Waitlist
     </a>
   </div>
-  <div class="waitlist-note">Built by <a href="https://github.com/jupiturliu" style="color:var(--accent);text-decoration:none;">Liu Fei</a> · MIT License · Open Source</div>
+  <div class="waitlist-note">Built by <a href="https://github.com/jupiturliu" style="color:var(--accent);text-decoration:none;">Liu Fei</a> · Open Source · MIT License</div>
 </div>
 
 <!-- FOOTER -->

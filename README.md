@@ -67,6 +67,56 @@ Human intent
 - [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
 - [docs/aria-integration.md](./docs/aria-integration.md) — Aria ↔ Synapse integration guide
 - [docs/getting-started.md](./docs/getting-started.md) — Getting started
+- [docs/demo-blueprint.md](./docs/demo-blueprint.md) — Runnable demo design
+- [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
+
+---
+
+## Demo
+
+Run the self-contained demo in this repo:
+
+```bash
+python3 examples/nousos_demo.py
+```
+
+It demonstrates:
+- Aria-style intent routing
+- Synapse-style multi-agent fan-out
+- TrustMem-style memory recall and human override reuse
+
+Run the workspace-wired demo when `aria/`, `synapse/`, and `trustmem/` exist under the shared workspace:
+
+```bash
+python3 examples/nousos_workspace_demo.py
+```
+
+See [docs/workspace-demo.md](./docs/workspace-demo.md) for details.
+
+Run the heartbeat bridge demo to show how Aria's `agent-bus` flow upgrades into NOUS OS:
+
+```bash
+python3 examples/nousos_heartbeat_demo.py
+```
+
+See [docs/heartbeat-demo.md](./docs/heartbeat-demo.md).
+
+Use the formal runner when you want a reusable heartbeat entry plus a dashboard snapshot:
+
+```bash
+python3 scripts/run_nous_heartbeat.py
+python3 -m http.server
+```
+
+Then open `demo/heartbeat-dashboard.html`.
+
+Or run the interactive local dashboard server:
+
+```bash
+python3 scripts/run_nous_dashboard.py
+```
+
+Then open `http://127.0.0.1:8765/demo/heartbeat-dashboard.html`.
 
 ---
 
