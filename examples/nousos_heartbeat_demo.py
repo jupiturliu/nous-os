@@ -30,6 +30,7 @@ try:
     from singleton import reset_singletons
     from worker import AgentWorker
     import worker as synapse_worker_module
+    import core.worker as synapse_core_worker_module
     import aria_orchestrator as aria_orch_module
     from aria_orchestrator import AriaOrchestrator
     EXTERNAL_RUNTIME_AVAILABLE = True
@@ -37,6 +38,7 @@ except ModuleNotFoundError:
     reset_singletons = None
     AgentWorker = object
     synapse_worker_module = None
+    synapse_core_worker_module = None
     aria_orch_module = None
     AriaOrchestrator = None
     EXTERNAL_RUNTIME_AVAILABLE = False
@@ -48,6 +50,7 @@ RUNTIME_EPISODE_LOGGER = RUNTIME_DIR / "episode_logger_local.py"
 RUNTIME_ALERTS = RUNTIME_DIR / "alerts.json"
 RUNTIME_INSIGHTS = RUNTIME_DIR / "insights.json"
 RUNTIME_EPISODES = RUNTIME_DIR / "data" / "episodes" / "episodes.jsonl"
+RUNTIME_EPISODES_SQLITE = RUNTIME_DIR / "data" / "episodes" / "episodes.sqlite"
 RUNTIME_DASHBOARD = RUNTIME_DIR / "dashboard-data.json"
 
 DEFAULT_GOAL = "Build a demo for multi-agent memory and human override evolution in NOUS OS"
@@ -104,6 +107,8 @@ def reset_runtime_files() -> None:
     RUNTIME_EPISODES.parent.mkdir(parents=True, exist_ok=True)
     if RUNTIME_EPISODES.exists():
         RUNTIME_EPISODES.unlink()
+    if RUNTIME_EPISODES_SQLITE.exists():
+        RUNTIME_EPISODES_SQLITE.unlink()
 
 
 def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAULT_OVERRIDE_KIND) -> None:
@@ -535,6 +540,7 @@ def run_heartbeat_flow(goal: str = DEFAULT_GOAL, override_kind: str = DEFAULT_OV
     reset_runtime_files()
 
     synapse_worker_module._EPISODE_LOGGER_PATH = RUNTIME_EPISODE_LOGGER
+    synapse_core_worker_module._EPISODE_LOGGER_PATH = RUNTIME_EPISODE_LOGGER
     aria_orch_module._EPISODE_LOGGER_PATH = RUNTIME_EPISODE_LOGGER
     aria_orch_module._AGENT_BUS_DIR = RUNTIME_AGENT_BUS
 

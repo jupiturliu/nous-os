@@ -1,6 +1,6 @@
 # Getting Started with NOUS OS
 
-This guide shows the current TrustMem + Synapse integration path. References to `AriaSynapseBridge` describe the planned Phase 1 interface, not code shipped in this repository.
+This guide shows the current TrustMem + Synapse integration path. The `AriaSynapseBridge` and `AriaOrchestrator.publish_from_agent_bus()` implementations live in the sibling `synapse/` workspace repo; this repository keeps the NOUS OS narrative, demos, dashboard, and public benchmark surface.
 
 This repository also includes a self-contained demo that preserves the NOUS OS layer boundaries without depending on the external component repos.
 
@@ -36,9 +36,9 @@ This shows the full loop:
 
 ---
 
-## Step 2 — Planned AriaSynapseBridge Integration
+## Step 2 — AriaSynapseBridge Integration
 
-`AriaSynapseBridge` is the planned Phase 1 integration point. It is part of the target NOUS OS architecture, but Aria itself is not open-sourced in this repository yet.
+`AriaSynapseBridge` is the Phase 1 integration point in the workspace Synapse repo. Aria itself is still treated as the private consciousness/alignment layer, while the bridge and heartbeat demo prove the public integration boundary.
 
 ```python
 import sys
@@ -93,11 +93,14 @@ print(f"Override recorded: {insight_id}")
 
 ## Step 4 — Check Memory ROI
 
-After a few runs, check what the memory system has learned:
+For the current public demo, inspect the benchmark snapshot:
 
 ```bash
-python3 synapse/reports/nous_os_roi.py
+python3 scripts/run_nous_heartbeat.py
+cat examples/runtime/dashboard-data.json
 ```
+
+The snapshot maps directly to Q/C/E/R and CLS in [benchmark-spec.md](./benchmark-spec.md).
 
 ---
 

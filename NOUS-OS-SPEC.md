@@ -87,23 +87,23 @@ NOUS OS 不是放大器，是砥砺石。在投资决策、战略方向、重大
 
 ---
 
-## 当前状态（2026-04-02）
+## 当前状态（2026-05-16）
 
 | 组件 | 状态 |
 |------|------|
-| TrustMem | ✅ 生产运行，11天，Hit@5 100% |
-| Synapse | ✅ 生产运行，183 agents，290K msg/s |
-| Aria | ✅ 运行中，COO角色，5个专业agent |
-| Phase 1 集成 | ✅ 完成，13/13 测试通过 |
-| Phase 2 集成 | 🔜 Worker hooks 完整化 |
-| Phase 3 集成 | 🔜 Human Override → 系统进化链路 |
+| TrustMem | ✅ 记忆层已独立成 repo，支持知识搜索、episode logging、verification / decay 工具 |
+| Synapse | ✅ 信号层已独立成 repo，包含 Event Bus、Blackboard、Worker、DAG、Budget Scheduler |
+| Aria | ✅ 私有意识层，作为 intent / judgment / human alignment 边界 |
+| Phase 1 集成 | ✅ `AriaSynapseBridge` 与 Event Bus 派发路径已在 workspace Synapse 中存在 |
+| Phase 2 集成 | ✅ demo/runtime path 已展示 worker memory recall、episode log、quality score |
+| Phase 3 集成 | ✅ heartbeat demo、dashboard、Q/C/E/R benchmark、CI、Pages 发布路径已落地 |
 
 ---
 
 ## 路线图
 
-**2026 Q2：** Phase 2/3 集成完成，Flywheel 完全闭合  
-**2026 Q3：** NOUS OS 作为独立开源项目发布  
+**2026 Q2：** 生产 Aria runtime 接线、领域 evaluator、cross-repo release gate
+**2026 Q3：** NOUS OS public demo / docs / benchmark 固化，对外发布
 **2026 Q4：** 学术论文投稿（TrustMem + Synapse + NOUS 整体架构）  
 
 ---

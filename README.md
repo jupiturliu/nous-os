@@ -52,17 +52,33 @@ Human intent
 
 ## Integration Status
 
-| Phase | Description | Tests |
-|-------|-------------|-------|
-| Phase 1 ✅ | Aria ↔ Synapse Bridge, Event Bus replaces JSON polling | 13/13 |
-| Phase 2 ✅ | AgencyWorker TrustMem hooks, Human Override Flywheel, Quality scoring | 44/44 |
-| Phase 3 ✅ | Demo script, ROI report, pre-publish checks | — |
+Current as of 2026-05-16:
+
+| Area | Status | Evidence |
+|------|--------|----------|
+| Core repo | ✅ Standalone `nous-os` repo initialized | README, architecture docs, examples, tests |
+| Aria ↔ Synapse | ✅ Bridge exists in workspace Synapse | `AriaSynapseBridge`, `AriaOrchestrator.publish_from_agent_bus()` |
+| Heartbeat flywheel | ✅ Runnable local demo | `python3 scripts/run_nous_heartbeat.py` |
+| Dashboard | ✅ Local interactive console + GitHub Pages artifact | `scripts/run_nous_dashboard.py`, `demo/heartbeat-dashboard.html` |
+| Benchmark | ✅ Public Q/C/E/R + CLS snapshot | `docs/benchmark-spec.md`, `examples/runtime/dashboard-data.json` |
+| CI / Pages | ✅ Unit tests and static deploy workflow | `.github/workflows/ci.yml`, `.github/workflows/pages.yml` |
+
+Historical phase summary:
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1 | Aria ↔ Synapse Bridge, Event Bus replaces JSON polling | Complete |
+| Phase 2 | Worker memory hooks, human override flywheel, quality scoring | Complete in demo/runtime path |
+| Phase 3 | Standalone repo, heartbeat demo, dashboard, benchmark, publish path | Complete for local/public demo |
+
+Remaining work is product hardening: wire a production Aria runtime, replace demo-quality scoring with domain evaluators, and add release automation for the upstream TrustMem/Synapse repos.
 
 ---
 
 ## Documentation
 
 - [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
+- [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
 - [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
 - [docs/aria-integration.md](./docs/aria-integration.md) — Aria ↔ Synapse integration guide

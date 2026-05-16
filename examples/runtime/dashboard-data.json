@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-04T12:07:03",
-  "goal": "Benchmark-driven conference demo for NOUS OS",
+  "generated_at": "2026-05-16T11:31:08",
+  "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
   "current_round": 2,
   "runs": [
     {
@@ -20,12 +20,12 @@
           "output": {
             "agent": "vibe-vpe",
             "topic": "implementation_queue",
-            "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "quality_score": 0.72,
-            "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "memory_hits": 0,
             "round": 1,
-            "goal": "Benchmark-driven conference demo for NOUS OS"
+            "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
           }
         },
         {
@@ -34,12 +34,12 @@
           "output": {
             "agent": "research-cto",
             "topic": "learning_queue",
-            "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "task": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "quality_score": 0.76,
-            "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "memory_hits": 0,
             "round": 1,
-            "goal": "Benchmark-driven conference demo for NOUS OS"
+            "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
           }
         }
       ],
@@ -54,18 +54,18 @@
           "items": [
             {
               "id": "impl-demo-001",
-              "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
-              "reason": "Aria wants a visible prototype for: Benchmark-driven conference demo for NOUS OS",
+              "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "reason": "Aria wants a visible prototype for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "type": "implementation_queue",
               "priority": "high",
               "status": "done",
-              "created_at": "2026-04-04T12:07:01",
+              "created_at": "2026-05-16T11:31:08",
               "round": 1,
-              "goal": "Benchmark-driven conference demo for NOUS OS",
-              "synapse_dispatched_at": "2026-04-04T12:07:01.918158",
-              "completed_at": "2026-04-04T12:07:02",
+              "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "synapse_dispatched_at": "2026-05-16T11:31:08.184551",
+              "completed_at": "2026-05-16T11:31:08",
               "result_path": "runtime://implementation_queue/impl-demo-001",
-              "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "quality_score": 0.72,
               "memory_hits": 0
             }
@@ -75,18 +75,18 @@
           "items": [
             {
               "id": "learn-demo-001",
-              "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
-              "reason": "Aria needs a research narrative for: Benchmark-driven conference demo for NOUS OS",
+              "topic": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "reason": "Aria needs a research narrative for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "type": "learning_queue",
               "priority": "high",
               "status": "done",
-              "created_at": "2026-04-04T12:07:01",
+              "created_at": "2026-05-16T11:31:08",
               "round": 1,
-              "goal": "Benchmark-driven conference demo for NOUS OS",
-              "synapse_dispatched_at": "2026-04-04T12:07:01.964024",
-              "completed_at": "2026-04-04T12:07:02",
+              "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "synapse_dispatched_at": "2026-05-16T11:31:08.212653",
+              "completed_at": "2026-05-16T11:31:08",
               "result_path": "runtime://learning_queue/learn-demo-001",
-              "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "quality_score": 0.76,
               "memory_hits": 0
             }
@@ -112,12 +112,12 @@
           "output": {
             "agent": "vibe-vpe",
             "topic": "implementation_queue",
-            "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "quality_score": 0.9,
-            "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+            "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "memory_hits": 2,
             "round": 2,
-            "goal": "Benchmark-driven conference demo for NOUS OS"
+            "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
           }
         },
         {
@@ -126,12 +126,12 @@
           "output": {
             "agent": "research-cto",
             "topic": "learning_queue",
-            "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "task": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "quality_score": 0.94,
-            "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+            "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "memory_hits": 2,
             "round": 2,
-            "goal": "Benchmark-driven conference demo for NOUS OS"
+            "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
           }
         },
         {
@@ -140,12 +140,12 @@
           "output": {
             "agent": "vibe-vpe",
             "topic": "implementation_queue",
-            "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+            "task": "Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "quality_score": 0.94,
-            "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+            "summary": "Built implementation draft: Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
             "memory_hits": 3,
             "round": 2,
-            "goal": "Benchmark-driven conference demo for NOUS OS"
+            "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
           }
         }
       ],
@@ -160,37 +160,37 @@
           "items": [
             {
               "id": "impl-demo-002",
-              "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
-              "reason": "Aria wants a refined execution path with memory for: Benchmark-driven conference demo for NOUS OS",
+              "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "reason": "Aria wants a refined execution path with memory for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "type": "implementation_queue",
               "priority": "high",
               "status": "done",
-              "created_at": "2026-04-04T12:07:02",
+              "created_at": "2026-05-16T11:31:08",
               "round": 2,
-              "goal": "Benchmark-driven conference demo for NOUS OS",
-              "synapse_dispatched_at": "2026-04-04T12:07:02.258928",
-              "completed_at": "2026-04-04T12:07:02",
+              "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "synapse_dispatched_at": "2026-05-16T11:31:08.447594",
+              "completed_at": "2026-05-16T11:31:08",
               "result_path": "runtime://implementation_queue/impl-demo-002",
-              "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+              "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "quality_score": 0.9,
               "memory_hits": 2
             },
             {
               "id": "risk-demo-002",
-              "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+              "task": "Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "reason": "TrustMem already contains the previous round and a human correction about risk.",
               "type": "implementation_queue",
               "priority": "high",
               "status": "done",
-              "created_at": "2026-04-04T12:07:02",
+              "created_at": "2026-05-16T11:31:08",
               "round": 2,
-              "goal": "Benchmark-driven conference demo for NOUS OS",
+              "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "role": "risk_guard",
               "override_kind": "risk",
-              "synapse_dispatched_at": "2026-04-04T12:07:02.305072",
-              "completed_at": "2026-04-04T12:07:03",
+              "synapse_dispatched_at": "2026-05-16T11:31:08.472658",
+              "completed_at": "2026-05-16T11:31:08",
               "result_path": "runtime://implementation_queue/risk-demo-002",
-              "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+              "summary": "Built implementation draft: Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "quality_score": 0.94,
               "memory_hits": 3
             }
@@ -200,18 +200,18 @@
           "items": [
             {
               "id": "learn-demo-002",
-              "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
-              "reason": "Aria wants the next run to reuse prior learning for: Benchmark-driven conference demo for NOUS OS",
+              "topic": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "reason": "Aria wants the next run to reuse prior learning for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "type": "learning_queue",
               "priority": "high",
               "status": "done",
-              "created_at": "2026-04-04T12:07:02",
+              "created_at": "2026-05-16T11:31:08",
               "round": 2,
-              "goal": "Benchmark-driven conference demo for NOUS OS",
-              "synapse_dispatched_at": "2026-04-04T12:07:02.354394",
-              "completed_at": "2026-04-04T12:07:02",
+              "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+              "synapse_dispatched_at": "2026-05-16T11:31:08.495823",
+              "completed_at": "2026-05-16T11:31:08",
               "result_path": "runtime://learning_queue/learn-demo-002",
-              "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+              "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
               "quality_score": 0.94,
               "memory_hits": 2
             }
@@ -224,7 +224,7 @@
     {
       "stage": "Human Intent",
       "title": "You set a goal",
-      "detail": "Benchmark-driven conference demo for NOUS OS",
+      "detail": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
       "accent": "intent"
     },
     {
@@ -264,7 +264,7 @@
         "id": "human",
         "label": "Human",
         "kind": "human",
-        "meta": "Benchmark-driven conference demo for NOUS OS"
+        "meta": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
       },
       {
         "id": "aria",
@@ -368,11 +368,11 @@
     ]
   },
   "override": {
-    "id": "override-1775329622208",
-    "goal": "Benchmark-driven conference demo for NOUS OS",
+    "id": "override-1778956268422",
+    "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
     "reason": "Human override: add an explicit risk gate before execution.",
     "domain": "demo",
-    "created_at": "2026-04-04T12:07:02",
+    "created_at": "2026-05-16T11:31:08",
     "round_1_quality": 0.74,
     "kind": "risk"
   },
@@ -445,37 +445,37 @@
       "items": [
         {
           "id": "impl-demo-002",
-          "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
-          "reason": "Aria wants a refined execution path with memory for: Benchmark-driven conference demo for NOUS OS",
+          "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+          "reason": "Aria wants a refined execution path with memory for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "type": "implementation_queue",
           "priority": "high",
           "status": "done",
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "round": 2,
-          "goal": "Benchmark-driven conference demo for NOUS OS",
-          "synapse_dispatched_at": "2026-04-04T12:07:02.258928",
-          "completed_at": "2026-04-04T12:07:02",
+          "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+          "synapse_dispatched_at": "2026-05-16T11:31:08.447594",
+          "completed_at": "2026-05-16T11:31:08",
           "result_path": "runtime://implementation_queue/impl-demo-002",
-          "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "quality_score": 0.9,
           "memory_hits": 2
         },
         {
           "id": "risk-demo-002",
-          "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "task": "Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "reason": "TrustMem already contains the previous round and a human correction about risk.",
           "type": "implementation_queue",
           "priority": "high",
           "status": "done",
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "round": 2,
-          "goal": "Benchmark-driven conference demo for NOUS OS",
+          "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "role": "risk_guard",
           "override_kind": "risk",
-          "synapse_dispatched_at": "2026-04-04T12:07:02.305072",
-          "completed_at": "2026-04-04T12:07:03",
+          "synapse_dispatched_at": "2026-05-16T11:31:08.472658",
+          "completed_at": "2026-05-16T11:31:08",
           "result_path": "runtime://implementation_queue/risk-demo-002",
-          "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "summary": "Built implementation draft: Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "quality_score": 0.94,
           "memory_hits": 3
         }
@@ -485,18 +485,18 @@
       "items": [
         {
           "id": "learn-demo-002",
-          "topic": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
-          "reason": "Aria wants the next run to reuse prior learning for: Benchmark-driven conference demo for NOUS OS",
+          "topic": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
+          "reason": "Aria wants the next run to reuse prior learning for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "type": "learning_queue",
           "priority": "high",
           "status": "done",
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "round": 2,
-          "goal": "Benchmark-driven conference demo for NOUS OS",
-          "synapse_dispatched_at": "2026-04-04T12:07:02.354394",
-          "completed_at": "2026-04-04T12:07:02",
+          "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS",
+          "synapse_dispatched_at": "2026-05-16T11:31:08.495823",
+          "completed_at": "2026-05-16T11:31:08",
           "result_path": "runtime://learning_queue/learn-demo-002",
-          "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "quality_score": 0.94,
           "memory_hits": 2
         }
@@ -505,14 +505,14 @@
     "alerts": {
       "items": [
         {
-          "id": "vibe-vpe-1775329623008",
+          "id": "vibe-vpe-1778956268884",
           "level": "medium",
           "type": "task_complete",
-          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "vibe-vpe",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:03",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "job_id": "risk-demo-002",
             "quality_score": 0.94,
@@ -520,14 +520,14 @@
           }
         },
         {
-          "id": "research-cto-1775329622721",
+          "id": "research-cto-1778956268699",
           "level": "medium",
           "type": "task_complete",
-          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "research-cto",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "job_id": "learn-demo-002",
             "quality_score": 0.94,
@@ -535,14 +535,14 @@
           }
         },
         {
-          "id": "vibe-vpe-1775329622639",
+          "id": "vibe-vpe-1778956268665",
           "level": "medium",
           "type": "task_complete",
-          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "vibe-vpe",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "job_id": "impl-demo-002",
             "quality_score": 0.9,
@@ -550,28 +550,28 @@
           }
         },
         {
-          "id": "aria-1775329622209",
+          "id": "aria-1778956268423",
           "level": "medium",
           "type": "task_complete",
-          "message": "Human override recorded for: Benchmark-driven conference demo for NOUS OS",
+          "message": "Human override recorded for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "aria",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "reason": "Human override: add an explicit risk gate before execution.",
             "round_1_quality": 0.74
           }
         },
         {
-          "id": "research-cto-1775329622208",
+          "id": "research-cto-1778956268422",
           "level": "medium",
           "type": "task_complete",
-          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "research-cto",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "job_id": "learn-demo-001",
             "quality_score": 0.76,
@@ -579,14 +579,14 @@
           }
         },
         {
-          "id": "vibe-vpe-1775329622163",
+          "id": "vibe-vpe-1778956268407",
           "level": "medium",
           "type": "task_complete",
-          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
           "source": "vibe-vpe",
           "acknowledged": false,
           "action_required": false,
-          "created_at": "2026-04-04T12:07:02",
+          "created_at": "2026-05-16T11:31:08",
           "metadata": {
             "job_id": "impl-demo-001",
             "quality_score": 0.72,
@@ -603,12 +603,12 @@
       "output": {
         "agent": "vibe-vpe",
         "topic": "implementation_queue",
-        "task": "Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+        "task": "Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "quality_score": 0.9,
-        "summary": "Built implementation draft: Prototype the execution surface for: Benchmark-driven conference demo for NOUS OS",
+        "summary": "Built implementation draft: Prototype the execution surface for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "memory_hits": 2,
         "round": 2,
-        "goal": "Benchmark-driven conference demo for NOUS OS"
+        "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
       }
     },
     {
@@ -617,12 +617,12 @@
       "output": {
         "agent": "research-cto",
         "topic": "learning_queue",
-        "task": "Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+        "task": "Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "quality_score": 0.94,
-        "summary": "Produced research brief: Research the flywheel story for: Benchmark-driven conference demo for NOUS OS",
+        "summary": "Produced research brief: Research the flywheel story for: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "memory_hits": 2,
         "round": 2,
-        "goal": "Benchmark-driven conference demo for NOUS OS"
+        "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
       }
     },
     {
@@ -631,19 +631,19 @@
       "output": {
         "agent": "vibe-vpe",
         "topic": "implementation_queue",
-        "task": "Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+        "task": "Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "quality_score": 0.94,
-        "summary": "Built implementation draft: Apply risk guardrails before shipping: Benchmark-driven conference demo for NOUS OS",
+        "summary": "Built implementation draft: Apply risk guardrails before shipping: Build a demo for multi-agent memory and human override evolution in NOUS OS",
         "memory_hits": 3,
         "round": 2,
-        "goal": "Benchmark-driven conference demo for NOUS OS"
+        "goal": "Build a demo for multi-agent memory and human override evolution in NOUS OS"
       }
     }
   ],
   "paths": {
-    "implementation_queue": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/implementation_queue.json",
-    "learning_queue": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/learning_queue.json",
-    "alerts": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/agent-bus/alerts.json",
-    "dashboard_data": "/home/fei/.openclaw/workspace/nous-os/examples/runtime/dashboard-data.json"
+    "implementation_queue": "/Users/liyao/nousos/nous-os/examples/runtime/agent-bus/implementation_queue.json",
+    "learning_queue": "/Users/liyao/nousos/nous-os/examples/runtime/agent-bus/learning_queue.json",
+    "alerts": "/Users/liyao/nousos/nous-os/examples/runtime/agent-bus/alerts.json",
+    "dashboard_data": "/Users/liyao/nousos/nous-os/examples/runtime/dashboard-data.json"
   }
 }

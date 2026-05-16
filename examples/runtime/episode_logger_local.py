@@ -13,16 +13,21 @@ NOUS_OS_ROOT = HERE.parent.parent
 WORKSPACE = NOUS_OS_ROOT.parent
 EPISODES_DIR = NOUS_OS_ROOT / "examples" / "runtime" / "data" / "episodes"
 EPISODES_FILE = EPISODES_DIR / "episodes.jsonl"
+SQLITE_FILE = EPISODES_DIR / "episodes.sqlite"
 
 
 def load_episode_module():
-    module_path = WORKSPACE / "tools" / "episode_logger.py"
+    module_path = WORKSPACE / "trustmem" / "tools" / "episode_logger.py"
+    tools_dir = str(module_path.parent)
+    if tools_dir not in sys.path:
+        sys.path.insert(0, tools_dir)
     spec = importlib.util.spec_from_file_location("workspace_episode_logger", module_path)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
     spec.loader.exec_module(module)
     module.EPISODES_DIR = EPISODES_DIR
     module.EPISODES_FILE = EPISODES_FILE
+    module._DEFAULT_SQLITE_PATH = str(SQLITE_FILE)
     return module
 
 
