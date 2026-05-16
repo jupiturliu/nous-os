@@ -212,18 +212,35 @@ class SiteContractTests(unittest.TestCase):
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
         release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
         second_vertical = ROOT / "docs" / "second-vertical-entry-criteria.md"
+        one_pager = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.md"
+        one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
         self.assertTrue(release_gate.exists())
         self.assertTrue(second_vertical.exists())
+        self.assertTrue(one_pager.exists())
+        self.assertTrue(one_pager_en.exists())
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/domain-evaluator-interface.md", readme)
         self.assertIn("docs/cross-repo-release-gate.md", readme)
+        self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.md", readme)
+        self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.en.md", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", phase3)
         self.assertIn("second-vertical-entry-criteria.md", roadmap.read_text())
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
         self.assertIn("Second vertical work remains deferred", second_vertical.read_text())
+        self.assertIn("Cognitive COO Operating System", one_pager_en.read_text())
+        self.assertIn("TrustMem: agents' trustworthy hippocampus", one_pager_en.read_text())
+
+    def test_landing_page_uses_cognitive_coo_without_overclaiming(self) -> None:
+        html = (ROOT / "index.html").read_text()
+
+        self.assertIn("Cognitive COO OS", html)
+        self.assertIn("Trading Brain as the first vertical proof", html)
+        self.assertIn("Production hardening is still in progress", html)
+        self.assertNotIn("fully autonomous trading system", html.lower())
+        self.assertNotIn("production-ready multi-tenant saas", html.lower())
 
     def test_public_release_smoke_docs_reference_release_gate(self) -> None:
         getting_started = (ROOT / "docs" / "getting-started.md").read_text()
