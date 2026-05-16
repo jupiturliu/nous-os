@@ -1,0 +1,538 @@
+{
+  "style": 5,
+  "width": 1920,
+  "height": 1320,
+  "title": "NOUS OS V2 — Cognitive COO Operating System",
+  "subtitle": "Human intent + Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof",
+  "header_meta": "North Star V2 · Obsidian = knowledge sedimentation layer · first vertical proof: Trading Brain",
+  "footer": "Truth split: Obsidian sediments human-readable knowledge; repo/runtime holds machine evidence and live state; irreversible authority remains human-gated.",
+  "footer_position": "bottom-left",
+  "legend_position": "bottom-right",
+  "legend_box": true,
+  "containers": [
+    {
+      "x": 56,
+      "y": 150,
+      "width": 400,
+      "height": 880,
+      "label": "Human / Consciousness",
+      "subtitle": "intent · judgment · knowledge review",
+      "stroke": "rgba(88,166,255,0.32)",
+      "fill": "rgba(88,166,255,0.045)"
+    },
+    {
+      "x": 510,
+      "y": 150,
+      "width": 405,
+      "height": 880,
+      "label": "COO Control Plane",
+      "subtitle": "Hermes / Aria",
+      "stroke": "rgba(188,140,255,0.34)",
+      "fill": "rgba(188,140,255,0.045)"
+    },
+    {
+      "x": 965,
+      "y": 150,
+      "width": 405,
+      "height": 880,
+      "label": "Knowledge + Memory + Signal",
+      "subtitle": "Obsidian + TrustMem + Synapse",
+      "stroke": "rgba(63,185,80,0.34)",
+      "fill": "rgba(63,185,80,0.045)"
+    },
+    {
+      "x": 1420,
+      "y": 150,
+      "width": 440,
+      "height": 880,
+      "label": "Domain Runtime + Proof",
+      "subtitle": "first proof: Trading Brain",
+      "stroke": "rgba(247,129,102,0.34)",
+      "fill": "rgba(247,129,102,0.045)"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "human",
+      "kind": "user_avatar",
+      "x": 100,
+      "y": 238,
+      "width": 300,
+      "height": 98,
+      "label": "Human / CEO",
+      "sublabel": "intent · judgment · override",
+      "glow": "blue",
+      "type_label": "irreversible authority"
+    },
+    {
+      "id": "surfaces",
+      "kind": "rect",
+      "x": 100,
+      "y": 468,
+      "width": 300,
+      "height": 104,
+      "label": "Interaction Surfaces",
+      "sublabel": "Dashboard · Telegram · CLI",
+      "glow": "blue",
+      "type_label": "attention + operation"
+    },
+    {
+      "id": "human_gate",
+      "kind": "hexagon",
+      "x": 98,
+      "y": 764,
+      "width": 304,
+      "height": 112,
+      "label": "Human Gate",
+      "sublabel": "capital / production boundary",
+      "glow": "orange",
+      "type_label": "no bypass"
+    },
+    {
+      "id": "coo",
+      "kind": "rect",
+      "x": 570,
+      "y": 238,
+      "width": 286,
+      "height": 116,
+      "label": "Hermes / Aria",
+      "sublabel": "COO · consciousness layer",
+      "glow": "purple",
+      "type_label": "intent + alignment"
+    },
+    {
+      "id": "routing",
+      "kind": "rect",
+      "x": 570,
+      "y": 468,
+      "width": 286,
+      "height": 104,
+      "label": "Specialist Routing",
+      "sublabel": "plans · agents · cron · synthesis",
+      "glow": "purple",
+      "type_label": "control plane"
+    },
+    {
+      "id": "briefing",
+      "kind": "rect",
+      "x": 570,
+      "y": 758,
+      "width": 286,
+      "height": 112,
+      "label": "COO Briefs",
+      "sublabel": "operator packets · evidence links",
+      "glow": "purple",
+      "type_label": "decision support"
+    },
+    {
+      "id": "trustmem",
+      "kind": "cylinder",
+      "x": 1008,
+      "y": 220,
+      "width": 310,
+      "height": 132,
+      "label": "TrustMem",
+      "sublabel": "distilled memory · decay · promotion",
+      "fill": "rgba(63,185,80,0.08)",
+      "stroke": "#3fb950",
+      "glow": "green"
+    },
+    {
+      "id": "synapse",
+      "kind": "rect",
+      "x": 1008,
+      "y": 420,
+      "width": 310,
+      "height": 108,
+      "label": "Synapse",
+      "sublabel": "Event Bus · DAG · Blackboard",
+      "glow": "green",
+      "type_label": "signal mesh"
+    },
+    {
+      "id": "learning",
+      "kind": "rect",
+      "x": 1010,
+      "y": 880,
+      "width": 306,
+      "height": 112,
+      "label": "Verified Learning",
+      "sublabel": "scoreboards · lessons · priors",
+      "glow": "green",
+      "type_label": "next-cycle memory"
+    },
+    {
+      "id": "domain",
+      "kind": "rect",
+      "x": 1480,
+      "y": 222,
+      "width": 320,
+      "height": 112,
+      "label": "Domain Runtime",
+      "sublabel": "trading-agent first vertical",
+      "glow": "orange",
+      "type_label": "machine truth"
+    },
+    {
+      "id": "risk",
+      "kind": "hexagon",
+      "x": 1480,
+      "y": 432,
+      "width": 320,
+      "height": 112,
+      "label": "Risk / Contracts",
+      "sublabel": "reconciliation · schemas · guards",
+      "glow": "orange",
+      "type_label": "runtime boundary"
+    },
+    {
+      "id": "outcomes",
+      "kind": "cylinder",
+      "x": 1480,
+      "y": 650,
+      "width": 320,
+      "height": 124,
+      "label": "Measured Outcomes",
+      "sublabel": "replay · results · avoided errors",
+      "fill": "rgba(247,129,102,0.08)",
+      "stroke": "#f78166",
+      "glow": "orange"
+    },
+    {
+      "id": "proof",
+      "kind": "rect",
+      "x": 1490,
+      "y": 870,
+      "width": 310,
+      "height": 116,
+      "label": "Proof Bundles",
+      "sublabel": "reviewed experiment · learning update",
+      "glow": "orange",
+      "type_label": "human review"
+    },
+    {
+      "id": "obsidian",
+      "kind": "folder",
+      "x": 1008,
+      "y": 640,
+      "width": 310,
+      "height": 118,
+      "label": "Obsidian Vault",
+      "sublabel": "North Stars · playbooks · reviews",
+      "glow": "green",
+      "type_label": "knowledge sedimentation"
+    }
+  ],
+  "arrows": [
+    {
+      "source": "human",
+      "target": "coo",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "intent / correction",
+      "flow": "control",
+      "corridor_y": [
+        292
+      ]
+    },
+    {
+      "source": "coo",
+      "target": "routing",
+      "source_port": "bottom",
+      "target_port": "top",
+      "label": "classify + plan",
+      "flow": "control",
+      "corridor_x": [
+        714
+      ]
+    },
+    {
+      "source": "routing",
+      "target": "synapse",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "dispatch work",
+      "flow": "async",
+      "corridor_y": [
+        500
+      ]
+    },
+    {
+      "source": "routing",
+      "target": "trustmem",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "recall memory",
+      "flow": "read",
+      "corridor_y": [
+        390
+      ]
+    },
+    {
+      "source": "synapse",
+      "target": "domain",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "domain task",
+      "flow": "async",
+      "corridor_y": [
+        474
+      ]
+    },
+    {
+      "source": "domain",
+      "target": "risk",
+      "source_port": "bottom",
+      "target_port": "top",
+      "label": "contracts",
+      "flow": "control",
+      "corridor_x": [
+        1640
+      ]
+    },
+    {
+      "source": "risk",
+      "target": "outcomes",
+      "source_port": "bottom",
+      "target_port": "top",
+      "label": "run + observe",
+      "flow": "data",
+      "corridor_x": [
+        1640
+      ]
+    },
+    {
+      "source": "outcomes",
+      "target": "proof",
+      "source_port": "bottom",
+      "target_port": "top",
+      "label": "evidence pack",
+      "flow": "write",
+      "corridor_x": [
+        1640
+      ]
+    },
+    {
+      "source": "proof",
+      "target": "human_gate",
+      "source_port": "left",
+      "target_port": "right",
+      "label": "review decision",
+      "flow": "feedback",
+      "corridor_y": [
+        1085
+      ],
+      "route_points": [
+        [
+          1645,
+          1048
+        ],
+        [
+          250,
+          1048
+        ]
+      ],
+      "label_dy": -14
+    },
+    {
+      "source": "surfaces",
+      "target": "human",
+      "source_port": "top",
+      "target_port": "bottom",
+      "label": "attention",
+      "flow": "read",
+      "corridor_x": [
+        250
+      ]
+    },
+    {
+      "source": "human_gate",
+      "target": "risk",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "irreversible action only by gate",
+      "flow": "neutral",
+      "dashed": true,
+      "opacity": 0.76,
+      "route_points": [
+        [
+          444,
+          820
+        ],
+        [
+          444,
+          1100
+        ],
+        [
+          1390,
+          1100
+        ],
+        [
+          1390,
+          488
+        ]
+      ],
+      "label_dy": -16
+    },
+    {
+      "source": "trustmem",
+      "target": "synapse",
+      "source_port": "bottom",
+      "target_port": "top",
+      "label": "memory signals",
+      "flow": "data",
+      "corridor_x": [
+        1163
+      ]
+    },
+    {
+      "source": "briefing",
+      "target": "obsidian",
+      "source_port": "right",
+      "target_port": "left",
+      "label": "sediment briefs",
+      "flow": "write",
+      "corridor_y": [
+        814
+      ],
+      "route_points": [
+        [
+          900,
+          814
+        ],
+        [
+          930,
+          814
+        ],
+        [
+          930,
+          720
+        ]
+      ],
+      "label_dy": 18
+    },
+    {
+      "source": "obsidian",
+      "target": "trustmem",
+      "source_port": "top",
+      "target_port": "bottom",
+      "label": "distill lessons",
+      "flow": "write",
+      "corridor_x": [
+        1163
+      ]
+    },
+    {
+      "source": "outcomes",
+      "target": "obsidian",
+      "source_port": "left",
+      "target_port": "right",
+      "label": "evidence to notes",
+      "flow": "feedback",
+      "corridor_y": [
+        700
+      ]
+    },
+    {
+      "source": "outcomes",
+      "target": "learning",
+      "source_port": "left",
+      "target_port": "right",
+      "label": "outcome proof",
+      "flow": "feedback",
+      "corridor_y": [
+        712
+      ]
+    },
+    {
+      "source": "learning",
+      "target": "obsidian",
+      "source_port": "top",
+      "target_port": "bottom",
+      "label": "playbook update",
+      "flow": "write",
+      "corridor_x": [
+        1163
+      ]
+    },
+    {
+      "source": "learning",
+      "target": "routing",
+      "source_port": "left",
+      "target_port": "right",
+      "label": "next-cycle priors",
+      "flow": "feedback",
+      "corridor_y": [
+        930
+      ],
+      "route_points": [
+        [
+          965,
+          936
+        ],
+        [
+          940,
+          936
+        ],
+        [
+          940,
+          610
+        ],
+        [
+          858,
+          610
+        ]
+      ],
+      "label_dy": -12
+    },
+    {
+      "source": "obsidian",
+      "target": "surfaces",
+      "source_port": "left",
+      "target_port": "right",
+      "label": "knowledge review",
+      "flow": "read",
+      "route_points": [
+        [
+          930,
+          700
+        ],
+        [
+          930,
+          610
+        ],
+        [
+          420,
+          610
+        ]
+      ],
+      "label_dy": -14
+    }
+  ],
+  "legend": [
+    {
+      "flow": "control",
+      "label": "control / intent"
+    },
+    {
+      "flow": "read",
+      "label": "read / review knowledge"
+    },
+    {
+      "flow": "async",
+      "label": "event dispatch"
+    },
+    {
+      "flow": "write",
+      "label": "write / sediment knowledge"
+    },
+    {
+      "flow": "feedback",
+      "label": "outcome feedback"
+    },
+    {
+      "flow": "neutral",
+      "label": "human-gated boundary"
+    }
+  ]
+}

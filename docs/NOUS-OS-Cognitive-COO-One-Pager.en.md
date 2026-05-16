@@ -9,7 +9,7 @@ It connects human intent, verified memory, event-driven coordination, domain run
 ## One Line
 
 ```text
-NOUS OS = shared memory + event mesh + domain runtime + outcome proof + human authority.
+NOUS OS = Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof + human authority.
 ```
 
 ## System Map
@@ -17,6 +17,7 @@ NOUS OS = shared memory + event mesh + domain runtime + outcome proof + human au
 ```text
 Human intent
   -> Hermes / Aria: COO control plane
+  -> Obsidian: human-readable knowledge sedimentation
   -> TrustMem: trustworthy hippocampus
   -> Synapse: event-driven service mesh
   -> Domain runtime: first proof = Trading Brain / trading-agent
@@ -27,6 +28,7 @@ Human intent
 ## Product Boundaries
 
 - TrustMem: agents' trustworthy hippocampus for memory, trust, decay, and verification.
+- Obsidian: human-readable knowledge sedimentation layer for North Stars, playbooks, architecture maps, handoffs, reviews, and durable judgment.
 - Synapse: event-driven service mesh for agents, DAGs, workers, and budget routing.
 - Trading Brain: first vertical proof, a Personal AI Trading COO built on NOUS OS.
 - Dashboard / Obsidian / CLI: review surfaces, not live state sources of truth.

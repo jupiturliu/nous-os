@@ -9,7 +9,7 @@ NOUS OS 是面向 human-AI co-evolution 的 Cognitive COO Operating System。
 ## 一句话
 
 ```text
-NOUS OS = shared memory + event mesh + domain runtime + outcome proof + human authority.
+NOUS OS = Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof + human authority.
 ```
 
 ## 组件关系
@@ -17,6 +17,7 @@ NOUS OS = shared memory + event mesh + domain runtime + outcome proof + human au
 ```text
 Human intent
   -> Hermes / Aria: COO control plane
+  -> Obsidian: human-readable knowledge sedimentation
   -> TrustMem: trustworthy hippocampus
   -> Synapse: event-driven service mesh
   -> Domain runtime: first proof = Trading Brain / trading-agent
@@ -27,6 +28,7 @@ Human intent
 ## 关键产品边界
 
 - TrustMem：agents' trustworthy hippocampus，负责记忆、信任、衰减、验证。
+- Obsidian：human-readable knowledge sedimentation layer，负责 North Star、playbook、architecture map、handoff、review 和 durable judgment。
 - Synapse：event-driven service mesh for agents，负责事件、DAG、worker、budget routing。
 - Trading Brain：first vertical proof，基于 NOUS OS 的 Personal AI Trading COO。
 - Dashboard / Obsidian / CLI：review surfaces，不是 live state source of truth。

@@ -948,6 +948,56 @@
     color: var(--text-secondary);
   }
 
+  .northstar-line {
+    width: min(920px, 100%);
+    margin: 4px auto 18px;
+    position: relative;
+    z-index: 2;
+    padding: 14px 18px;
+    border: 1px solid rgba(0,212,170,0.18);
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(0,212,170,0.08), rgba(123,97,255,0.06));
+    color: rgba(240,240,245,0.72);
+    font-size: 12px;
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: left;
+  }
+
+  .architecture-showcase {
+    width: min(1040px, 100%);
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+    background: rgba(5,8,14,0.72);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.36);
+    overflow: hidden;
+  }
+
+  .architecture-showcase img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .architecture-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-align: left;
+  }
+
+  .architecture-caption strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
   .demo-frame {
     min-height: 760px;
     border: 0;
@@ -1164,6 +1214,7 @@
     .demo-frame { min-height: 640px; }
     .demo-metrics { grid-template-columns: 1fr; }
     .hero-mini-proof { grid-template-columns: 1fr; }
+    .architecture-caption { flex-direction: column; }
     .loop-grid { grid-template-columns: 1fr; }
     .loop-diagram-grid { grid-template-columns: 1fr; }
     .loop-node-arrow { display: none; }
@@ -1202,13 +1253,13 @@
 <div class="hero">
   <div class="hero-badge">
     <span class="badge-dot"></span>
-    Cognitive COO Operating System · Open Source
+    Cognitive COO Operating System · First vertical proof: Trading Brain
   </div>
 
   <h1>A <em>Cognitive COO OS</em><br>for human + agent<br>co-evolution</h1>
 
   <p class="hero-tagline">
-    NOUS OS connects <strong>verified memory, event routing, domain runtime, outcome proof, and human authority</strong> —<br>
+    NOUS OS connects <strong>Obsidian knowledge sedimentation, verified memory, event routing, domain runtime, outcome proof, and human authority</strong> —<br>
     with Trading Brain as the first vertical proof and production hardening in progress.
   </p>
 
@@ -1227,57 +1278,36 @@
   </div>
 
   <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:-6px 0 30px;position:relative;z-index:2;">
-    <span class="demo-chip">Aria = consciousness</span>
-    <span class="demo-chip">TrustMem = learning flywheel</span>
-    <span class="demo-chip">Synapse = coordination fabric</span>
+    <span class="demo-chip">Hermes / Aria = COO control plane</span>
+    <span class="demo-chip">Obsidian = knowledge sedimentation</span>
+    <span class="demo-chip">TrustMem = verified memory</span>
+    <span class="demo-chip">Synapse = event mesh</span>
+    <span class="demo-chip">trading-agent = first runtime proof</span>
+  </div>
+
+  <div class="northstar-line">
+    NOUS OS = Cognitive COO Operating System: human intent + human-readable knowledge sedimentation + verified memory + event mesh + domain runtime + measured outcomes + human authority.
   </div>
 
   <div class="hero-mini-proof">
     <div class="hero-proof-card">
-      <div class="hero-proof-kicker">Why it matters</div>
-      <div class="hero-proof-title">Agents should not restart from zero</div>
-      <div class="hero-proof-desc">NOUS OS gives agents continuity: memory before action, learning after action, and better judgment on the next run.</div>
+      <div class="hero-proof-kicker">North Star V2</div>
+      <div class="hero-proof-title">A verifiable cognitive COO</div>
+      <div class="hero-proof-desc">The system connects intent, operating notes, durable memory, event routing, runtime truth, and outcome proof into a repeatable learning loop.</div>
     </div>
     <div class="hero-proof-card">
-      <div class="hero-proof-kicker">Category boundary</div>
-      <div class="hero-proof-title">Not an agent framework. A cognitive runtime.</div>
-      <div class="hero-proof-desc">Aria, TrustMem, and Synapse do not just orchestrate agents. They provide the runtime in which agents can reason, remember, coordinate, and improve.</div>
+      <div class="hero-proof-kicker">Authority boundary</div>
+      <div class="hero-proof-title">Human judgment stays final</div>
+      <div class="hero-proof-desc">NOUS OS can route, recall, score, and brief. It cannot bypass irreversible broker, risk, reconciliation, approval, or live-state boundaries.</div>
     </div>
   </div>
 
   <!-- Architecture Diagram -->
-  <div class="arch-diagram" id="architecture">
-    <div class="arch-inner">
-      <div class="arch-layer">
-        <div class="arch-icon arch-icon-a">🏛️</div>
-        <div class="arch-info">
-          <div class="arch-name">Aria</div>
-          <div class="arch-desc">Intent · Judgment · Human Alignment · MCP-portable</div>
-        </div>
-        <span class="arch-tag tag-a">Consciousness Layer</span>
-      </div>
-
-      <div class="arch-connector">↕ &nbsp; event-driven · O(N)</div>
-
-      <div class="arch-layer">
-        <div class="arch-icon arch-icon-s">⚡</div>
-        <div class="arch-info">
-          <div class="arch-name">Synapse</div>
-          <div class="arch-desc">Event Bus · DAG Executor · Budget Router</div>
-        </div>
-        <span class="arch-tag tag-s">Signal Layer</span>
-      </div>
-
-      <div class="arch-connector">↕ &nbsp; trust-scored · decay-aware</div>
-
-      <div class="arch-layer">
-        <div class="arch-icon arch-icon-t">🧠</div>
-        <div class="arch-info">
-          <div class="arch-name">TrustMem</div>
-          <div class="arch-desc">Trusted Recall · Outcome Writeback · Human Override Learning</div>
-        </div>
-        <span class="arch-tag tag-t">Learning Layer</span>
-      </div>
+  <div class="architecture-showcase" id="architecture">
+    <img src="demo/assets/architecture/nous-os-cognitive-coo-architecture-fireworks.png" alt="NOUS OS Cognitive COO architecture map showing Human, Hermes and Aria, Obsidian, TrustMem, Synapse, domain runtime, outcome proof, and human authority boundaries">
+    <div class="architecture-caption">
+      <span><strong>Architecture map:</strong> Human -> Hermes / Aria -> Obsidian + TrustMem + Synapse -> domain runtime -> outcome proof.</span>
+      <span>Generated with Fireworks Tech Graph · review-only</span>
     </div>
   </div>
 </div>

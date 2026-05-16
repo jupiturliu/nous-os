@@ -5,7 +5,7 @@
 NOUS OS V2 is the Cognitive COO Operating System for human-AI co-evolution:
 
 ```text
-Human intent + verified memory + event mesh + domain runtime + outcome proof + human authority.
+Human intent + Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof + human authority.
 ```
 
 The goal is not a fully autonomous agent company. The goal is a reusable operating system that runs real cognitive work, improves across measured cycles, and preserves human authority at every irreversible boundary.
@@ -15,10 +15,11 @@ The goal is not a fully autonomous agent company. The goal is a reusable operati
 | Layer | System | Responsibility |
 |-------|--------|----------------|
 | Consciousness / COO control plane | Hermes / Aria | Intent parsing, user alignment, specialist routing, operator synthesis, human decision capture |
+| Knowledge sedimentation | Obsidian | Human-readable North Stars, playbooks, architecture maps, handoffs, reviews, and durable judgment notes |
 | Memory / trust substrate | TrustMem | Episodic memory, knowledge trust, verification, decay, promotion, cross-agent recall |
 | Signal / event mesh | Synapse | Event Bus, Blackboard, DAG execution, worker pool, budget routing |
 | Domain runtime | First proof: trading-agent | Account/runtime truth, risk and reconciliation gates, outcome ledgers, domain-specific constraints |
-| Review surfaces | Dashboard, Telegram / ARIA, Obsidian, CLI | Human-readable review, briefing, audit memory, and operator workflow |
+| Interaction surfaces | Dashboard, Telegram / ARIA, CLI | Human-readable review, briefing, and operator workflow |
 
 ## Current Phase
 
@@ -37,13 +38,13 @@ Trading Brain / `trading-agent` is the first vertical proof bed because it has h
 The generic loop:
 
 ```text
-intent -> memory -> event routing -> domain runtime -> outcome -> verified learning -> next intent
+intent -> Obsidian knowledge sedimentation -> verified memory -> event routing -> domain runtime -> outcome -> verified learning -> next intent
 ```
 
 The Trading Brain loop:
 
 ```text
-market/user intent -> investment memory -> research/risk agents -> trading-agent runtime -> measured outcome -> scoreboard/lesson -> next decision
+market/user intent -> Obsidian investment notes/playbooks -> verified memory -> research/risk agents -> trading-agent runtime -> measured outcome -> scoreboard/lesson -> next decision
 ```
 
 ## Explicit Deferrals
