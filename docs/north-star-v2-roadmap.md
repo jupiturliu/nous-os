@@ -57,6 +57,8 @@ These are not current-phase work:
 - fully autonomous trading company
 - multi-tenant SaaS launch
 
+Second vertical work is gated by [second-vertical-entry-criteria.md](./second-vertical-entry-criteria.md).
+
 ## Boundaries
 
 NOUS OS may score, route, recall, validate, summarize, and generate review packets. It must not authorize capital actions, bypass broker/risk/reconciliation gates, treat Obsidian as live state, or mistake synthetic demo quality for production evaluation.

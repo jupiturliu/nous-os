@@ -211,15 +211,19 @@ class SiteContractTests(unittest.TestCase):
         roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
         release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
+        second_vertical = ROOT / "docs" / "second-vertical-entry-criteria.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
         self.assertTrue(release_gate.exists())
+        self.assertTrue(second_vertical.exists())
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/domain-evaluator-interface.md", readme)
         self.assertIn("docs/cross-repo-release-gate.md", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", phase3)
+        self.assertIn("second-vertical-entry-criteria.md", roadmap.read_text())
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
+        self.assertIn("Second vertical work remains deferred", second_vertical.read_text())
 
     def test_public_release_smoke_docs_reference_release_gate(self) -> None:
         getting_started = (ROOT / "docs" / "getting-started.md").read_text()
