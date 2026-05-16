@@ -1270,6 +1270,9 @@
 const apiDataPath = "/api/dashboard-data";
 const apiRunPath = "/api/run-heartbeat";
 const staticDataPath = "../examples/runtime/dashboard-data.json";
+const hasLocalApi =
+  (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") &&
+  window.location.port === "8765";
 let progressTimer = null;
 let latestSnapshot = null;
 let selectedOverride = "risk";
@@ -1720,9 +1723,10 @@ async function renderSnapshot(snapshot) {
 
 async function loadSnapshot() {
   try {
-    const response = await fetch(apiDataPath, { cache: "no-store" });
+    const primaryPath = hasLocalApi ? apiDataPath : staticDataPath;
+    const response = await fetch(primaryPath, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    staticMode = false;
+    staticMode = !hasLocalApi;
     return response.json();
   } catch (err) {
     const fallback = await fetch(staticDataPath, { cache: "no-store" });
