@@ -45,6 +45,11 @@ except ModuleNotFoundError:
 
 
 RUNTIME_DIR = ROOT / "runtime"
+if str(RUNTIME_DIR) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_DIR))
+
+from cls_v2 import compute_cls_v2
+
 RUNTIME_AGENT_BUS = RUNTIME_DIR / "agent-bus"
 RUNTIME_EPISODE_LOGGER = RUNTIME_DIR / "episode_logger_local.py"
 RUNTIME_ALERTS = RUNTIME_DIR / "alerts.json"
@@ -352,6 +357,14 @@ def build_benchmark(round1: Dict, round2: Dict, alerts_count: int, episodes_logg
     e_component = max(0.0, memory_reuse)
     r_component = max(0.0, task_expansion)
     cls = round(0.4 * q_component + 0.2 * c_component + 0.2 * e_component + 0.2 * r_component, 3)
+    cls_v2_components = {
+        "outcome_quality_delta": round(min(1.0, q_component), 3),
+        "correction_absorption": round(c_component, 3),
+        "memory_reuse_precision": round(min(1.0, e_component), 3),
+        "repeatability_gain": round(min(1.0, r_component), 3),
+        "boundary_integrity": 1.0,
+        "human_agency_preservation": 1.0 if override else 0.0,
+    }
 
     return {
         "baseline": {
@@ -380,6 +393,15 @@ def build_benchmark(round1: Dict, round2: Dict, alerts_count: int, episodes_logg
                 "e_memory_reuse": round(e_component, 3),
                 "r_repeatability_gain": round(r_component, 3),
             },
+        },
+        "cls_v2": {
+            "score": compute_cls_v2(cls_v2_components),
+            "components": cls_v2_components,
+            "evidence_refs": [
+                "runtime://round1",
+                "runtime://round2",
+                "runtime://human_override" if override else "runtime://no_override",
+            ],
         },
         "public_standard": [
             {
@@ -508,6 +530,7 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict) -> Dic
             "alerts_created": alerts_count,
             "quality_delta": quality_delta,
             "cls_score": benchmark["cls"]["score"],
+            "cls_v2_score": benchmark["cls_v2"]["score"],
         },
         "queues": {
             "implementation_queue": read_json(RUNTIME_AGENT_BUS / "implementation_queue.json"),

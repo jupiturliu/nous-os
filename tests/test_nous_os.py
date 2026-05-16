@@ -12,12 +12,14 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "examples"
 SCRIPTS = ROOT / "scripts"
+RUNTIME = EXAMPLES / "runtime"
 
-for path in (EXAMPLES, SCRIPTS):
+for path in (EXAMPLES, SCRIPTS, RUNTIME):
     path_str = str(path)
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
 
+from cls_v2 import compute_cls_v2
 import nousos_heartbeat_demo as heartbeat_demo
 import run_nous_dashboard as dashboard_server
 
@@ -59,6 +61,18 @@ class BenchmarkTests(unittest.TestCase):
         r = round((3 - 2) / 2, 3)
         expected_cls = round(0.4 * q + 0.2 * 1.0 + 0.2 * 1.0 + 0.2 * r, 3)
         self.assertEqual(benchmark["cls"]["score"], expected_cls)
+        self.assertEqual(
+            set(benchmark["cls_v2"]["components"]),
+            {
+                "outcome_quality_delta",
+                "correction_absorption",
+                "memory_reuse_precision",
+                "repeatability_gain",
+                "boundary_integrity",
+                "human_agency_preservation",
+            },
+        )
+        self.assertEqual(benchmark["cls_v2"]["score"], compute_cls_v2(benchmark["cls_v2"]["components"]))
 
     def test_build_dashboard_snapshot_contains_contract_fields(self) -> None:
         round1 = {
@@ -115,6 +129,24 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(len(snapshot["topology"]["nodes"]), 8)
         self.assertIn("benchmark", snapshot)
         self.assertIn("cls_score", snapshot["metrics"])
+        self.assertIn("cls_v2_score", snapshot["metrics"])
+        self.assertIn("cls_v2", snapshot["benchmark"])
+
+    def test_compute_cls_v2_weighted_sum(self) -> None:
+        components = {
+            "outcome_quality_delta": 0.5,
+            "correction_absorption": 1.0,
+            "memory_reuse_precision": 0.8,
+            "repeatability_gain": 0.4,
+            "boundary_integrity": 1.0,
+            "human_agency_preservation": 1.0,
+        }
+
+        self.assertEqual(compute_cls_v2(components), 0.705)
+
+    def test_compute_cls_v2_requires_all_components(self) -> None:
+        with self.assertRaises(KeyError):
+            compute_cls_v2({"outcome_quality_delta": 0.5})
 
 
 class DashboardApiTests(unittest.TestCase):
@@ -173,10 +205,41 @@ class DashboardApiTests(unittest.TestCase):
 
 
 class SiteContractTests(unittest.TestCase):
+    def test_v2_roadmap_and_evaluator_docs_are_linked(self) -> None:
+        readme = (ROOT / "README.md").read_text()
+        phase3 = (ROOT / "NOUS-OS-PHASE3.md").read_text()
+        roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
+        evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
+
+        self.assertTrue(roadmap.exists())
+        self.assertTrue(evaluator.exists())
+        self.assertIn("docs/north-star-v2-roadmap.md", readme)
+        self.assertIn("docs/domain-evaluator-interface.md", readme)
+        self.assertIn("docs/north-star-v2-roadmap.md", phase3)
+        self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
+
+    def test_dashboard_snapshot_contains_cls_v2_components(self) -> None:
+        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
+        components = snapshot["benchmark"]["cls_v2"]["components"]
+
+        self.assertEqual(
+            set(components),
+            {
+                "outcome_quality_delta",
+                "correction_absorption",
+                "memory_reuse_precision",
+                "repeatability_gain",
+                "boundary_integrity",
+                "human_agency_preservation",
+            },
+        )
+        self.assertEqual(snapshot["metrics"]["cls_v2_score"], snapshot["benchmark"]["cls_v2"]["score"])
+
     def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
 
         self.assertIn("cp favicon.svg _site/", workflow)
+        self.assertIn("cp docs/*.md _site/docs/", workflow)
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
 

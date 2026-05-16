@@ -14,7 +14,9 @@ NOUS OS 不是单模型 benchmark，而是系统级 benchmark。核心问题不�
 - `baseline`：第一轮冷启动，无历史记忆
 - `treatment`：第二轮，带 memory recall + human override
 
-## Public Metrics
+## Public Metrics: CLS v1 Demo Frame
+
+The current heartbeat demo keeps Q/C/E/R as a continuity frame. This is `CLS v1 demo frame`, useful for showing the local flywheel before domain-specific evaluators exist.
 
 ### Q — Quality Improvement
 
@@ -60,7 +62,7 @@ second_run_tasks_with_memory / total_second_run_tasks
 含义：
 - 系统是否根据第一轮和人类反馈，扩展或细化了第二轮计划
 
-## CLS
+## CLS v1
 
 定义一个简化版 `Cognitive Loop Score`：
 
@@ -72,6 +74,32 @@ CLS = 0.4 * Q + 0.2 * C + 0.2 * E + 0.2 * R
 - `Q` 权重最高，因为结果质量仍然是主目标
 - `C`、`E`、`R` 分别衡量反馈吸收、记忆复用、跨轮改进
 
+## CLS v2
+
+CLS v2 upgrades the demo score into the V2 North Star metric:
+
+```text
+CLS = 0.35 * outcome_quality_delta
+    + 0.20 * correction_absorption
+    + 0.15 * memory_reuse_precision
+    + 0.15 * repeatability_gain
+    + 0.10 * boundary_integrity
+    + 0.05 * human_agency_preservation
+```
+
+Accepted public-reporting ranges:
+
+| Component | Range | Meaning |
+|-----------|-------|---------|
+| `outcome_quality_delta` | 0.0-1.0 | Treatment improved measured outcome quality versus baseline |
+| `correction_absorption` | 0.0-1.0 | Human correction changed future behavior |
+| `memory_reuse_precision` | 0.0-1.0 | Reused memory was relevant and useful |
+| `repeatability_gain` | 0.0-1.0 | Similar future work became more repeatable or lower-friction |
+| `boundary_integrity` | 0.0-1.0 | Irreversible boundaries remained intact |
+| `human_agency_preservation` | 0.0-1.0 | The system preserved and strengthened human judgment |
+
+The heartbeat demo can populate these fields deterministically, but production domains must provide a domain evaluator. See [domain-evaluator-interface.md](./domain-evaluator-interface.md).
+
 ## Demo Mapping
 
 在 `demo/heartbeat-dashboard.html` 里，这些指标应该都有明确映射：
@@ -80,7 +108,8 @@ CLS = 0.4 * Q + 0.2 * C + 0.2 * E + 0.2 * R
 - `Human Policy` → C
 - `Memory Loop / Memory Reuse` → E
 - `Task Expansion` → R
-- `CLS Score` → 汇总分
+- `CLS Score` → CLS v1 demo score
+- `CLS v2 Score` → V2 Cognitive COO score
 
 ## What Counts As Publicly Convincing
 

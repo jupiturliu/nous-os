@@ -46,7 +46,7 @@ jobs:
           cp .nojekyll _site/
           cp README.md _site/
           cp ARCHITECTURE.md _site/
-          cp docs/getting-started.md _site/docs/
+          cp docs/*.md _site/docs/
           cp demo/heartbeat-dashboard.html _site/demo/
           cp examples/runtime/dashboard-data.json _site/examples/runtime/
 

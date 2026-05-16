@@ -79,12 +79,14 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 
 - [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
 - [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
+- [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Cognitive COO V2 roadmap and first-vertical proof scope
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
 - [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
 - [docs/aria-integration.md](./docs/aria-integration.md) — Aria ↔ Synapse integration guide
 - [docs/getting-started.md](./docs/getting-started.md) — Getting started
 - [docs/demo-blueprint.md](./docs/demo-blueprint.md) — Runnable demo design
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
+- [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md) — Domain evaluator contract for CLS v2
 
 ---
 

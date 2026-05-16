@@ -95,8 +95,10 @@ http://127.0.0.1:8765/demo/heartbeat-dashboard.html
 
 ## 下一阶段：Production Hardening
 
+See [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) for the Cognitive COO V2 roadmap and first-vertical proof boundaries.
+
 1. 生产 Aria runtime 接线：把 demo heartbeat 的 runtime agent-bus 替换为真实 Aria queue / policy source。
-2. 领域评分器：把 demo 的 synthetic quality score 替换为投资、研究、代码等领域 evaluator。
+2. 领域评分器：把 demo 的 synthetic quality score 替换为投资、研究、代码等领域 evaluator；接口见 [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md)。
 3. Cross-repo release gate：对 `trustmem`、`synapse`、`nous-os` 做统一测试、路径扫描、密钥扫描和 changelog 检查。
 4. Dashboard 数据持久化：保留多次 run 的历史曲线，而不是只发布一个 snapshot。
 5. Public release package：固定 README、one-pager、demo script、benchmark report 的对外叙事。
