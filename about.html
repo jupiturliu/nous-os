@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About NOUS OS — Cognitive COO OS</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --bg-2: #0d0d1a;
+    --panel: rgba(255,255,255,0.035);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.34);
+    --accent: #7b61ff;
+    --green: #00d4aa;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.035) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84);
+    backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .nav-links a:hover { color: var(--text); }
+  main { position: relative; z-index: 1; }
+  .hero {
+    min-height: 78vh;
+    display: grid;
+    align-items: end;
+    padding: 110px 40px 60px;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(123,97,255,0.18), transparent 38%),
+      radial-gradient(circle at 75% 42%, rgba(0,212,170,0.10), transparent 30%);
+  }
+  .hero-inner { width: min(1040px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 13px;
+    border: 1px solid rgba(0,212,170,0.28);
+    border-radius: 999px;
+    background: rgba(0,212,170,0.08);
+    color: #8ff6dd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 28px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  h1 {
+    max-width: 920px;
+    font-size: clamp(40px, 7vw, 86px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    margin-bottom: 26px;
+  }
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, #ffffff, #8ff6dd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .lead {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: clamp(16px, 2vw, 20px);
+  }
+  section {
+    width: min(1040px, 100%);
+    margin: 0 auto;
+    padding: 72px 40px;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 18px;
+  }
+  p { color: var(--muted); max-width: 800px; margin: 0 0 18px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+    padding: 18px;
+    min-height: 170px;
+  }
+  .card b { display: block; font-size: 16px; margin-bottom: 8px; }
+  .card span { color: var(--muted); font-size: 13px; }
+  .quote {
+    margin-top: 28px;
+    border-left: 3px solid var(--green);
+    padding: 18px 22px;
+    background: rgba(0,212,170,0.06);
+    color: rgba(240,240,245,0.78);
+    font-size: 18px;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  .diagram {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #0b1120;
+    box-shadow: 0 22px 60px rgba(0,0,0,0.32);
+  }
+  .diagram img { display: block; width: 100%; height: auto; }
+  .caption {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-size: 12px;
+  }
+  .principles {
+    display: grid;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .principle {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 18px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+  }
+  .principle strong { color: var(--text); }
+  .principle div:last-child { color: var(--muted); }
+  footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 40px;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-size: 13px;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  @media (max-width: 820px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 96px 22px 44px; }
+    section { padding: 54px 22px; }
+    .grid, .split { grid-template-columns: 1fr; }
+    .principle { grid-template-columns: 1fr; gap: 6px; }
+    footer { flex-direction: column; padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">
+    <span class="logo-mark">N</span>
+    <span>NOUS OS</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#demo">Demo</a></li>
+    <li><a href="/#architecture">Architecture</a></li>
+    <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge"><span class="dot"></span>About the name</div>
+      <h1>Why <em>NOUS</em>?</h1>
+      <p class="lead">NOUS is a personal research project about the future of AI + human beings: how people and intelligent systems can cooperate cognitively without outsourcing judgment, agency, or responsibility.</p>
+    </div>
+  </section>
+
+  <section class="split">
+    <div>
+      <div class="section-label">Origin</div>
+      <h2>The name points to mind, judgment, and meaning.</h2>
+      <p><strong>Nous</strong> comes from the Greek word for intellect, mind, and the faculty that perceives meaning. I chose it because the project is not only about automation. It is about cognition: memory, attention, judgment, reflection, and the way humans decide what matters.</p>
+      <p>The OS part is also intentional. An operating system coordinates resources. NOUS OS coordinates cognitive resources: human intent, knowledge sedimentation, verified memory, event routing, domain runtime, measured outcomes, and human authority.</p>
+      <div class="quote">The goal is not to make AI replace human thought. The goal is to build a better cognitive partnership.</div>
+    </div>
+    <div class="diagram">
+      <img src="demo/assets/architecture/nous-os-cognitive-coo-architecture-fireworks.png" alt="NOUS OS V2 Cognitive COO architecture map">
+      <div class="caption">NOUS OS V2 architecture: human authority, Hermes / Aria, Obsidian, TrustMem, Synapse, domain runtime, and outcome proof.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Personal thread</div>
+    <h2>Exploring AI + human beings with my daughter.</h2>
+    <p>Part of the reason this project matters to me is that I am exploring the future of AI and human beings together with my daughter. That changes the question. It is not just: what can AI do for us? It is also: what kind of thinking habits, judgment, curiosity, and responsibility do we want to preserve and strengthen as AI becomes more capable?</p>
+    <p>NOUS OS is my way of making that question concrete. It treats AI as a cognitive partner that can remember, challenge, route work, surface evidence, and learn from outcomes. But it also keeps the human role explicit: choosing goals, reviewing meaning, correcting mistakes, and holding authority at irreversible boundaries.</p>
+  </section>
+
+  <section>
+    <div class="section-label">Cognitive collaboration</div>
+    <h2>How Humans and AI can cooperate better.</h2>
+    <div class="grid">
+      <article class="card">
+        <b>AI extends recall.</b>
+        <span>Machines are good at storing, searching, comparing, and reusing memory. TrustMem exists so this memory can be verified, decayed, promoted, and corrected.</span>
+      </article>
+      <article class="card">
+        <b>Humans protect meaning.</b>
+        <span>Humans decide what matters, when a result is actually useful, and where values or responsibility change the answer.</span>
+      </article>
+      <article class="card">
+        <b>The loop improves both.</b>
+        <span>Each cycle should make the system more useful and the human more informed, not more passive. Corrections become future behavior.</span>
+      </article>
+    </div>
+    <div class="principles">
+      <div class="principle">
+        <strong>Memory before action</strong>
+        <div>Do not start every task from zero. Recall what was learned, what failed, and what the human corrected.</div>
+      </div>
+      <div class="principle">
+        <strong>Evidence before confidence</strong>
+        <div>Do not confuse fluent output with truth. Tie claims to sources, outcomes, and reviewable artifacts.</div>
+      </div>
+      <div class="principle">
+        <strong>Human authority at boundaries</strong>
+        <div>AI may operate the cognitive workflow, but irreversible decisions remain human-gated.</div>
+      </div>
+      <div class="principle">
+        <strong>Compounding judgment</strong>
+        <div>The best loop is not faster task completion alone. It is better future judgment for both the person and the system.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>NOUS OS · Cognitive COO OS</div>
+  <div><a href="/">Home</a> · <a href="https://github.com/jupiturliu/nous-os">GitHub</a></div>
+</footer>
+</body>
+</html>

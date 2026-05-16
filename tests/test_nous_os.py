@@ -278,6 +278,7 @@ class SiteContractTests(unittest.TestCase):
     def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
 
+        self.assertIn("cp about.html _site/", workflow)
         self.assertIn("cp favicon.svg _site/", workflow)
         self.assertIn("cp docs/*.md _site/docs/", workflow)
         self.assertIn("cp -R demo/assets _site/demo/", workflow)
@@ -287,9 +288,22 @@ class SiteContractTests(unittest.TestCase):
     def test_site_pages_reference_favicon(self) -> None:
         homepage = (ROOT / "index.html").read_text()
         demo_page = (ROOT / "demo" / "heartbeat-dashboard.html").read_text()
+        about_page = (ROOT / "about.html").read_text()
 
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', homepage)
         self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', demo_page)
+        self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', about_page)
+
+    def test_about_page_explains_nous_origin_and_human_ai_future(self) -> None:
+        homepage = (ROOT / "index.html").read_text()
+        about_page = (ROOT / "about.html").read_text()
+
+        self.assertIn('href="/about.html"', homepage)
+        self.assertIn("Why <em>NOUS</em>?", about_page)
+        self.assertIn("Greek word for intellect", about_page)
+        self.assertIn("exploring the future of AI and human beings together with my daughter", about_page)
+        self.assertIn("Humans and AI can cooperate better", about_page)
+        self.assertIn("demo/assets/architecture/nous-os-cognitive-coo-architecture-fireworks.png", about_page)
 
 
 if __name__ == "__main__":
