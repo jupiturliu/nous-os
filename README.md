@@ -87,6 +87,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [docs/demo-blueprint.md](./docs/demo-blueprint.md) — Runnable demo design
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
 - [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md) — Domain evaluator contract for CLS v2
+- [docs/cross-repo-release-gate.md](./docs/cross-repo-release-gate.md) — Read-only release readiness gate across NOUS OS repos
 
 ---
 

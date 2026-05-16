@@ -63,6 +63,19 @@ http://127.0.0.1:8765/demo/heartbeat-dashboard.html
 
 定义见 [benchmark-spec.md](./benchmark-spec.md)。
 
+## Public Release Smoke
+
+This command set checks the public demo path and the read-only cross-repo release gate:
+
+```bash
+python3 examples/nousos_demo.py
+python3 scripts/run_nous_heartbeat.py
+python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
+python3 -m unittest discover -s tests -v
+```
+
+`examples/nousos_demo.py` and the unit tests run inside this repository. `run_nous_heartbeat.py` and `check_cross_repo_release_gate.py` expect the full workspace with sibling `synapse`, `trustmem`, `hermes-agent`, and `trading-agent` repos.
+
 ## 隔离运行态
 
 为了不碰现有线上队列，demo 使用：

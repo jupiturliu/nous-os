@@ -210,13 +210,24 @@ class SiteContractTests(unittest.TestCase):
         phase3 = (ROOT / "NOUS-OS-PHASE3.md").read_text()
         roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
+        release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
+        self.assertTrue(release_gate.exists())
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/domain-evaluator-interface.md", readme)
+        self.assertIn("docs/cross-repo-release-gate.md", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", phase3)
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
+
+    def test_public_release_smoke_docs_reference_release_gate(self) -> None:
+        getting_started = (ROOT / "docs" / "getting-started.md").read_text()
+        heartbeat = (ROOT / "docs" / "heartbeat-demo.md").read_text()
+
+        for text in (getting_started, heartbeat):
+            self.assertIn("Public Release Smoke", text)
+            self.assertIn("scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json", text)
 
     def test_dashboard_snapshot_contains_cls_v2_components(self) -> None:
         snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())

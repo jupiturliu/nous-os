@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Read-only cross-repo release gate for NOUS OS."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+
+REPOS = {
+    "nous-os": {
+        "docs": ["README.md", "NOUS-OS-PHASE3.md", "docs"],
+        "tests": ["python3", "-m", "unittest", "discover", "-s", "tests", "-v"],
+    },
+    "trustmem": {
+        "docs": ["README.md", "docs"],
+        "tests": ["python3", "tools/knowledge_search.py", "agent", "--top", "1"],
+    },
+    "synapse": {
+        "docs": ["README.md", "ARCHITECTURE.md", "docs"],
+        "tests": ["python3", "synapse.py", "test"],
+    },
+    "hermes-agent": {
+        "docs": ["README.md", "docs"],
+        "tests": ["python3", "-m", "pytest", "tests", "-q"],
+    },
+    "trading-agent": {
+        "docs": ["README.md", "docs/harness"],
+        "tests": ["venv/bin/python3", "-m", "pytest", "tests/test_documentation_contract.py", "-q", "--tb=short"],
+    },
+}
+
+PRIVATE_PATH_RE = re.compile(r"/(?:Users|home)/[A-Za-z0-9._-]+(?:/[^\s`'\"),]+)*")
+SECRET_RE = re.compile(
+    r"(?i)\b(?:api[_-]?key|secret|token|password)\b\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{16,}"
+)
+ALLOWLISTED_PRIVATE_PATHS = {
+    "/Users/liyao/nousos",
+    "/Users/liyao/Documents/nousos",
+    "/home/fei/.openclaw/workspace",
+}
+
+
+def run_command(cmd: list[str], cwd: Path, timeout: int = 60) -> dict[str, Any]:
+    try:
+        result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+    except FileNotFoundError as exc:
+        return {"ok": False, "returncode": 127, "stderr": str(exc), "stdout": ""}
+    except subprocess.TimeoutExpired as exc:
+        return {"ok": False, "returncode": 124, "stderr": f"timeout after {exc.timeout}s", "stdout": exc.stdout or ""}
+    return {
+        "ok": result.returncode == 0,
+        "returncode": result.returncode,
+        "stdout": result.stdout[-4000:],
+        "stderr": result.stderr[-4000:],
+    }
+
+
+def git_status(repo_path: Path) -> tuple[bool, list[str], list[str]]:
+    result = run_command(["git", "status", "--short"], cwd=repo_path)
+    if not result["ok"]:
+        return True, [], [f"git status failed: {result['stderr'] or result['stdout']}"]
+    lines = [line for line in result["stdout"].splitlines() if line.strip()]
+    return bool(lines), lines, []
+
+
+def iter_doc_files(repo_path: Path, doc_entries: list[str]) -> list[Path]:
+    files: list[Path] = []
+    for entry in doc_entries:
+        path = repo_path / entry
+        if path.is_file() and path.suffix.lower() in {".md", ".txt", ".rst"}:
+            files.append(path)
+        elif path.is_dir():
+            files.extend(sorted(path.rglob("*.md")))
+    return files
+
+
+def is_allowed_private_path(match: str) -> bool:
+    return any(match.startswith(prefix) for prefix in ALLOWLISTED_PRIVATE_PATHS)
+
+
+def scan_docs(repo_path: Path, doc_entries: list[str]) -> list[str]:
+    issues: list[str] = []
+    for path in iter_doc_files(repo_path, doc_entries):
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError as exc:
+            issues.append(f"{path.relative_to(repo_path)}: read failed: {exc}")
+            continue
+        for lineno, line in enumerate(lines, start=1):
+            for match in PRIVATE_PATH_RE.findall(line):
+                if not is_allowed_private_path(match):
+                    issues.append(f"{path.relative_to(repo_path)}:{lineno}: private absolute path")
+            if SECRET_RE.search(line):
+                issues.append(f"{path.relative_to(repo_path)}:{lineno}: secret-like token")
+    return issues
+
+
+def check_repo(workspace: Path, name: str, config: dict[str, Any], run_tests: bool) -> dict[str, Any]:
+    repo_path = workspace / name
+    report: dict[str, Any] = {
+        "exists": repo_path.exists(),
+        "dirty": False,
+        "dirty_entries": [],
+        "issues": [],
+    }
+    if not repo_path.exists():
+        report["issues"].append("repository missing")
+        return report
+    if not (repo_path / ".git").exists():
+        report["issues"].append("not a git repository")
+        return report
+
+    dirty, entries, status_issues = git_status(repo_path)
+    report["dirty"] = dirty
+    report["dirty_entries"] = entries[:50]
+    report["issues"].extend(status_issues)
+    report["issues"].extend(scan_docs(repo_path, config.get("docs", [])))
+
+    if run_tests:
+        test_result = run_command(config["tests"], cwd=repo_path, timeout=300)
+        report["test"] = test_result
+        if not test_result["ok"]:
+            report["issues"].append("test command failed")
+
+    return report
+
+
+def build_report(workspace: Path, run_tests: bool = False) -> dict[str, Any]:
+    repos = {
+        name: check_repo(workspace, name, config, run_tests=run_tests)
+        for name, config in REPOS.items()
+    }
+    ok = all(repo["exists"] and not repo["dirty"] and not repo["issues"] for repo in repos.values())
+    return {"ok": ok, "workspace": str(workspace), "run_tests": run_tests, "repos": repos}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--workspace", default=str(Path(__file__).resolve().parents[2]))
+    parser.add_argument("--run-tests", action="store_true")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(argv)
+
+    report = build_report(Path(args.workspace).resolve(), run_tests=args.run_tests)
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print("ok" if report["ok"] else "not ready")
+        for name, repo in report["repos"].items():
+            print(f"{name}: exists={repo['exists']} dirty={repo['dirty']} issues={len(repo['issues'])}")
+    return 0 if report["ok"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

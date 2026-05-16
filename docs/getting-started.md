@@ -110,6 +110,26 @@ See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full three-layer design and in
 
 ---
 
+## Public Release Smoke
+
+These commands require only this `nous-os` repository:
+
+```bash
+python3 examples/nousos_demo.py
+python3 -m unittest discover -s tests -v
+```
+
+These commands require the full `/Users/liyao/nousos` workspace with sibling repos:
+
+```bash
+python3 scripts/run_nous_heartbeat.py
+python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
+```
+
+The cross-repo release gate is read-only. It reports repo existence, dirty state, and conservative doc scan findings; it does not mutate runtime state.
+
+---
+
 ## How the Flywheel Self-Improves
 
 | Run | Memory State | Quality | Time |
