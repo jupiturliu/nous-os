@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+echo "Running NOUS OS pre-commit checks..."
+
+git diff --check
+python3 -m unittest discover -s tests -v
+
+echo "NOUS OS pre-commit checks passed."
