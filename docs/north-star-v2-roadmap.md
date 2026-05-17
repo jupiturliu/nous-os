@@ -46,7 +46,7 @@ In flight or owner-team work:
 
 - `trading-agent`-side ReviewedExperiment ledger population (criterion 1).
 - `trading-agent`-side capital-boundary documentation tested end-to-end (criterion 6 deeper).
-- Live `dirty=False` for `trading-agent` (currently 10 owner-team WIP entries).
+- Live `dirty=False` for `trading-agent` once owner-team WIP entries are committed or intentionally accepted.
 
 See [second-vertical-entry-criteria.md](./second-vertical-entry-criteria.md) for the live gate; criteria 2, 3, 4, 5 are advanced by the work above.
 

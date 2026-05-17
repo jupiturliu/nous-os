@@ -33,17 +33,19 @@ Mode → boundary catalog mapping confirmed by runtime probe:
 
 ## What to pick up next
 
-### 1. Phase 3 visibility audit (small, do first)
+### 1. Phase 3 visibility audit (closed)
 
 **Decided by human 2026-05-16:** the panel-level `first_vertical.not_for` line is sufficient — no headline-level disclaimer required.
 
-Remaining check (visual only, no code change unless something is actually wrong): open the dashboard in a browser, click the **Trading Agent Research Proof** chip, confirm the `first_vertical` panel renders with the existing "not to recommend trades, not student investing advice, and not a commercialization endpoint" line. If it renders, Phase 3 is closed.
+Verified 2026-05-16 with Playwright against local static serving: after clicking the **Trading Agent Research Proof** chip, the active mode updates and the `first_vertical` panel renders the existing "not to recommend trades, not student investing advice, and not a commercialization endpoint" line. Phase 3 is closed.
 
-### 2. Phase 4 Student Agent Sandbox v0
+### 2. Phase 4 Student Agent Sandbox v0 (closed)
 
 **Decided by human 2026-05-16:** first scenario = the plan's default ("a high-school student wants help planning a research project without losing their own thinking").
 
-Plan section "Phase 4" (lines 189-215). Constraints, in order:
+Implemented as `examples/student_sandbox_v0.py`, with contract coverage in `tests/test_nous_os.py` and a machine-readable surface entry in `docs/harness/HARNESS_INVENTORY.json`. It remains local-only, does not call external models, redacts private details before record emission, and writes the compatible research record shape.
+
+Closed constraints:
 - local-only, no external student data collection;
 - AI asks clarifying questions before answering;
 - AI gives hints + practice instead of final answers when learning boundary is active;
@@ -52,17 +54,19 @@ Plan section "Phase 4" (lines 189-215). Constraints, in order:
 - AI ends every session with a reflection prompt;
 - produces a research record (reuse `build_research_record()` plumbing — do not invent a parallel schema).
 
-Suggested file: `examples/student_sandbox_v0.py` + accompanying contract test in `tests/test_nous_os.py`. Do **not** add a network endpoint yet.
+No network endpoint was added.
 
-### 3. Phase 5 review protocol scaffolding
+### 3. Phase 5 review protocol scaffolding (scaffold closed; external review remains)
 
 **Decided by human 2026-05-16:** review entries go directly under `/Users/liyao/Documents/nousos/NousOS/04 Reviews/` — no per-audience subfolders.
 
-Plan section "Phase 5" (lines 217-239). Two pieces:
-- repo: a review template at `docs/review-template.md` capturing audience type, viewer confusion, boundary clarity, next-run change;
-- Obsidian: a first review entry under `/Users/liyao/Documents/nousos/NousOS/04 Reviews/` after the next demo viewing.
+Plan section "Phase 5" (lines 217-239). Completed pieces:
+- repo: `docs/review-template.md` captures audience type, viewer confusion, boundary clarity, and next-run change;
+- Obsidian: `/Users/liyao/Documents/nousos/NousOS/04 Reviews/NOUS OS Review Log.md` contains the internal Claude/Codex pickup review plus the 2026-05-16 Playwright visibility audit evidence.
 
 Research records under `examples/runtime/research-records/` already exist — Phase 5 is the human-readable side, not a duplicate of the machine artifact.
+
+Remaining Phase 5 work: run the demo with an actual student, parent, teacher, or researcher and record what they cannot explain without coaching.
 
 ## Hard boundaries (do not violate)
 
