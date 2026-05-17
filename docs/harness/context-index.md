@@ -18,6 +18,7 @@ Use this index before starting NOUS OS work.
 | Harness inventory | `docs/harness/HARNESS_INVENTORY.json`, `python3 scripts/check_harness_inventory.py --json` |
 | Benchmark contract | `docs/benchmark-spec.md` |
 | Domain evaluator contract | `docs/domain-evaluator-interface.md` |
+| Trading evaluator | `examples/runtime/trading_evaluator.py`, `tests/test_trading_evaluator.py` |
 | Cross-repo release readiness | `docs/cross-repo-release-gate.md`, `scripts/check_cross_repo_release_gate.py` |
 | Unit/site contract tests | `python3 -m unittest discover -s tests -v` |
 

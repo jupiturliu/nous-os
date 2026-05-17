@@ -17,6 +17,12 @@ Second vertical work remains deferred until all criteria below are met.
 5. Public demo can be reproduced from README / getting-started commands.
 6. Human authority boundary is tested or documented for the first vertical.
 
+## Current Progress
+
+- `examples/runtime/trading_evaluator.py` is the first read-only adapter from trading-agent proof artifacts to CLS v2 components.
+- Slice 1 covers boundary integrity, human agency preservation, explicit pending markers for unimplemented signals, and read-only file access tests.
+- This advances criteria 2, 3, and 6, but does not yet satisfy the second-vertical entry gate because outcome and repeatability mappings are still pending.
+
 ## Allowed Before Entry
 
 - Document second-vertical ideas as deferred candidates.

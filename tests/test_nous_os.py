@@ -252,6 +252,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertEqual(inventory["project"], "nous-os")
         surface_ids = {surface["id"] for surface in inventory["surfaces"]}
         self.assertIn("student_sandbox_v0", surface_ids)
+        self.assertIn("trading_evaluator", surface_ids)
         self.assertIn("latest_research_record", surface_ids)
         self.assertIn("cross_repo_release_gate", surface_ids)
         self.assertIn("github_pages_workflow", surface_ids)

@@ -45,6 +45,14 @@
       "verification": "python3 scripts/run_nous_heartbeat.py"
     },
     {
+      "id": "trading_evaluator",
+      "path": "examples/runtime/trading_evaluator.py",
+      "kind": "domain_evaluator",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
       "id": "student_sandbox_v0",
       "path": "examples/student_sandbox_v0.py",
       "kind": "local_sandbox",

@@ -35,6 +35,7 @@ Forbidden by default:
 | Context index | `docs/harness/context-index.md` | What agents should read before NOUS OS work |
 | North Star roadmap | `docs/north-star-v2-roadmap.md` | Product direction and explicit deferrals |
 | Domain evaluator interface | `docs/domain-evaluator-interface.md` | CLS v2 evaluator contract |
+| Trading evaluator | `examples/runtime/trading_evaluator.py` | Read-only first vertical adapter from trading-agent proof artifacts to CLS v2 components |
 | Cross-repo release gate | `docs/cross-repo-release-gate.md` | Read-only readiness check across NOUS OS repos |
 | Public release smoke docs | `docs/getting-started.md`, `docs/heartbeat-demo.md` | Demo/release verification path |
 | Handoffs | `docs/harness/handoffs/` | Cross-agent pickup notes (Claude ↔ Codex) |

@@ -56,6 +56,7 @@ def validate_inventory(inventory_path: Path = DEFAULT_INVENTORY) -> dict:
         "next_development_plan",
         "heartbeat_demo_dashboard",
         "heartbeat_runtime",
+        "trading_evaluator",
         "student_sandbox_v0",
         "latest_research_record",
         "review_template",
