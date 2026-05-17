@@ -116,6 +116,16 @@ nous-os/demo/student-sandbox-v1.html
 
 Open it directly in a browser (double-click, or `open demo/student-sandbox-v1.html`). It renders the 6 phases, source checklist, reflection card, and parent/teacher observation prompts as a single self-contained page. Nothing typed in the page is uploaded, saved to disk, or persisted across reloads — closing the tab discards everything.
 
+### Student / parent why-and-how page
+
+For students and parents who want context before opening the sandbox, the matching guide page is:
+
+```text
+nous-os/demo/student-sandbox-v1-guide.html
+```
+
+It explains why the sandbox exists, the five promises it keeps, what a session looks like for a student, a parent, and a teacher, and a step-by-step run-through. The sandbox page links to it from the top bar (`why & how`).
+
 ### Optional — regenerate the JSON artifact for research archival
 
 If you also want a research-side record of the loop schedule:

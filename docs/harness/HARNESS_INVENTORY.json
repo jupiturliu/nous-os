@@ -117,6 +117,22 @@
       "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_web_renders_phases_checklist_and_reflection -v"
     },
     {
+      "id": "student_sandbox_v1_guide",
+      "path": "demo/student-sandbox-v1-guide.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_guide_explains_why_and_how -v"
+    },
+    {
+      "id": "student_sandbox_v1_recruitment",
+      "path": "docs/student-sandbox-v1-recruitment.md",
+      "kind": "recruitment_template",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_recruitment_keeps_promises_honest -v"
+    },
+    {
       "id": "latest_research_record",
       "path": "examples/runtime/research-records/latest.json",
       "kind": "research_artifact",

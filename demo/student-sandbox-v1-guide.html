@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS — Why & How · Student Sandbox v1</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="description" content="Why the Student Sandbox v1 exists, and how a high-school student or parent uses it in 20 minutes. Hints, not answers.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #eef5f2;
+    --ink: #162018;
+    --muted: #5b645d;
+    --line: rgba(24, 49, 43, 0.13);
+    --panel: rgba(255, 255, 255, 0.88);
+    --panel-strong: rgba(255, 255, 255, 0.98);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.12);
+    --teal-glow: rgba(15, 118, 110, 0.22);
+    --gold: #b7791f;
+    --gold-soft: rgba(183, 121, 31, 0.14);
+    --red: #b42318;
+    --red-soft: rgba(180, 35, 24, 0.11);
+    --navy: #21406b;
+    --navy-soft: rgba(33, 64, 107, 0.10);
+    --shadow: 0 28px 80px rgba(24, 49, 43, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 24%),
+      radial-gradient(circle at 18% 14%, rgba(33, 64, 107, 0.12), transparent 22%),
+      radial-gradient(circle at left 62%, rgba(183, 121, 31, 0.07), transparent 26%),
+      linear-gradient(180deg, #f8fbf8 0%, var(--bg) 100%);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(15, 118, 110, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 118, 110, 0.025) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+  }
+
+  .shell {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 36px 22px 80px;
+    position: relative;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .topbar a {
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(15,118,110,0.35);
+  }
+  .topbar a:hover { color: var(--ink); }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 4px var(--teal-soft);
+  }
+
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(32px, 4vw, 50px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+  .headline-gradient {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--teal) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .lede {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 42rem;
+  }
+
+  h2 {
+    margin: 44px 0 14px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h2::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 22px;
+    background: linear-gradient(180deg, var(--teal), var(--gold));
+    border-radius: 999px;
+    vertical-align: middle;
+    margin-right: 12px;
+    transform: translateY(-2px);
+  }
+
+  p { margin: 0 0 14px; font-size: 15.5px; color: var(--ink); }
+  p.muted { color: var(--muted); font-size: 14.5px; }
+
+  .promise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin: 8px 0 8px;
+  }
+  .promise {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .promise .promise-id {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .promise .promise-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .promise .promise-body {
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  .audience {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px 24px;
+    margin: 12px 0;
+    box-shadow: var(--shadow);
+  }
+  .audience h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+  .audience p { margin-bottom: 0; }
+
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 14px 16px 14px 56px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+    position: relative;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    width: 28px; height: 28px;
+    border-radius: 9px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .steps li strong { color: var(--ink); }
+
+  .privacy-callout {
+    margin: 14px 0;
+    padding: 18px 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(15,118,110,0.22);
+    background: linear-gradient(135deg, rgba(15,118,110,0.08), rgba(183,121,31,0.05));
+    box-shadow: var(--shadow);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .privacy-callout strong { color: var(--teal); }
+
+  .not-doing {
+    background: rgba(180, 35, 24, 0.04);
+    border: 1px solid rgba(180, 35, 24, 0.18);
+    border-radius: 18px;
+    padding: 18px 22px;
+    margin: 14px 0;
+  }
+  .not-doing h3 {
+    margin: 0 0 8px;
+    color: var(--red);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .not-doing ul {
+    margin: 4px 0 0;
+    padding-left: 20px;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .not-doing ul li { margin-bottom: 4px; }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 30px 0 12px;
+  }
+  .btn-primary, .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), #117e76);
+    color: #fff;
+    border: 1px solid rgba(15,118,110,0.35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(15,118,110,0.22);
+  }
+  .btn-ghost {
+    background: var(--panel-strong);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-ghost:hover { border-color: rgba(15,118,110,0.32); }
+
+  footer.foot {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer.foot a {
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(15,118,110,0.35);
+  }
+
+  @media (max-width: 640px) {
+    .shell { padding: 26px 16px 60px; }
+    h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <div class="topbar">
+    <span>NOUS OS · Student Sandbox v1 · Why &amp; How</span>
+    <a href="student-sandbox-v1.html">open the sandbox →</a>
+  </div>
+
+  <span class="eyebrow"><span class="dot"></span> for students and parents</span>
+  <h1 class="headline-gradient">Why this exists, and how to use it.</h1>
+  <p class="lede">
+    AI can write a student's homework. That's exactly the problem. We built
+    this sandbox so a high-school student can use AI for 20 minutes, learn
+    something real, and still be the one who chose what they learned, what
+    they verified, and what they're willing to defend.
+  </p>
+
+  <h2>Why we made this</h2>
+  <p>
+    There are already a thousand tools that let a student type a question and
+    get an answer back. That's the wrong thing to optimize. When AI writes
+    the final answer, the student loses the part that matters: framing the
+    question, judging the sources, choosing what they actually believe.
+  </p>
+  <p>
+    The Student Sandbox v1 is the opposite shape. It paces a student through
+    a 20-minute research loop where AI is allowed to help — but only with
+    hints, plans, and source critiques. The student never receives a final
+    answer from this page. The page deliberately refuses to be the homework.
+  </p>
+  <p class="muted">
+    This is a research-first scaffold, not a product. It's free, local-only,
+    and there is no account, no upload, and no comparison or grading. It
+    exists so we can watch what actually helps a real student think better
+    with AI — not what looks good in a demo.
+  </p>
+
+  <h2>The five promises this page keeps</h2>
+  <div class="promise-grid">
+    <div class="promise">
+      <div class="promise-id">1 · hints, not answers</div>
+      <div class="promise-title">AI helps the loop, not the answer.</div>
+      <div class="promise-body">No final paragraph, no graded essay, no copy-paste output. The student writes the conclusion themselves.</div>
+    </div>
+    <div class="promise">
+      <div class="promise-id">2 · human keeps responsibility</div>
+      <div class="promise-title">The student keeps the judgment.</div>
+      <div class="promise-body">Goal, boundary, source acceptance, and the final claim are explicitly the student's, not the AI's.</div>
+    </div>
+    <div class="promise">
+      <div class="promise-id">3 · privacy by default</div>
+      <div class="promise-title">Nothing leaves your browser.</div>
+      <div class="promise-body">No login, no upload, no account. Closing the tab discards everything you typed.</div>
+    </div>
+    <div class="promise">
+      <div class="promise-id">4 · no external models</div>
+      <div class="promise-title">This page does not call an AI.</div>
+      <div class="promise-body">It's a structured loop you run alongside whatever AI you already use. The page never sends your input anywhere.</div>
+    </div>
+    <div class="promise">
+      <div class="promise-id">5 · fits in 20 minutes</div>
+      <div class="promise-title">Short enough to actually do.</div>
+      <div class="promise-body">Six phases, 20 minutes total. Designed for one homework session, not a curriculum.</div>
+    </div>
+  </div>
+
+  <h2>What it looks like for…</h2>
+
+  <div class="audience">
+    <h3>…a high-school student</h3>
+    <p>
+      You open the sandbox page and press <strong>Start 20-min session</strong>.
+      The page walks you through six phases: write your question, ask AI for a
+      plan (not an answer), set one boundary, check two sources, ask AI to
+      revise, then reflect. You fill in four short reflection prompts at the
+      end — these stay only in your browser tab.
+    </p>
+  </div>
+
+  <div class="audience">
+    <h3>…a parent</h3>
+    <p>
+      You sit nearby for one session. You're not grading; you're watching how
+      your kid uses AI. The page surfaces a privacy banner up top, a list of
+      observation prompts at the bottom, and a clear "no final answer is
+      produced for you" line. If your kid finishes and can tell you what AI
+      helped with, what they verified, and what they're still on the hook for,
+      the session worked.
+    </p>
+  </div>
+
+  <div class="audience">
+    <h3>…a teacher</h3>
+    <p>
+      Use it as a 20-minute classroom scaffold before a real research
+      assignment. The reflection card answers ("What did AI help with? What
+      did I verify? What remains my responsibility?") are exactly the moves
+      you want a student to practice before they touch the actual rubric.
+    </p>
+  </div>
+
+  <h2>How to run a session, step by step</h2>
+  <ol class="steps">
+    <li><strong>Pick the topic.</strong> Use the topic area ("CRISPR ethics for biology class"), not identifying details ("Mrs. Smith's class at Lincoln HS"). Avoid full names, school names, emails, family details, and account info.</li>
+    <li><strong>Open the sandbox.</strong> Press <strong>Start 20-min session</strong> in the timer bar. The clock starts and the current phase highlights automatically.</li>
+    <li><strong>Phase 1–2 (7 min).</strong> Frame your question. Ask your AI of choice for a learning <em>plan</em> — not an answer paragraph. Copy the plan into your own notes.</li>
+    <li><strong>Phase 3 (3 min).</strong> Set one boundary you want to keep. Examples: "don't choose my opinion," "don't write the conclusion," "don't use sources older than 2020."</li>
+    <li><strong>Phase 4 (4 min).</strong> Pick two sources. Run them through the source checklist on the page. Reject what doesn't survive it.</li>
+    <li><strong>Phase 5 (3 min).</strong> Ask AI to revise the plan using your boundary and source notes. Notice what it changed.</li>
+    <li><strong>Phase 6 (3 min).</strong> Answer the four reflection prompts on the page. Copy your answers somewhere you keep notes — the page intentionally discards them when you close the tab.</li>
+  </ol>
+
+  <h2>About privacy — be specific</h2>
+  <div class="privacy-callout">
+    <p><strong>What the page enforces:</strong> if you type an email, phone number, or SSN-style pattern into the research record artifact, the software detects it and replaces the field with <code>[redacted-by-policy]</code>. The page itself never uploads or saves anything you type — closing the tab discards it.</p>
+    <p style="margin-bottom:0"><strong>What the page <em>cannot</em> enforce:</strong> full names, school names, family details. The software can't reliably catch these. So please don't type them in the first place. Topic area, not identifying context.</p>
+  </div>
+
+  <div class="not-doing">
+    <h3>What this page deliberately does not do</h3>
+    <ul>
+      <li>No login, no account, no profile.</li>
+      <li>No grading, scoring, ranking, or comparison to other students.</li>
+      <li>No record of your session is saved by us — ever.</li>
+      <li>No "the AI did this for you" final-answer button.</li>
+      <li>No marketing, no waitlist, no upsell on this page.</li>
+    </ul>
+  </div>
+
+  <h2>If something feels wrong</h2>
+  <p>
+    Close the tab. That's the safe action — closing discards everything you
+    typed and nothing is left behind. This isn't a product you have to
+    finish; it's a scaffold you can leave at any time without consequences.
+  </p>
+
+  <div class="cta-row">
+    <a class="btn-primary" href="student-sandbox-v1.html">Open the 20-minute sandbox →</a>
+    <a class="btn-ghost" href="../index.html">Back to NOUS OS</a>
+  </div>
+
+  <footer class="foot">
+    <div>NOUS OS · Student Sandbox v1 · local-only · hints_not_answers</div>
+    <div><a href="student-sandbox-v1.html">sandbox</a> · <a href="../index.html">home</a></div>
+  </footer>
+
+</main>
+</body>
+</html>

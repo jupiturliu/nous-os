@@ -402,6 +402,72 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("hints_not_answers", html, "web page must surface AI support policy explicitly")
         self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
 
+    def test_student_sandbox_v1_guide_explains_why_and_how(self) -> None:
+        """The student/parent guide must keep its core invariants visible."""
+
+        guide_path = ROOT / "demo" / "student-sandbox-v1-guide.html"
+        self.assertTrue(guide_path.exists(), "demo/student-sandbox-v1-guide.html must exist as the why-and-how surface")
+        html = guide_path.read_text()
+        lower = html.lower()
+
+        for must_contain in (
+            "why we made this",
+            "how to run a session",
+            "hints, not answers",
+            "no login",
+            "20 minutes",
+            "boundary",
+            "reflection",
+        ):
+            self.assertIn(must_contain.lower(), lower, f"guide must contain {must_contain!r}")
+
+        self.assertIn('href="student-sandbox-v1.html"', html, "guide must link back to the sandbox page")
+        self.assertIn("redacted-by-policy", html, "guide must explain the privacy-redaction contract")
+        self.assertNotIn("final answer is produced", html.lower())
+        for forbidden in ("login required", "create account", "sign in", "upload your"):
+            self.assertNotIn(forbidden, lower, f"guide must not promise {forbidden!r}")
+
+    def test_student_sandbox_v1_recruitment_keeps_promises_honest(self) -> None:
+        """Recruitment templates must not promise features the page does not deliver.
+
+        The 'forbidden' scan is restricted to the blockquoted message bodies — the part
+        operators actually copy and send — so the meta 'what not to promise' section
+        can name red-flag phrases without tripping the test on itself.
+        """
+
+        recruitment_path = ROOT / "docs" / "student-sandbox-v1-recruitment.md"
+        self.assertTrue(recruitment_path.exists(), "recruitment template must exist")
+        body = recruitment_path.read_text()
+        full_lower = body.lower()
+
+        for must_contain in (
+            "20 分钟",
+            "20-minute",
+            "for a parent",
+            "for a teacher",
+            "what not to promise",
+            "<url>",
+        ):
+            self.assertIn(must_contain.lower(), full_lower, f"recruitment must contain {must_contain!r}")
+
+        # Only the lines that operators actually paste are the contract surface.
+        message_lines = [line[2:] for line in body.splitlines() if line.startswith("> ")]
+        self.assertTrue(message_lines, "recruitment must include at least one blockquoted message body")
+        message_text = "\n".join(message_lines).lower()
+
+        for forbidden in (
+            "personalized ai tutor",
+            "ai writes",
+            "saves your progress",
+            "free trial",
+            "sign up",
+            "create an account",
+            "we'll grade",
+            "score your",
+            "leaderboard",
+        ):
+            self.assertNotIn(forbidden, message_text, f"recruitment message must not promise {forbidden!r}")
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:

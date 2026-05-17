@@ -132,7 +132,7 @@ def build_source_checklist() -> List[str]:
         "Author or institution is identifiable.",
         "Date is current enough for the topic.",
         "Evidence is separated from opinion.",
-        "Student writes what would change their mind.",
+        "Write what would change your mind.",
     ]
 
 

@@ -425,11 +425,168 @@
     border-radius: 999px;
   }
 
+  /* Phase title + secondary id */
+  .phase-title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .phase-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+    background: var(--teal-soft);
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .phase-label {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .phase-id-sub {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    margin-left: 34px;
+    letter-spacing: 0.02em;
+  }
+  .phase-card.active .phase-num {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  /* Boundary definition tip on phase 3 */
+  .boundary-tip {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--gold-soft);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.5;
+    border-left: 3px solid var(--gold);
+  }
+  .boundary-tip strong { color: var(--gold); }
+
+  /* Plain-English policy phrasing + secondary monospace token */
+  .hints-policy-chip {
+    margin-left: 10px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    cursor: help;
+  }
+
+  /* Privacy reminder beside reflection */
+  .reflection-privacy-note {
+    margin: 6px 0 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(15,118,110,0.32);
+    background: rgba(15,118,110,0.04);
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .reflection-privacy-note strong { color: var(--teal); }
+
+  /* 20-minute timer + segmented progress strip */
+  .timer-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 14px 0 18px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    flex-wrap: wrap;
+  }
+  .timer-bar .timer-display {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    min-width: 100px;
+  }
+  .timer-bar .timer-display .of {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .start-btn {
+    border: 1px solid rgba(15,118,110,0.35);
+    background: linear-gradient(135deg, var(--teal), #117e76);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  }
+  .start-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(15,118,110,0.20);
+  }
+  .start-btn[data-state="running"] {
+    background: linear-gradient(135deg, var(--red), #a01b10);
+    border-color: rgba(180,35,24,0.35);
+  }
+  .start-btn[data-state="done"] {
+    background: var(--panel-strong);
+    color: var(--muted);
+    cursor: default;
+    border-color: var(--line);
+  }
+  .progress-strip {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(15,118,110,0.06);
+    border: 1px solid var(--line);
+  }
+  .progress-segment {
+    flex-grow: var(--seg-weight, 1);
+    position: relative;
+    border-right: 1px solid rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+  .progress-segment:last-child { border-right: none; }
+  .progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--teal-glow));
+    transition: width 0.35s linear;
+  }
+
   @media (max-width: 640px) {
     .shell { padding: 24px 16px 60px; }
     h1 { font-size: 30px; }
     .phase-row { grid-template-columns: 1fr; }
     .phase-row dt { padding-top: 0; }
+    .phase-id-sub { margin-left: 0; }
+    .timer-bar .timer-display { min-width: auto; }
   }
 </style>
 </head>
@@ -438,7 +595,7 @@
 
   <div class="topbar">
     <span>NOUS OS · Student Sandbox v1 · local-only</span>
-    <a href="../index.html">← back to NOUS OS</a>
+    <span><a href="student-sandbox-v1-guide.html">why &amp; how</a> &nbsp;·&nbsp; <a href="../index.html">← back to NOUS OS</a></span>
   </div>
 
   <span class="eyebrow"><span class="dot"></span> 20-minute AI-assisted research loop</span>
@@ -447,7 +604,8 @@
     Use AI like a tutor, not a ghostwriter. In 20 minutes you frame a research
     question, set one human boundary, check two sources, revise with AI, and
     end with a reflection that names what AI helped with, what you verified,
-    and what remains yours. Click a phase to focus on it.
+    and what remains yours. Press <strong>Start</strong> to pace yourself with
+    the 20-minute clock, or click a phase to browse.
   </p>
 
   <div class="privacy-banner">
@@ -464,14 +622,32 @@
   </div>
 
   <section>
-    <div class="section-label">20-minute loop · 6 phases · click to focus</div>
+    <div class="section-label">20-minute loop · 6 phases</div>
+
+    <div class="timer-bar" role="group" aria-label="Session timer">
+      <button class="start-btn" id="start-btn" type="button" data-state="idle">Start 20-min session</button>
+      <div class="progress-strip" id="progress-strip" aria-hidden="true">
+        <div class="progress-segment" data-idx="0" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="1" style="--seg-weight:4"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="2" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="3" style="--seg-weight:4"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="4" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="5" style="--seg-weight:3"><div class="progress-fill"></div></div>
+      </div>
+      <div class="timer-display"><span id="time-elapsed">0:00</span> <span class="of">/ 20:00</span></div>
+    </div>
+
     <div class="phase-grid" id="phase-grid">
 
       <article class="phase-card" data-phase="intent">
         <div class="phase-head">
-          <span class="phase-id">1 · intent</span>
+          <div class="phase-title">
+            <span class="phase-num">1</span>
+            <span class="phase-label">Frame your question</span>
+          </div>
           <span class="phase-min">3 min</span>
         </div>
+        <span class="phase-id-sub">phase id: intent</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Write the research question in your own words and name what you already believe.</dd>
           <dt>AI helps</dt><dd>Suggest clearer subquestions without choosing the thesis.</dd>
@@ -482,9 +658,13 @@
 
       <article class="phase-card" data-phase="ai_first_pass">
         <div class="phase-head">
-          <span class="phase-id">2 · ai_first_pass</span>
+          <div class="phase-title">
+            <span class="phase-num">2</span>
+            <span class="phase-label">Ask AI for a plan</span>
+          </div>
           <span class="phase-min">4 min</span>
         </div>
+        <span class="phase-id-sub">phase id: ai_first_pass</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Ask for a learning plan, not an answer paragraph.</dd>
           <dt>AI helps</dt><dd>Offer concepts, vocabulary, possible source types, and common traps.</dd>
@@ -495,22 +675,31 @@
 
       <article class="phase-card" data-phase="human_boundary">
         <div class="phase-head">
-          <span class="phase-id">3 · human_boundary</span>
+          <div class="phase-title">
+            <span class="phase-num">3</span>
+            <span class="phase-label">Set your boundary</span>
+          </div>
           <span class="phase-min">3 min</span>
         </div>
+        <span class="phase-id-sub">phase id: human_boundary</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Choose one boundary: privacy, facts, learning, decision, or values.</dd>
           <dt>AI helps</dt><dd>Restate the boundary and adapt the plan around it.</dd>
           <dt>You keep</dt><dd>values, privacy choices, and assignment constraints</dd>
           <dt>Output</dt><dd>boundary card</dd>
         </dl>
+        <div class="boundary-tip"><strong>What's a boundary?</strong> Something you decide AI is <em>not</em> allowed to do for you in this session — like <em>"don't choose my opinion,"</em> <em>"don't write the conclusion,"</em> or <em>"don't use any source older than 2020."</em></div>
       </article>
 
       <article class="phase-card" data-phase="source_check">
         <div class="phase-head">
-          <span class="phase-id">4 · source_check</span>
+          <div class="phase-title">
+            <span class="phase-num">4</span>
+            <span class="phase-label">Check your sources</span>
+          </div>
           <span class="phase-min">4 min</span>
         </div>
+        <span class="phase-id-sub">phase id: source_check</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Check at least two reviewable sources for author, date, evidence, and uncertainty.</dd>
           <dt>AI helps</dt><dd>Provide a checklist and critique weak evidence.</dd>
@@ -521,9 +710,13 @@
 
       <article class="phase-card" data-phase="ai_second_pass">
         <div class="phase-head">
-          <span class="phase-id">5 · ai_second_pass</span>
+          <div class="phase-title">
+            <span class="phase-num">5</span>
+            <span class="phase-label">Revise with AI</span>
+          </div>
           <span class="phase-min">3 min</span>
         </div>
+        <span class="phase-id-sub">phase id: ai_second_pass</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Ask AI to revise the research plan using the chosen boundary and source notes.</dd>
           <dt>AI helps</dt><dd>Improve next steps, practice questions, and uncertainty notes.</dd>
@@ -534,9 +727,13 @@
 
       <article class="phase-card" data-phase="reflection">
         <div class="phase-head">
-          <span class="phase-id">6 · reflection</span>
+          <div class="phase-title">
+            <span class="phase-num">6</span>
+            <span class="phase-label">Reflect</span>
+          </div>
           <span class="phase-min">3 min</span>
         </div>
+        <span class="phase-id-sub">phase id: reflection</span>
         <dl class="phase-row">
           <dt>You do</dt><dd>Answer the reflection card below before writing any final assignment text.</dd>
           <dt>AI helps</dt><dd>Help compare first-pass vs second-pass behavior.</dd>
@@ -548,9 +745,8 @@
     </div>
 
     <div class="total-bar">
-      <strong>Total:</strong> 20 minutes · AI support policy
-      <code style="font-family:'IBM Plex Mono',monospace; background: var(--teal-soft); color: var(--teal); padding: 2px 8px; border-radius: 999px;">hints_not_answers</code>
-      · no final answer is produced for you
+      <strong>Total:</strong> 20 minutes · AI only gives hints — it will not write your answer for you.
+      <span class="hints-policy-chip" title="machine policy token; see harness contract">hints_not_answers</span>
     </div>
   </section>
 
@@ -561,12 +757,13 @@
       <li><label class="checklist-item"><input type="checkbox"><span>Author or institution is identifiable.</span></label></li>
       <li><label class="checklist-item"><input type="checkbox"><span>Date is current enough for the topic.</span></label></li>
       <li><label class="checklist-item"><input type="checkbox"><span>Evidence is separated from opinion.</span></label></li>
-      <li><label class="checklist-item"><input type="checkbox"><span>Student writes what would change their mind.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Write what would change your mind.</span></label></li>
     </ul>
   </section>
 
   <section>
     <div class="section-label">Reflection · finish before drafting</div>
+    <div class="reflection-privacy-note"><strong>Your answers stay only in this browser tab.</strong> Closing the tab discards them. That's the privacy promise — copy anything you want to keep into your own notes before you leave.</div>
     <div class="reflection-grid">
       <div class="reflection-block">
         <label>What did AI help with?</label>
@@ -609,14 +806,104 @@
 </main>
 
 <script>
-  // Phase focus toggle — purely visual, no state persisted anywhere.
-  document.querySelectorAll('.phase-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const wasActive = card.classList.contains('active');
-      document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('active'));
-      if (!wasActive) card.classList.add('active');
+  // All state is in-memory only. Nothing here writes to disk, network, or any storage API.
+  (function () {
+    const PHASE_MINUTES = [3, 4, 3, 4, 3, 3]; // total 20
+    const TOTAL_SECONDS = PHASE_MINUTES.reduce((a, b) => a + b, 0) * 60;
+    const cards = Array.from(document.querySelectorAll('.phase-card'));
+    const fills = Array.from(document.querySelectorAll('.progress-fill'));
+    const startBtn = document.getElementById('start-btn');
+    const elapsedEl = document.getElementById('time-elapsed');
+
+    let timerHandle = null;
+    let startMs = null;
+
+    function fmt(sec) {
+      sec = Math.max(0, Math.min(TOTAL_SECONDS, Math.floor(sec)));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function phaseIndexFor(elapsedMin) {
+      let acc = 0;
+      for (let i = 0; i < PHASE_MINUTES.length; i++) {
+        if (elapsedMin < acc + PHASE_MINUTES[i]) return i;
+        acc += PHASE_MINUTES[i];
+      }
+      return PHASE_MINUTES.length - 1;
+    }
+
+    function paint(elapsedSec) {
+      elapsedEl.textContent = fmt(elapsedSec);
+      const elapsedMin = elapsedSec / 60;
+      let acc = 0;
+      for (let i = 0; i < PHASE_MINUTES.length; i++) {
+        const start = acc;
+        const end = acc + PHASE_MINUTES[i];
+        let pct = 0;
+        if (elapsedMin >= end) pct = 100;
+        else if (elapsedMin > start) pct = ((elapsedMin - start) / PHASE_MINUTES[i]) * 100;
+        fills[i].style.width = pct + '%';
+        acc = end;
+      }
+      const active = phaseIndexFor(elapsedMin);
+      cards.forEach((c, i) => c.classList.toggle('active', i === active));
+    }
+
+    function tick() {
+      const elapsed = (Date.now() - startMs) / 1000;
+      if (elapsed >= TOTAL_SECONDS) {
+        paint(TOTAL_SECONDS);
+        finish();
+        return;
+      }
+      paint(elapsed);
+    }
+
+    function start() {
+      startMs = Date.now();
+      startBtn.dataset.state = 'running';
+      startBtn.textContent = 'Stop · reset';
+      paint(0);
+      timerHandle = setInterval(tick, 500);
+    }
+
+    function reset() {
+      clearInterval(timerHandle);
+      timerHandle = null;
+      startMs = null;
+      startBtn.dataset.state = 'idle';
+      startBtn.textContent = 'Start 20-min session';
+      elapsedEl.textContent = '0:00';
+      fills.forEach(f => f.style.width = '0%');
+      cards.forEach(c => c.classList.remove('active'));
+    }
+
+    function finish() {
+      clearInterval(timerHandle);
+      timerHandle = null;
+      startBtn.dataset.state = 'done';
+      startBtn.textContent = 'Session done · reset';
+    }
+
+    startBtn.addEventListener('click', () => {
+      const state = startBtn.dataset.state;
+      if (state === 'idle') start();
+      else reset();
     });
-  });
+
+    // Manual browse: clicking a phase card highlights it when timer is idle.
+    // While the timer runs, the timer owns the active highlight.
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (timerHandle) return; // timer drives active state
+        const wasActive = card.classList.contains('active');
+        cards.forEach(c => c.classList.remove('active'));
+        if (!wasActive) card.classList.add('active');
+      });
+    });
+  })();
 </script>
 </body>
 </html>
