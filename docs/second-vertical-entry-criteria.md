@@ -24,7 +24,7 @@ Second vertical work remains deferred until all criteria below are met.
 - Missing evaluator evidence still emits explicit `pending:` markers; no CLS v2 component is filled with optimistic defaults.
 - `examples/nousos_heartbeat_demo.py` routes `trading_vertical` demo mode through the evaluator when trading-agent artifacts exist, and falls back with `evidence_source: synthetic_demo_fallback` + an explicit `fallback_reason` otherwise. Other demo modes stay synthetic.
 - This advances criteria 2 and 3. Criterion 6 progress is partial (the evaluator's read-only contract and boundary-integrity check are tested; broader boundary documentation for the first vertical remains owned by trading-agent).
-- Criteria 1 is not yet closed by this evaluator alone.
+- Criterion 1: advanced on 2026-05-16 — three ReviewedExperiment entries seeded via `scripts/draft_reviewed_experiments.py`, surfaced by `TradingEvaluator` in the `trading_vertical` snapshot. Trading-agent's downstream `LearningUpdate` artifact remains owner-team work.
 - Criterion 4: `scripts/check_cross_repo_release_gate.py` now distinguishes true blockers from documented noise via per-repo `dirty_allowlist`. Trustmem distilled output no longer perpetually fails the gate.
 - Criterion 5: `tests/test_documentation_reproducibility.py` asserts every documented quickstart script exists and that `scripts/run_nous_heartbeat.py` runs end-to-end without external sibling repos.
 
