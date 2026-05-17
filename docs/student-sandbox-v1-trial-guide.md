@@ -114,7 +114,15 @@ The intended student experience is the local web page:
 nous-os/demo/student-sandbox-v1.html
 ```
 
-Open it directly in a browser (double-click, or `open demo/student-sandbox-v1.html`). It renders the 6 phases, source checklist, reflection card, and parent/teacher observation prompts as a single self-contained page. Nothing typed in the page is uploaded, saved to disk, or persisted across reloads — closing the tab discards everything.
+Open it directly in a browser (double-click, or `open demo/student-sandbox-v1.html`). It renders the 6 phases, source checklist, reflection card, and parent/teacher observation prompts as a single self-contained page.
+
+If the local backend is running, the page can save a redacted session record through `/api/student-sandbox-session` for parent/teacher review. The saved record is local-first and should not include student identity, school identity, email, phone number, family details, account details, or the raw private prompt. If the backend is not running, the student can still use the worksheet and prompt cards in the browser.
+
+Review saved sessions at:
+
+```text
+nous-os/demo/student-session-review.html
+```
 
 ### Student / parent why-and-how page
 

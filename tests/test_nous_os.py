@@ -622,6 +622,7 @@ class SiteContractTests(unittest.TestCase):
         one_pager = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.md"
         one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
         student_trial_guide = ROOT / "docs" / "student-sandbox-v1-trial-guide.md"
+        student_workflow = ROOT / "docs" / "student-sandbox-deterministic-workflow.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
@@ -642,6 +643,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(one_pager.exists())
         self.assertTrue(one_pager_en.exists())
         self.assertTrue(student_trial_guide.exists())
+        self.assertTrue(student_workflow.exists())
         self.assertIn("education and research project", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/education-research-narrative.md", readme)
@@ -652,6 +654,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("docs/domain-evaluator-interface.md", readme)
         self.assertIn("docs/harness/README.md", readme)
         self.assertIn("docs/cross-repo-release-gate.md", readme)
+        self.assertIn("docs/student-sandbox-deterministic-workflow.md", readme)
         self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.md", readme)
         self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.en.md", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", phase3)
@@ -683,6 +686,16 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("hints, not final answers", student_trial_text)
         self.assertIn("Privacy", student_trial_text)
         self.assertIn("What remains my responsibility?", student_trial_text)
+        self.assertIn("/api/student-sandbox-session", student_trial_text)
+        self.assertIn("student-session-review.html", student_trial_text)
+        student_workflow_text = student_workflow.read_text()
+        self.assertIn("deterministic software first", student_workflow_text)
+        self.assertIn("Workflow State Machine", student_workflow_text)
+        self.assertIn("Skills Layer", student_workflow_text)
+        self.assertIn("NOUS Guide", student_workflow_text)
+        self.assertIn("research_signals", student_workflow_text)
+        self.assertIn("source_cards", student_workflow_text)
+        self.assertIn("must not mutate the protocol itself", student_workflow_text)
         student_review_text = student_v1_review_template.read_text()
         self.assertIn("Student Sandbox v1 Trial Review", student_review_text)
         self.assertIn("What did the student understand?", student_review_text)
