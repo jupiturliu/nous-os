@@ -48,6 +48,7 @@ jobs:
           cp README.md _site/
           cp ARCHITECTURE.md _site/
           cp docs/*.md _site/docs/
+          cp -R docs/harness _site/docs/
           cp demo/heartbeat-dashboard.html _site/demo/
           cp -R demo/assets _site/demo/
           cp examples/runtime/dashboard-data.json _site/examples/runtime/

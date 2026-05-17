@@ -23,6 +23,7 @@ from cls_v2 import compute_cls_v2
 import nousos_heartbeat_demo as heartbeat_demo
 import run_nous_dashboard as dashboard_server
 import student_sandbox_v0 as student_sandbox
+import check_harness_inventory as harness_inventory
 
 
 class BenchmarkTests(unittest.TestCase):
@@ -242,6 +243,20 @@ class DashboardApiTests(unittest.TestCase):
 
 
 class SiteContractTests(unittest.TestCase):
+    def test_harness_inventory_is_machine_readable_and_current(self) -> None:
+        inventory_path = ROOT / "docs" / "harness" / "HARNESS_INVENTORY.json"
+        inventory = json.loads(inventory_path.read_text())
+        result = harness_inventory.validate_inventory(inventory_path)
+
+        self.assertTrue(result["ok"], result["issues"])
+        self.assertEqual(inventory["project"], "nous-os")
+        surface_ids = {surface["id"] for surface in inventory["surfaces"]}
+        self.assertIn("student_sandbox_v0", surface_ids)
+        self.assertIn("latest_research_record", surface_ids)
+        self.assertIn("cross_repo_release_gate", surface_ids)
+        self.assertIn("github_pages_workflow", surface_ids)
+        self.assertIn("live trading state", inventory["default_boundary"])
+
     def test_v2_roadmap_and_evaluator_docs_are_linked(self) -> None:
         readme = (ROOT / "README.md").read_text()
         phase3 = (ROOT / "NOUS-OS-PHASE3.md").read_text()
@@ -391,6 +406,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp about.html _site/", workflow)
         self.assertIn("cp favicon.svg _site/", workflow)
         self.assertIn("cp docs/*.md _site/docs/", workflow)
+        self.assertIn("cp -R docs/harness _site/docs/", workflow)
         self.assertIn("cp -R demo/assets _site/demo/", workflow)
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)

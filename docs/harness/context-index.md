@@ -15,6 +15,7 @@ Use this index before starting NOUS OS work.
 | Need | Read / Run |
 |---|---|
 | Harness boundary | `docs/harness/README.md` |
+| Harness inventory | `docs/harness/HARNESS_INVENTORY.json`, `python3 scripts/check_harness_inventory.py --json` |
 | Benchmark contract | `docs/benchmark-spec.md` |
 | Domain evaluator contract | `docs/domain-evaluator-interface.md` |
 | Cross-repo release readiness | `docs/cross-repo-release-gate.md`, `scripts/check_cross_repo_release_gate.py` |

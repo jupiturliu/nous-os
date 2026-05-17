@@ -31,6 +31,7 @@ Forbidden by default:
 
 | Surface | Path | Purpose |
 |---|---|---|
+| Harness inventory | `docs/harness/HARNESS_INVENTORY.json` | Machine-readable list of harness surfaces, boundaries, artifacts, and verification commands |
 | Context index | `docs/harness/context-index.md` | What agents should read before NOUS OS work |
 | North Star roadmap | `docs/north-star-v2-roadmap.md` | Product direction and explicit deferrals |
 | Domain evaluator interface | `docs/domain-evaluator-interface.md` | CLS v2 evaluator contract |
@@ -43,6 +44,7 @@ Forbidden by default:
 ```bash
 cd /Users/liyao/nousos/nous-os
 python3 -m unittest discover -s tests -v
+python3 scripts/check_harness_inventory.py --json
 python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
 ```
 

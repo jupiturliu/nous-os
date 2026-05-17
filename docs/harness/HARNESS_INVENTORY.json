@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "project": "nous-os",
+  "purpose": "Machine-readable inventory of NOUS OS harness surfaces, boundaries, artifacts, and verification commands.",
+  "default_boundary": "NOUS OS harness may inspect, route, evaluate, verify, summarize, and create review artifacts; it must not mutate live trading state, broker state, secrets, risk config, or production queues.",
+  "surfaces": [
+    {
+      "id": "harness_readme",
+      "path": "docs/harness/README.md",
+      "kind": "boundary_map",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "harness_context_index",
+      "path": "docs/harness/context-index.md",
+      "kind": "context_index",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "next_development_plan",
+      "path": "docs/plans/2026-05-16-nous-os-next-development-plan.md",
+      "kind": "development_plan",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "heartbeat_demo_dashboard",
+      "path": "demo/heartbeat-dashboard.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 scripts/run_nous_heartbeat.py && python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "heartbeat_runtime",
+      "path": "examples/nousos_heartbeat_demo.py",
+      "kind": "runtime_demo",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 scripts/run_nous_heartbeat.py"
+    },
+    {
+      "id": "student_sandbox_v0",
+      "path": "examples/student_sandbox_v0.py",
+      "kind": "local_sandbox",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 examples/student_sandbox_v0.py"
+    },
+    {
+      "id": "latest_research_record",
+      "path": "examples/runtime/research-records/latest.json",
+      "kind": "research_artifact",
+      "owner": "runtime",
+      "published": true,
+      "verification": "python3 scripts/run_nous_heartbeat.py"
+    },
+    {
+      "id": "review_template",
+      "path": "docs/review-template.md",
+      "kind": "review_protocol",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "cross_repo_release_gate",
+      "path": "scripts/check_cross_repo_release_gate.py",
+      "kind": "release_gate",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json"
+    },
+    {
+      "id": "github_pages_workflow",
+      "path": ".github/workflows/pages.yml",
+      "kind": "deployment_workflow",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest discover -s tests -v"
+    }
+  ]
+}
