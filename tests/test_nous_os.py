@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import io
+import os
 import subprocess
 import sys
 import tempfile
@@ -271,6 +272,39 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(result.stdout, "")
         self.assertNotIn("Redis not available", result.stderr)
         self.assertNotIn("MemoryBackend only", result.stderr)
+
+    def test_heartbeat_demo_run_does_not_emit_optional_redis_warning(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "scripts/run_nous_heartbeat.py"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+
+        combined = result.stdout + result.stderr
+        self.assertNotIn("Redis not available", combined)
+        self.assertNotIn("MemoryBackend only", combined)
+
+    def test_runtime_backend_policy_uses_redis_or_sqlite_in_production(self) -> None:
+        with mock.patch.dict(os.environ, {"NOUS_OS_ENV": "production"}, clear=True):
+            policy = heartbeat_demo.runtime_backend_policy()
+            self.assertEqual(policy["requested_backend"], "sqlite")
+            self.assertEqual(policy["episode_store"], "sqlite")
+            self.assertFalse(policy["memory_fallback_allowed"])
+
+        with mock.patch.dict(os.environ, {"NOUS_OS_ENV": "production", "REDIS_URL": "redis://localhost:6379"}, clear=True):
+            policy = heartbeat_demo.runtime_backend_policy()
+            self.assertEqual(policy["requested_backend"], "redis")
+            self.assertEqual(policy["synapse_backend"], "redis")
+            self.assertEqual(policy["episode_store"], "sqlite")
+
+        with mock.patch.dict(
+            os.environ,
+            {"NOUS_OS_ENV": "production", "NOUS_OS_RUNTIME_BACKEND": "memory"},
+            clear=True,
+        ):
+            self.assertEqual(heartbeat_demo.resolve_runtime_backend(), "sqlite")
 
     def test_student_sandbox_v1_builds_20_minute_learning_loop_without_final_answer(self) -> None:
         packet = student_sandbox_v1.build_learning_loop_packet(
@@ -684,6 +718,21 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', demo_page)
         self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', student_sandbox_page)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', about_page)
+
+    def test_homepage_publishes_research_track_links(self) -> None:
+        homepage = (ROOT / "index.html").read_text()
+        readme = (ROOT / "README.md").read_text()
+        production_runtime = (ROOT / "docs" / "production-runtime.md").read_text()
+
+        self.assertIn('id="research"', homepage)
+        self.assertIn("Human-AI co-evolution", homepage)
+        self.assertIn("/docs/human-ai-symbiosis-self-evolution.md", homepage)
+        self.assertIn("/docs/human-ai-coevolution-model-v0.md", homepage)
+        self.assertIn("/docs/self-evolution-metrics-v0.md", homepage)
+        self.assertIn("/demo/student-sandbox-v1.html", homepage)
+        self.assertIn("docs/production-runtime.md", readme)
+        self.assertIn("NOUS_OS_RUNTIME_BACKEND=redis", production_runtime)
+        self.assertIn("NOUS_OS_RUNTIME_BACKEND=sqlite", production_runtime)
 
     def test_about_page_explains_nous_origin_and_human_ai_future(self) -> None:
         homepage = (ROOT / "index.html").read_text()

@@ -85,6 +85,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [docs/human-ai-coevolution-model-v0.md](./docs/human-ai-coevolution-model-v0.md) — v0 model for the human-agent co-evolution loop
 - [docs/self-evolution-metrics-v0.md](./docs/self-evolution-metrics-v0.md) — v0 metrics for human, agent, and relationship evolution
 - [docs/memory-philosophy-v0.md](./docs/memory-philosophy-v0.md) — Memory rules for remember, challenge, decay, and forget
+- [docs/production-runtime.md](./docs/production-runtime.md) — Production backend policy for Redis/SQLite instead of memory-only runtime state
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design

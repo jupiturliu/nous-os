@@ -71,6 +71,8 @@ RUNTIME_RESEARCH_RECORDS = RUNTIME_DIR / "research-records"
 DEFAULT_DEMO_MODE = "student"
 DEFAULT_GOAL = "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking."
 DEFAULT_OVERRIDE_KIND = "privacy"
+ALLOWED_RUNTIME_BACKENDS = {"memory", "redis", "sqlite"}
+PRODUCTION_ENV_VALUES = {"prod", "production"}
 HUMAN_AGENCY = {
     "human_sets_goal": True,
     "human_sets_boundary": True,
@@ -237,6 +239,57 @@ def now_run_id() -> str:
     return time.strftime("%Y%m%dT%H%M%S")
 
 
+def runtime_mode() -> str:
+    mode = (
+        os.environ.get("NOUS_OS_ENV")
+        or os.environ.get("ENVIRONMENT")
+        or os.environ.get("APP_ENV")
+        or "local"
+    ).strip().lower()
+    return "production" if mode in PRODUCTION_ENV_VALUES else mode
+
+
+def _configured_runtime_backend() -> str | None:
+    backend = (os.environ.get("NOUS_OS_RUNTIME_BACKEND") or os.environ.get("SYNAPSE_BACKEND") or "").strip().lower()
+    return backend or None
+
+
+def _validate_runtime_backend(backend: str) -> str:
+    if backend not in ALLOWED_RUNTIME_BACKENDS:
+        allowed = ", ".join(sorted(ALLOWED_RUNTIME_BACKENDS))
+        raise ValueError(f"Unsupported NOUS OS runtime backend: {backend!r}. Expected one of: {allowed}.")
+    return backend
+
+
+def resolve_runtime_backend() -> str:
+    configured = _configured_runtime_backend()
+    if configured:
+        backend = _validate_runtime_backend(configured)
+        if runtime_mode() == "production" and backend == "memory" and os.environ.get("NOUS_OS_ALLOW_MEMORY_IN_PRODUCTION") != "1":
+            return "sqlite"
+        return backend
+    if runtime_mode() == "production":
+        return "redis" if os.environ.get("REDIS_URL") else "sqlite"
+    return "memory"
+
+
+def synapse_worker_backend(runtime_backend: str | None = None) -> str:
+    backend = runtime_backend or resolve_runtime_backend()
+    return "redis" if backend == "redis" else "memory"
+
+
+def runtime_backend_policy() -> Dict:
+    backend = resolve_runtime_backend()
+    return {
+        "mode": runtime_mode(),
+        "requested_backend": backend,
+        "synapse_backend": synapse_worker_backend(backend),
+        "episode_store": "sqlite" if backend in {"sqlite", "redis"} else "jsonl",
+        "sqlite_path": str(RUNTIME_EPISODES_SQLITE),
+        "memory_fallback_allowed": runtime_mode() != "production",
+    }
+
+
 def write_json(path: Path, payload: Dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -376,7 +429,11 @@ def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAUL
 
 class QueueWorker(AgentWorker):
     def __init__(self, agent_id: str, topic: str, result_prefix: str, base_quality: float):
-        super().__init__(agent_id=agent_id, topics=[topic], backend="memory")
+        if os.environ.get("NOUS_OS_SHOW_RUNTIME_IMPORT_WARNINGS"):
+            super().__init__(agent_id=agent_id, topics=[topic], backend=synapse_worker_backend())
+        else:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                super().__init__(agent_id=agent_id, topics=[topic], backend=synapse_worker_backend())
         self.result_prefix = result_prefix
         self.base_quality = base_quality
 
@@ -905,6 +962,7 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict, demo_m
         "reflection": mode["reflection"],
         "first_vertical": FIRST_VERTICAL,
         "research_record": build_research_record(goal, runs, override, benchmark, demo_mode),
+        "runtime_backend": runtime_backend_policy(),
         "current_round": 2,
         "runs": runs,
         "timeline": build_timeline(goal, runs, override, demo_mode=demo_mode),

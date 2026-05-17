@@ -529,6 +529,63 @@
     font-weight: 600;
   }
 
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .research-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+    padding: 22px;
+    border: 1px solid rgba(0,212,170,0.18);
+    border-radius: 8px;
+    background: rgba(0,212,170,0.045);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+
+  .research-card:hover {
+    border-color: rgba(0,212,170,0.4);
+    background: rgba(0,212,170,0.075);
+    transform: translateY(-2px);
+  }
+
+  .research-kicker {
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(0,212,170,0.75);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .research-title {
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .research-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .research-link {
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(0,212,170,0.8);
+  }
+
   .ps-card {
     padding: 28px;
     border-radius: 16px;
@@ -1234,6 +1291,7 @@
     .component-grid { grid-template-columns: 1fr; }
     .why-col { border-right: none; border-bottom: 1px solid var(--border); }
     .why-col:last-child { border-bottom: none; }
+    .research-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 20px; text-align: center; }
     .waitlist-section { padding: 80px 20px; }
   }
@@ -1436,6 +1494,40 @@
         <div class="why-text">Most systems can execute tasks. Few can <strong>turn interaction into future intelligence</strong>. NOUS OS compounds because memory shapes judgment, judgment produces outcomes, human correction updates trust, and the next task starts from a better state.</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- RESEARCH TRACK -->
+<section id="research">
+  <div class="section-label">Research Track</div>
+  <h2 class="section-title">Human-AI co-evolution, published as a working research topic.</h2>
+  <p class="section-sub">NOUS OS is using the student companion and Trading Brain proof bed to study how humans and AI can cooperate cognitively: memory, agency, boundaries, reflection, and measurable self-evolution.</p>
+
+  <div class="research-grid">
+    <a class="research-card" href="/docs/human-ai-symbiosis-self-evolution.md">
+      <div class="research-kicker">Theory Anchor</div>
+      <div class="research-title">Human-AI Symbiosis and Self-Evolution</div>
+      <div class="research-text">The core framing for NOUS as an education and research system, not a generic automation stack.</div>
+      <div class="research-link">Read note -></div>
+    </a>
+    <a class="research-card" href="/docs/human-ai-coevolution-model-v0.md">
+      <div class="research-kicker">Model v0</div>
+      <div class="research-title">Co-Evolution Loop</div>
+      <div class="research-text">A compact model of how human feedback, agent behavior, memory, and outcomes form a repeatable learning loop.</div>
+      <div class="research-link">Open model -></div>
+    </a>
+    <a class="research-card" href="/docs/self-evolution-metrics-v0.md">
+      <div class="research-kicker">Metrics</div>
+      <div class="research-title">Measuring Better Cooperation</div>
+      <div class="research-text">Candidate metrics for human growth, agent adaptation, and relationship-level learning across repeated interactions.</div>
+      <div class="research-link">View metrics -></div>
+    </a>
+    <a class="research-card" href="/demo/student-sandbox-v1.html">
+      <div class="research-kicker">Study Demo</div>
+      <div class="research-title">Student Sandbox v1</div>
+      <div class="research-text">A browser-based 20-minute trial for hints, source checks, privacy boundaries, and final student reflection.</div>
+      <div class="research-link">Launch sandbox -></div>
+    </a>
   </div>
 </section>
 
