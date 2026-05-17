@@ -190,6 +190,8 @@ The stronger the agent and the higher the stakes, the more explicit the human bo
 
 **Goal:** Create a safe, local-only student-facing sandbox for AI-assisted learning and reflection.
 
+**Status:** Initial local-only v0 implemented as `examples/student_sandbox_v0.py`. It does not call external models or collect private student data; it emits a structured research record compatible with the heartbeat demo harness.
+
 ### Scope
 
 This is not a general agent platform. It is a local education/research sandbox with constrained behaviors.
@@ -214,9 +216,17 @@ A high-school student wants help planning a research project without losing thei
 - Produces a research record.
 - Shows what the student retained responsibility for.
 
+### Implemented artifact path
+
+```text
+examples/runtime/research-records/student-sandbox-latest.json
+```
+
 ## Phase 5 — Review and Iteration Protocol
 
 **Goal:** Make development itself follow the NOUS OS learning loop.
+
+**Status:** Initial scaffolding implemented. Repo template lives at `docs/review-template.md`; first Obsidian review entry is recorded under `/Users/liyao/Documents/nousos/NousOS/04 Reviews/`.
 
 After every demo/user test, create a review entry with:
 
@@ -236,6 +246,12 @@ Store machine-readable local artifacts under:
 
 ```text
 /Users/liyao/nousos/nous-os/examples/runtime/research-records/
+```
+
+Repo review template:
+
+```text
+docs/review-template.md
 ```
 
 ## Immediate Next Sprint

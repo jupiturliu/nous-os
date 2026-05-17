@@ -82,6 +82,33 @@ examples/runtime/research-records/latest.json
 
 `latest.json` 会随 GitHub Pages 发布，历史 run files 只作为本地研究记录保留。
 
+## Student Agent Sandbox v0
+
+Phase 4 的第一版是一个 local-only sandbox：
+
+```bash
+python3 examples/student_sandbox_v0.py
+```
+
+它不会调用外部模型，也不会采集真实学生隐私数据。它模拟一个受约束的学习 loop：
+
+```text
+student intent
+  -> clarifying questions
+  -> boundary-aware hints and practice
+  -> source checks
+  -> reflection prompt
+  -> structured research record
+```
+
+输出写到：
+
+```text
+examples/runtime/research-records/student-sandbox-latest.json
+```
+
+这个 sandbox 的目的不是替学生完成答案，而是让学生保留目标、验证、反思和最终责任。
+
 ## 下一步替换成真实组件
 
 - 把 `AriaAdapter.plan()` 替换为真实 Aria 的 intent router / policy layer。

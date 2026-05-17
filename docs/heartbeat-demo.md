@@ -102,6 +102,20 @@ examples/runtime/research-records/latest.json
 
 The per-run files are local research artifacts and are ignored by git. `latest.json` is tracked and published so reviewers can inspect the current demo's human intent, AI first pass, human boundary, memory/evidence update, AI second pass, reflection, and agency metrics.
 
+## Student Sandbox v0
+
+Phase 4 starts with a local-only sandbox:
+
+```bash
+python3 examples/student_sandbox_v0.py
+```
+
+It asks clarifying questions, returns hints and practice instead of a final answer, requires source checks, redacts private details before record emission, and ends with a reflection prompt. It writes:
+
+```text
+examples/runtime/research-records/student-sandbox-latest.json
+```
+
 ## Benchmark Mapping
 
 这个 demo 现在不仅展示效果，也展示 benchmark：

@@ -22,6 +22,7 @@ for path in (EXAMPLES, SCRIPTS, RUNTIME):
 from cls_v2 import compute_cls_v2
 import nousos_heartbeat_demo as heartbeat_demo
 import run_nous_dashboard as dashboard_server
+import student_sandbox_v0 as student_sandbox
 
 
 class BenchmarkTests(unittest.TestCase):
@@ -164,6 +165,26 @@ class BenchmarkTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             compute_cls_v2({"outcome_quality_delta": 0.5})
 
+    def test_student_sandbox_emits_local_private_research_record(self) -> None:
+        record = student_sandbox.build_sandbox_research_record(
+            intent="My email is student@example.com and I need help planning a science project.",
+            boundary_kind="learning",
+        )
+
+        self.assertEqual(record["demo_mode"], "student")
+        self.assertEqual(record["human_boundary"]["kind"], "learning")
+        self.assertIn("[redacted-email]", record["human_intent"])
+        self.assertFalse(record["privacy"]["contains_private_student_data"])
+        self.assertTrue(record["sandbox"]["local_only"])
+        self.assertFalse(record["sandbox"]["external_model_calls"])
+        self.assertTrue(record["sandbox"]["refuses_private_storage_without_anonymization"])
+        self.assertTrue(record["sandbox"]["private_detail_detected"])
+        self.assertGreaterEqual(len(record["sandbox"]["clarifying_questions"]), 3)
+        self.assertGreaterEqual(len(record["sandbox"]["hints"]), 3)
+        self.assertGreaterEqual(len(record["sandbox"]["practice"]), 1)
+        self.assertGreaterEqual(len(record["sandbox"]["source_check"]), 2)
+        self.assertIn("responsibility", record["reflection"]["prompt"])
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -227,6 +248,7 @@ class SiteContractTests(unittest.TestCase):
         roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
         release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
+        review_template = ROOT / "docs" / "review-template.md"
         demo_refresh_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-demo-refresh-plan.md"
         education_research = ROOT / "docs" / "education-research-narrative.md"
         harness_readme = ROOT / "docs" / "harness" / "README.md"
@@ -238,6 +260,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
         self.assertTrue(release_gate.exists())
+        self.assertTrue(review_template.exists())
         self.assertTrue(demo_refresh_plan.exists())
         self.assertTrue(education_research.exists())
         self.assertTrue(harness_readme.exists())
@@ -265,6 +288,9 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Privacy boundary", education_research.read_text())
         self.assertIn("Trading Brain / `trading-agent` remains the first vertical application", education_research.read_text())
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
+        self.assertIn("What confused the viewer?", review_template.read_text())
+        self.assertIn("Boundary Clarity", review_template.read_text())
+        self.assertIn("Next Run Change", review_template.read_text())
         self.assertIn("context index + boundary map + artifact contracts + evaluator specs + release gates + evidence write-back", harness_readme.read_text())
         self.assertIn("NOUS OS Harness Context Index", harness_context.read_text())
         self.assertIn("Second vertical work remains deferred", second_vertical.read_text())
