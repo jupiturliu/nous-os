@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOUS OS — Student Sandbox v1</title>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="description" content="A local-only 20-minute AI-assisted research learning loop for high-school students. Hints, not answers.">
+<meta name="description" content="A 20-minute AI-assisted research learning loop for high-school students with a local worksheet and Hermes Gateway-guided hints.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -710,6 +710,161 @@
     resize: vertical;
   }
 
+  .hermes-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .hermes-card {
+    border: 1px solid rgba(33,64,107,0.18);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(33,64,107,0.08), rgba(15,118,110,0.05));
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .hermes-card h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .hermes-card p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .hermes-rules {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .hermes-rule {
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: rgba(255,255,255,0.54);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .hermes-window {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .hermes-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.55);
+  }
+
+  .hermes-name {
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .hermes-mode {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: var(--teal-soft);
+    padding: 4px 8px;
+    border-radius: 999px;
+  }
+
+  .hermes-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 260px;
+    max-height: 360px;
+    overflow: auto;
+    padding: 16px;
+  }
+
+  .hermes-message {
+    width: min(92%, 620px);
+    padding: 11px 13px;
+    border-radius: 15px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  .hermes-message.agent {
+    align-self: flex-start;
+    background: rgba(33,64,107,0.08);
+    border: 1px solid rgba(33,64,107,0.16);
+  }
+
+  .hermes-message.user {
+    align-self: flex-end;
+    background: rgba(15,118,110,0.10);
+    border: 1px solid rgba(15,118,110,0.22);
+  }
+
+  .hermes-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .hermes-input-row textarea {
+    min-height: 58px;
+    max-height: 140px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 11px 12px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+  }
+
+  .hermes-input-row button {
+    align-self: start;
+    border: 1px solid rgba(33,64,107,0.26);
+    background: var(--navy);
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .hermes-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 14px;
+  }
+
+  .hermes-chips button {
+    border: 1px solid rgba(33,64,107,0.18);
+    background: rgba(33,64,107,0.07);
+    color: var(--navy);
+    border-radius: 999px;
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
   @media (max-width: 640px) {
     .shell { padding: 24px 16px 60px; }
     h1 { font-size: 30px; }
@@ -719,6 +874,8 @@
     .timer-bar .timer-display { min-width: auto; }
     .execution-panel { grid-template-columns: 1fr; }
     .prompt-head, .summary-actions { align-items: flex-start; flex-direction: column; }
+    .hermes-panel { grid-template-columns: 1fr; }
+    .hermes-input-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -726,7 +883,7 @@
 <main class="shell">
 
   <div class="topbar">
-    <span>NOUS OS · Student Sandbox v1 · local-only</span>
+    <span>NOUS OS · Student Sandbox v1 · local worksheet</span>
     <span><a href="student-sandbox-v1-guide.html">why &amp; how</a> &nbsp;·&nbsp; <a href="../index.html">← back to NOUS OS</a></span>
   </div>
 
@@ -743,9 +900,10 @@
   <div class="privacy-banner">
     <div class="icon">🔒</div>
     <div class="body">
-      <strong>Privacy:</strong> This page runs entirely in your browser.
-      Nothing you type is sent anywhere, saved to disk, or shared. Closing
-      the tab discards everything. Software can detect emails, phones, and
+      <strong>Privacy:</strong> The worksheet runs locally in your browser and is
+      not saved. Hermes chat sends only the question and worksheet context when
+      you click <strong>Ask</strong>, through a server-side Gateway route that
+      keeps keys out of the browser. Software can detect emails, phones, and
       SSN-style patterns — but it <strong>cannot</strong> catch your name,
       school name, or family details, so please don't type them. Use topic
       area ("CRISPR ethics for biology class"), not identifying context
@@ -754,12 +912,55 @@
   </div>
 
   <section>
+    <div class="section-label">Hermes Agent · ask any student question</div>
+    <div class="hermes-panel">
+      <div class="hermes-card">
+        <h2>Hermes is optimized for this project.</h2>
+        <p>
+          Hermes is the learning guide for this sandbox. Ask a research
+          question, source question, or "what should I do next?" It will keep
+          the session inside the NOUS OS rules: hints, boundaries, source
+          checks, and human responsibility.
+        </p>
+        <div class="hermes-rules">
+          <div class="hermes-rule"><strong>It will not write your final answer.</strong> It turns questions into subquestions, checks, and next moves.</div>
+          <div class="hermes-rule"><strong>It updates the worksheet.</strong> If your question box is empty, Hermes uses your chat question as the session question.</div>
+          <div class="hermes-rule"><strong>It calls Hermes Gateway through a secure API route.</strong> Gateway keys stay server-side in <code>/api/hermes-student-agent</code>; the browser never sees them.</div>
+        </div>
+      </div>
+
+      <div class="hermes-window" aria-label="Hermes student learning agent chat">
+        <div class="hermes-top">
+          <div>
+            <div class="hermes-name">Hermes Agent</div>
+            <div class="field-help">NOUS OS learning guide · hints_not_answers</div>
+          </div>
+          <div class="hermes-mode">LLM agent</div>
+        </div>
+        <div class="hermes-log" id="hermes-chat-log" aria-live="polite">
+          <div class="hermes-message agent">
+            Hi, I'm Hermes. Ask me your research question. I will help you frame it, set one boundary, choose source checks, and decide your next learning move — but I will not write the final answer for you.
+          </div>
+        </div>
+        <div class="hermes-input-row">
+          <textarea id="hermes-input" placeholder="Ask Hermes: How should I research CRISPR ethics? What sources should I check? How do I avoid letting AI write my answer?"></textarea>
+          <button id="hermes-send" type="button">Ask</button>
+        </div>
+        <div class="hermes-chips" aria-label="Hermes quick prompts">
+          <button type="button" data-hermes-prompt="Help me turn my topic into a better research question.">Improve my question</button>
+          <button type="button" data-hermes-prompt="What sources should I check for this topic?">Suggest source checks</button>
+          <button type="button" data-hermes-prompt="Help me choose a boundary so AI does not do my thinking.">Choose a boundary</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="section-label">Guided worksheet · no prompt engineering required</div>
     <p class="session-note">
-      This is the execution surface. Fill in short notes here, copy the prompt
-      cards into whatever AI tool you already use, then paste only the useful
-      learning notes back into the worksheet. The page never talks to an AI,
-      never uploads your text, and never saves your session.
+      This is the execution surface. Fill in short notes here, ask Hermes only
+      when you want guided help, or copy the prompt cards into another AI tool.
+      The worksheet itself stays local, and the page never saves your session.
     </p>
 
     <div class="execution-panel">
@@ -1023,7 +1224,7 @@
   </section>
 
   <footer class="foot">
-    <div>NOUS OS · Student Sandbox v1 · local-only scaffold</div>
+    <div>NOUS OS · Student Sandbox v1 · local worksheet scaffold</div>
     <div>artifact: <code>examples/runtime/research-records/student-sandbox-v1-latest.json</code></div>
   </footer>
 
@@ -1045,6 +1246,10 @@
     const sourceNotesEl = document.getElementById('source-notes');
     const revisedPlanEl = document.getElementById('revised-plan');
     const summaryEl = document.getElementById('session-summary');
+    const hermesLog = document.getElementById('hermes-chat-log');
+    const hermesInput = document.getElementById('hermes-input');
+    const hermesSend = document.getElementById('hermes-send');
+    const hermesEndpoint = window.NOUSOS_HERMES_ENDPOINT || '/api/hermes-student-agent';
 
     let timerHandle = null;
     let startMs = null;
@@ -1118,7 +1323,7 @@
       const fields = Array.from(document.querySelectorAll('[data-summary-label]'));
       const lines = [
         'Student Sandbox v1.1 local summary',
-        'Privacy: local-only; not saved or uploaded.',
+        'Privacy: worksheet notes are local and not saved; Hermes chat is sent only when I click Ask.',
         ''
       ];
       fields.forEach(field => {
@@ -1155,6 +1360,79 @@
       } else {
         document.execCommand('copy');
         done();
+      }
+    }
+
+    function worksheetContext() {
+      return {
+        question: questionEl.value.trim(),
+        prior_belief: priorEl.value.trim(),
+        boundary: boundaryEl.value.trim(),
+        ai_plan_notes: planNotesEl.value.trim(),
+        source_notes: sourceNotesEl.value.trim(),
+        revised_plan: revisedPlanEl.value.trim()
+      };
+    }
+
+    function appendHermesMessage(role, text) {
+      const message = document.createElement('div');
+      message.className = 'hermes-message ' + role;
+      message.textContent = text;
+      hermesLog.appendChild(message);
+      hermesLog.scrollTop = hermesLog.scrollHeight;
+      return message;
+    }
+
+    function syncQuestionFromHermes(text) {
+      if (questionEl.value.trim()) return;
+      const normalized = text.trim();
+      if (normalized.length < 12) return;
+      questionEl.value = normalized.slice(0, 220);
+      refreshPrompts();
+    }
+
+    async function callHermesAgent(message) {
+      const response = await fetch(hermesEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          worksheet: worksheetContext(),
+          policy: {
+            product: 'NOUS OS Student Sandbox v1.1',
+            audience: 'high_school_student_with_parent_or_teacher',
+            stance: 'hints_not_answers',
+            privacy: 'do_not_request_or_store_private_student_data'
+          }
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || 'Hermes endpoint is not available yet.');
+      }
+      return data.reply || 'Hermes did not return a reply. Try asking again with a shorter question.';
+    }
+
+    async function sendHermesMessage(text) {
+      const message = clean(text, '').slice(0, 1200);
+      if (!message) return;
+      appendHermesMessage('user', message);
+      syncQuestionFromHermes(message);
+      hermesInput.value = '';
+      hermesSend.disabled = true;
+      hermesSend.textContent = 'Thinking';
+      const pending = appendHermesMessage('agent', 'Hermes is thinking...');
+      try {
+        pending.textContent = await callHermesAgent(message);
+      } catch (error) {
+        pending.textContent = [
+          'Hermes Gateway is not connected yet.',
+          'Ask an adult or operator to deploy /api/hermes-student-agent with HERMES_GATEWAY_URL and, if needed, HERMES_GATEWAY_API_KEY on the server.',
+          'No Gateway key is stored in the page.'
+        ].join('\n');
+      } finally {
+        hermesSend.disabled = false;
+        hermesSend.textContent = 'Ask';
       }
     }
 
@@ -1250,6 +1528,16 @@
     });
     document.querySelectorAll('.copy-btn').forEach(button => {
       button.addEventListener('click', () => copyPrompt(button));
+    });
+    hermesSend.addEventListener('click', () => sendHermesMessage(hermesInput.value));
+    hermesInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        sendHermesMessage(hermesInput.value);
+      }
+    });
+    document.querySelectorAll('[data-hermes-prompt]').forEach(button => {
+      button.addEventListener('click', () => sendHermesMessage(button.dataset.hermesPrompt));
     });
     document.getElementById('build-summary').addEventListener('click', buildSummary);
     document.getElementById('clear-worksheet').addEventListener('click', clearWorksheet);

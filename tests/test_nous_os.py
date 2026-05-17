@@ -398,7 +398,7 @@ class BenchmarkTests(unittest.TestCase):
         for prompt in builder_packet["reflection_card"]["student_prompts"]:
             self.assertIn(prompt, html, f"reflection prompt {prompt!r} missing from web page")
 
-        self.assertIn("local-only", html.lower(), "web page must surface local-only privacy framing")
+        self.assertIn("local worksheet", html.lower(), "web page must surface local worksheet privacy framing")
         self.assertIn("hints_not_answers", html, "web page must surface AI support policy explicitly")
         self.assertIn("Guided worksheet", html)
         self.assertIn("no prompt engineering required", html)
@@ -406,13 +406,22 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("Copy prompt to AI", html)
         self.assertIn("Build local summary", html)
         self.assertIn("Parent / teacher observation checklist", html)
+        self.assertIn("Hermes Agent", html)
+        self.assertIn("Hermes student learning agent chat", html)
+        self.assertIn("LLM agent", html)
+        self.assertIn("Hermes Gateway", html)
+        self.assertIn("hermesEndpoint", html)
+        self.assertIn("/api/hermes-student-agent", html)
+        self.assertIn("fetch(hermesEndpoint", html)
+        self.assertIn("HERMES_GATEWAY_URL", html)
+        self.assertIn("HERMES_GATEWAY_API_KEY", html)
         self.assertIn("data-prompt-template=\"plan\"", html)
         self.assertIn("data-prompt-template=\"critique\"", html)
         self.assertIn("data-prompt-template=\"revise\"", html)
         self.assertIn("navigator.clipboard.writeText", html)
         self.assertNotIn("localStorage", html)
         self.assertNotIn("sessionStorage", html)
-        self.assertNotIn("fetch(", html)
+        self.assertNotIn("OPENAI_API_KEY", html)
         self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
 
     def test_student_sandbox_v1_guide_explains_why_and_how(self) -> None:
