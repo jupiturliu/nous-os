@@ -682,6 +682,65 @@
     line-height: 1.45;
   }
 
+  .source-card-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .source-card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.54);
+    padding: 14px;
+  }
+
+  .source-card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .source-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .source-fields label {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .source-fields input, .source-fields textarea, .source-fields select {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 9px 10px;
+    font: inherit;
+    color: var(--ink);
+  }
+
+  .source-fields textarea {
+    min-height: 62px;
+    grid-column: span 2;
+    resize: vertical;
+  }
+
+  .review-link-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
   .observer-checklist {
     list-style: none;
     padding: 0;
@@ -885,6 +944,8 @@
     .prompt-head, .summary-actions { align-items: flex-start; flex-direction: column; }
     .hermes-panel { grid-template-columns: 1fr; }
     .hermes-input-row { grid-template-columns: 1fr; }
+    .source-fields { grid-template-columns: 1fr; }
+    .source-fields textarea { grid-column: span 1; }
   }
 </style>
 </head>
@@ -1012,6 +1073,35 @@
         </div>
 
         <div class="field-card">
+          <label>Structured source cards</label>
+          <div class="source-card-grid" id="source-card-grid">
+            <div class="source-card" data-source-card="source-1">
+              <div class="source-card-title"><span>Source 1</span><span>required for research review</span></div>
+              <div class="source-fields">
+                <label>Title or URL<input data-source-field="title" placeholder="Article, paper, page, or URL"></label>
+                <label>Author / institution<input data-source-field="author" placeholder="Who produced it?"></label>
+                <label>Date<input data-source-field="date" placeholder="Year or publication date"></label>
+                <label>Decision<select data-source-field="decision"><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>
+                <label>Evidence<textarea data-source-field="evidence" placeholder="What evidence does it give?"></textarea></label>
+                <label>Uncertainty<textarea data-source-field="uncertainty" placeholder="What is weak, missing, biased, or uncertain?"></textarea></label>
+              </div>
+            </div>
+            <div class="source-card" data-source-card="source-2">
+              <div class="source-card-title"><span>Source 2</span><span>compare against Source 1</span></div>
+              <div class="source-fields">
+                <label>Title or URL<input data-source-field="title" placeholder="Article, paper, page, or URL"></label>
+                <label>Author / institution<input data-source-field="author" placeholder="Who produced it?"></label>
+                <label>Date<input data-source-field="date" placeholder="Year or publication date"></label>
+                <label>Decision<select data-source-field="decision"><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>
+                <label>Evidence<textarea data-source-field="evidence" placeholder="What evidence does it give?"></textarea></label>
+                <label>Uncertainty<textarea data-source-field="uncertainty" placeholder="What is weak, missing, biased, or uncertain?"></textarea></label>
+              </div>
+            </div>
+          </div>
+          <div class="field-help">Research review works best when at least two source cards have author, date, evidence, uncertainty, and a decision.</div>
+        </div>
+
+        <div class="field-card">
           <label for="revised-plan">Revised plan after boundary + sources</label>
           <textarea id="revised-plan" data-summary-label="Revised plan" placeholder="What changed after your boundary and source check?"></textarea>
         </div>
@@ -1050,8 +1140,11 @@
               <button class="plain-btn" id="clear-worksheet" type="button">Clear</button>
             </div>
           </div>
-          <textarea id="session-summary" readonly placeholder="Your local summary appears here. It is not saved or uploaded."></textarea>
-          <div class="summary-hint">Copy this summary into your own notes if you want to keep it. Closing this tab discards the worksheet.</div>
+          <textarea id="session-summary" readonly placeholder="Your local summary appears here and is saved through the local backend."></textarea>
+          <div class="summary-hint">Saved sessions can be reviewed locally after the backend receives a snapshot.</div>
+          <div class="review-link-row">
+            <a class="plain-btn" id="review-session-link" href="student-session-review.html" target="_blank" rel="noopener">Open review</a>
+          </div>
         </div>
       </div>
     </div>
@@ -1259,6 +1352,7 @@
     const sourceNotesEl = document.getElementById('source-notes');
     const revisedPlanEl = document.getElementById('revised-plan');
     const summaryEl = document.getElementById('session-summary');
+    const reviewSessionLink = document.getElementById('review-session-link');
     const hermesLog = document.getElementById('hermes-chat-log');
     const hermesInput = document.getElementById('hermes-input');
     const hermesSend = document.getElementById('hermes-send');
@@ -1283,6 +1377,10 @@
       const boundary = clean(boundaryEl.value, 'AI should not choose my opinion.');
       const planNotes = clean(planNotesEl.value, '[my first AI plan notes]');
       const sources = clean(sourceNotesEl.value, '[my two source notes]');
+      const sourceCards = structuredSourceCards()
+        .filter(card => card.title || card.author || card.evidence || card.uncertainty)
+        .map(card => `${card.id}: ${card.title || '[untitled]'}; ${card.author || '[unknown author]'}; ${card.date || '[unknown date]'}; decision=${card.decision}; evidence=${card.evidence || '[not filled]'}; uncertainty=${card.uncertainty || '[not filled]'}`)
+        .join('\n') || '[no structured source cards yet]';
 
       if (kind === 'plan') {
         return [
@@ -1307,6 +1405,8 @@
           'My research question: ' + question,
           'My boundary: ' + boundary,
           'My source notes: ' + sources,
+          'Structured source cards:',
+          sourceCards,
           '',
           'Help me critique these sources. For each one, ask:',
           '1. Who is the author or institution?',
@@ -1324,6 +1424,8 @@
         'My boundary: ' + boundary,
         'First AI plan notes: ' + planNotes,
         'Source notes: ' + sources,
+        'Structured source cards:',
+        sourceCards,
         '',
         'Revise the plan using my boundary and source checks.',
         'Show what changed, what is still uncertain, and what I should do next.',
@@ -1349,6 +1451,13 @@
         const value = field.value && field.value.trim() ? field.value.trim() : '[not filled]';
         lines.push(label + ': ' + value);
       });
+      structuredSourceCards().forEach(card => {
+        lines.push(`${card.id} title: ${card.title || '[not filled]'}`);
+        lines.push(`${card.id} author/date: ${card.author || '[not filled]'} / ${card.date || '[not filled]'}`);
+        lines.push(`${card.id} decision: ${card.decision || 'pending'}`);
+        lines.push(`${card.id} evidence: ${card.evidence || '[not filled]'}`);
+        lines.push(`${card.id} uncertainty: ${card.uncertainty || '[not filled]'}`);
+      });
       summaryEl.value = lines.join('\n');
       scheduleSave('summary');
     }
@@ -1358,6 +1467,10 @@
         el.value = '';
       });
       boundaryEl.selectedIndex = 0;
+      document.querySelectorAll('[data-source-field]').forEach(el => {
+        if (el.tagName === 'SELECT') el.value = 'pending';
+        else el.value = '';
+      });
       summaryEl.value = '';
       chatTurns.length = 0;
       refreshPrompts();
@@ -1395,6 +1508,35 @@
       };
     }
 
+    function structuredSourceCards() {
+      return Array.from(document.querySelectorAll('[data-source-card]')).map(card => {
+        const get = field => {
+          const el = card.querySelector('[data-source-field="' + field + '"]');
+          return el ? el.value.trim() : '';
+        };
+        return {
+          id: card.dataset.sourceCard,
+          title: get('title'),
+          author: get('author'),
+          date: get('date'),
+          decision: get('decision') || 'pending',
+          evidence: get('evidence'),
+          uncertainty: get('uncertainty')
+        };
+      });
+    }
+
+    function observerContext() {
+      const checked = Array.from(document.querySelectorAll('.observer-checklist input')).map(input => input.checked ? 'yes' : 'no');
+      return {
+        student_explained_question: checked[0] || 'no',
+        named_source_issue: checked[1] || 'no',
+        kept_human_responsibility: checked[2] || 'no',
+        used_ai_for_hints: checked[3] || 'no',
+        note: (document.querySelector('.observer-panel textarea') || {}).value || ''
+      };
+    }
+
     function reflectionContext() {
       return {
         reflect_help: document.getElementById('reflect-help').value.trim(),
@@ -1409,7 +1551,9 @@
         session_id: sessionId,
         reason,
         worksheet: worksheetContext(),
+        source_cards: structuredSourceCards(),
         reflection: reflectionContext(),
+        observer: observerContext(),
         summary: summaryEl.value.trim(),
         chat_turns: chatTurns,
         policy: {
@@ -1426,6 +1570,7 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Local session save failed.');
       saveStatus.innerHTML = '<strong>Saved locally</strong> · ' + new Date(data.saved_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      reviewSessionLink.href = 'student-session-review.html?session_id=' + encodeURIComponent(data.session_id);
       if (data.private_pattern_detected) {
         saveStatus.innerHTML += ' · private pattern redacted';
       }
@@ -1608,6 +1753,16 @@
     [revisedPlanEl, document.getElementById('reflect-help'), document.getElementById('reflect-verify'), document.getElementById('reflect-responsibility'), document.getElementById('reflect-next')].forEach(el => {
       el.addEventListener('input', () => scheduleSave('worksheet'));
       el.addEventListener('change', () => scheduleSave('worksheet'));
+    });
+    document.querySelectorAll('[data-source-field], .observer-checklist input, .observer-panel textarea').forEach(el => {
+      el.addEventListener('input', () => {
+        refreshPrompts();
+        scheduleSave('research_fields');
+      });
+      el.addEventListener('change', () => {
+        refreshPrompts();
+        scheduleSave('research_fields');
+      });
     });
     document.querySelectorAll('.copy-btn').forEach(button => {
       button.addEventListener('click', () => copyPrompt(button));

@@ -20,6 +20,7 @@ cp -R docs/harness _site/docs/
 cp demo/heartbeat-dashboard.html _site/demo/
 cp demo/student-sandbox-v1.html _site/demo/
 cp demo/student-sandbox-v1-guide.html _site/demo/
+cp demo/student-session-review.html _site/demo/
 cp -R demo/assets _site/demo/
 cp examples/runtime/dashboard-data.json _site/examples/runtime/
 cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/

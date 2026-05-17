@@ -403,8 +403,14 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("Guided worksheet", html)
         self.assertIn("no prompt engineering required", html)
         self.assertIn("Student session worksheet", html)
+        self.assertIn("Structured source cards", html)
+        self.assertIn("data-source-card=\"source-1\"", html)
+        self.assertIn("data-source-card=\"source-2\"", html)
+        self.assertIn("structuredSourceCards", html)
+        self.assertIn("observerContext", html)
         self.assertIn("Copy prompt to AI", html)
         self.assertIn("Build local summary", html)
+        self.assertIn("Open review", html)
         self.assertIn("Parent / teacher observation checklist", html)
         self.assertIn("NOUS Guide", html)
         self.assertIn("NOUS Guide student learning chat", html)
@@ -419,6 +425,8 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("local backend", html.lower())
         self.assertIn("fetch(hermesEndpoint", html)
         self.assertIn("fetch(sessionEndpoint", html)
+        self.assertIn("source_cards", html)
+        self.assertIn("observer", html)
         self.assertIn("HERMES_API_SERVER_URL", html)
         self.assertIn("HERMES_API_SERVER_KEY", html)
         self.assertIn("data-prompt-template=\"plan\"", html)
@@ -429,6 +437,21 @@ class BenchmarkTests(unittest.TestCase):
         self.assertNotIn("sessionStorage", html)
         self.assertNotIn("OPENAI_API_KEY", html)
         self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
+
+    def test_student_session_review_page_reads_local_backend_record(self) -> None:
+        review_path = ROOT / "demo" / "student-session-review.html"
+        self.assertTrue(review_path.exists(), "demo/student-session-review.html must exist")
+        html = review_path.read_text()
+
+        self.assertIn("Student Session Review", html)
+        self.assertIn("Session review for parents, teachers, and research notes", html)
+        self.assertIn("/api/student-sandbox-session", html)
+        self.assertIn("?list=1&limit=1", html)
+        self.assertIn("source_cards", html)
+        self.assertIn("research_signals", html)
+        self.assertIn("NOUS Guide turns", html)
+        self.assertNotIn("localStorage", html)
+        self.assertNotIn("sessionStorage", html)
 
     def test_student_sandbox_v1_guide_explains_why_and_how(self) -> None:
         """The student/parent guide must keep its core invariants visible."""
@@ -802,6 +825,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
         self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", workflow)
         self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", workflow)
+        self.assertIn("cp demo/student-session-review.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
         self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", workflow)
 

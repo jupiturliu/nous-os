@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS — Student Session Review</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #f5f8f6;
+    --ink: #17201a;
+    --muted: #637069;
+    --line: rgba(24,49,43,0.14);
+    --panel: #fff;
+    --teal: #0f766e;
+    --navy: #21406b;
+    --gold: #a96812;
+  }
+  body {
+    margin: 0;
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, #fbfdfb, var(--bg));
+  }
+  .shell { width: min(1080px, 100%); margin: 0 auto; padding: 34px 20px 70px; }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  a { color: var(--teal); text-decoration: none; }
+  h1 { margin: 0 0 10px; font-size: clamp(34px, 5vw, 58px); line-height: 1; letter-spacing: -0.04em; }
+  .lede { color: var(--muted); max-width: 760px; line-height: 1.6; margin-bottom: 24px; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 26px; }
+  input, button {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+  }
+  input { min-width: min(420px, 100%); flex: 1; }
+  button { background: var(--teal); color: #fff; cursor: pointer; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; align-items: start; }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    padding: 18px;
+    box-shadow: 0 20px 60px rgba(24,49,43,0.08);
+  }
+  .card h2 { margin: 0 0 12px; font-size: 18px; color: var(--navy); }
+  .kv { display: grid; grid-template-columns: 150px 1fr; gap: 8px 12px; font-size: 14px; line-height: 1.5; }
+  .kv dt { color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; }
+  .kv dd { margin: 0; white-space: pre-wrap; }
+  .signals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .signal { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(15,118,110,0.04); }
+  .signal b { display: block; font-size: 20px; color: var(--teal); }
+  .signal span { color: var(--muted); font-size: 12px; }
+  .source-list, .chat-list { display: grid; gap: 10px; }
+  .source, .turn { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(33,64,107,0.035); }
+  .source strong, .turn strong { color: var(--navy); }
+  .source p, .turn p { margin: 6px 0 0; color: var(--muted); line-height: 1.5; white-space: pre-wrap; }
+  .status { color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 12px; margin-bottom: 14px; }
+  @media (max-width: 760px) {
+    .grid, .signals, .kv { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar">
+    <span>NOUS OS · Student Session Review</span>
+    <span><a href="student-sandbox-v1.html">back to sandbox</a> · <a href="../research.html">research track</a></span>
+  </div>
+  <h1>Session review for parents, teachers, and research notes.</h1>
+  <p class="lede">This page reads the local backend session record. It does not ask for student identity. Use it to inspect source checks, reflection quality, boundary integrity, and whether NOUS Guide supported thinking without taking over final responsibility.</p>
+
+  <div class="toolbar">
+    <input id="session-id" placeholder="Session id, or leave blank for latest">
+    <button id="load-btn" type="button">Load review</button>
+  </div>
+  <div class="status" id="status">Loading latest session...</div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Worksheet</h2>
+      <dl class="kv" id="worksheet"></dl>
+    </section>
+    <section class="card">
+      <h2>Research signals</h2>
+      <div class="signals" id="signals"></div>
+    </section>
+    <section class="card">
+      <h2>Source cards</h2>
+      <div class="source-list" id="sources"></div>
+    </section>
+    <section class="card">
+      <h2>Reflection</h2>
+      <dl class="kv" id="reflection"></dl>
+    </section>
+    <section class="card">
+      <h2>Observer note</h2>
+      <dl class="kv" id="observer"></dl>
+    </section>
+    <section class="card">
+      <h2>NOUS Guide turns</h2>
+      <div class="chat-list" id="turns"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+  (function () {
+    const statusEl = document.getElementById('status');
+    const input = document.getElementById('session-id');
+    const endpoint = window.NOUSOS_STUDENT_SESSION_ENDPOINT || '/api/student-sandbox-session';
+
+    function text(value) {
+      return value ? String(value) : '[not filled]';
+    }
+
+    function setKv(id, pairs) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      pairs.forEach(([label, value]) => {
+        const dt = document.createElement('dt');
+        dt.textContent = label;
+        const dd = document.createElement('dd');
+        dd.textContent = text(value);
+        el.append(dt, dd);
+      });
+    }
+
+    function renderSignals(signals) {
+      const el = document.getElementById('signals');
+      el.innerHTML = '';
+      [
+        ['Sources complete', signals.source_cards_complete || 0],
+        ['Accepted sources', signals.accepted_sources || 0],
+        ['Reflection fields', signals.reflection_fields_complete || 0],
+        ['Chat turns', signals.chat_turns_total || 0],
+        ['Boundary set', signals.has_human_boundary ? 'yes' : 'no'],
+        ['Observer checks', signals.observer_check_count || 0],
+      ].forEach(([label, value]) => {
+        const div = document.createElement('div');
+        div.className = 'signal';
+        div.innerHTML = '<b></b><span></span>';
+        div.querySelector('b').textContent = value;
+        div.querySelector('span').textContent = label;
+        el.appendChild(div);
+      });
+    }
+
+    function renderSources(cards) {
+      const el = document.getElementById('sources');
+      el.innerHTML = '';
+      if (!cards || cards.length === 0) {
+        el.textContent = 'No structured sources saved yet.';
+        return;
+      }
+      cards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'source';
+        div.innerHTML = '<strong></strong><p></p><p></p>';
+        div.querySelector('strong').textContent = `${card.id || 'source'} · ${card.decision || 'pending'}`;
+        div.querySelectorAll('p')[0].textContent = `${text(card.title)} · ${text(card.author)} · ${text(card.date)}`;
+        div.querySelectorAll('p')[1].textContent = `Evidence: ${text(card.evidence)}\nUncertainty: ${text(card.uncertainty)}`;
+        el.appendChild(div);
+      });
+    }
+
+    function renderTurns(turns) {
+      const el = document.getElementById('turns');
+      el.innerHTML = '';
+      if (!turns || turns.length === 0) {
+        el.textContent = 'No chat turns saved yet.';
+        return;
+      }
+      turns.forEach(turn => {
+        const div = document.createElement('div');
+        div.className = 'turn';
+        div.innerHTML = '<strong></strong><p></p>';
+        div.querySelector('strong').textContent = `${turn.role || 'student'} · ${turn.created_at || ''}`;
+        div.querySelector('p').textContent = text(turn.text);
+        el.appendChild(div);
+      });
+    }
+
+    async function latestSessionId() {
+      const response = await fetch(endpoint + '?list=1&limit=1');
+      const data = await response.json();
+      return data.sessions && data.sessions[0] && data.sessions[0].session_id;
+    }
+
+    async function loadSession(sessionId) {
+      statusEl.textContent = 'Loading...';
+      let id = sessionId || input.value.trim() || new URLSearchParams(location.search).get('session_id') || '';
+      if (!id) id = await latestSessionId();
+      if (!id) throw new Error('No saved sessions found.');
+      input.value = id;
+      const response = await fetch(endpoint + '?session_id=' + encodeURIComponent(id));
+      const record = await response.json();
+      if (!response.ok) throw new Error(record.error || 'Could not load session.');
+      setKv('worksheet', [
+        ['session', record.session_id],
+        ['saved', record.saved_at],
+        ['question', record.worksheet && record.worksheet.question],
+        ['prior belief', record.worksheet && record.worksheet.prior_belief],
+        ['boundary', record.worksheet && record.worksheet.boundary],
+        ['AI notes', record.worksheet && record.worksheet.ai_plan_notes],
+        ['revised plan', record.worksheet && record.worksheet.revised_plan],
+      ]);
+      setKv('reflection', [
+        ['AI helped with', record.reflection && record.reflection.reflect_help],
+        ['verified', record.reflection && record.reflection.reflect_verify],
+        ['responsibility', record.reflection && record.reflection.reflect_responsibility],
+        ['next time', record.reflection && record.reflection.reflect_next],
+      ]);
+      setKv('observer', [
+        ['explained question', record.observer && record.observer.student_explained_question],
+        ['named source issue', record.observer && record.observer.named_source_issue],
+        ['kept responsibility', record.observer && record.observer.kept_human_responsibility],
+        ['used AI for hints', record.observer && record.observer.used_ai_for_hints],
+        ['note', record.observer && record.observer.note],
+        ['privacy redaction', record.privacy && record.privacy.private_pattern_detected ? 'private pattern detected and redacted' : 'no private pattern detected'],
+      ]);
+      renderSignals(record.research_signals || {});
+      renderSources(record.source_cards || []);
+      renderTurns(record.chat_turns || []);
+      statusEl.textContent = 'Loaded local session record.';
+    }
+
+    document.getElementById('load-btn').addEventListener('click', () => {
+      loadSession().catch(error => { statusEl.textContent = error.message; });
+    });
+    loadSession().catch(error => { statusEl.textContent = error.message; });
+  })();
+</script>
+</body>
+</html>

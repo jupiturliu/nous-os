@@ -6,6 +6,7 @@ const SESSION_DIR = path.join(ROOT, 'examples', 'runtime', 'student-sandbox-sess
 const MAX_BODY_CHARS = 64000;
 const MAX_TEXT_CHARS = 2000;
 const MAX_TURNS = 24;
+const MAX_SOURCE_CARDS = 4;
 
 const FIELD_LIMITS = {
   question: 500,
@@ -19,6 +20,24 @@ const FIELD_LIMITS = {
   reflect_responsibility: 900,
   reflect_next: 900,
   summary: 2000,
+};
+
+const SOURCE_CARD_LIMITS = {
+  title: 240,
+  url: 500,
+  author: 240,
+  date: 120,
+  evidence: 700,
+  uncertainty: 700,
+  decision: 80,
+};
+
+const OBSERVER_LIMITS = {
+  student_explained_question: 20,
+  named_source_issue: 20,
+  kept_human_responsibility: 20,
+  used_ai_for_hints: 20,
+  note: 1200,
 };
 
 function json(response, status, payload) {
@@ -95,6 +114,37 @@ function safeTurns(turns = []) {
   }));
 }
 
+function safeSourceCards(cards = []) {
+  return cards.slice(0, MAX_SOURCE_CARDS).map((card, index) => ({
+    id: safeText(card && card.id, 40) || `source-${index + 1}`,
+    ...safeObject(card || {}, SOURCE_CARD_LIMITS),
+  }));
+}
+
+function buildResearchSignals({ worksheet, reflection, sourceCards, chatTurns, observer }) {
+  const acceptedSources = sourceCards.filter(card => card.decision === 'accepted').length;
+  const sourceCardsComplete = sourceCards.filter(card =>
+    card.title && card.author && card.date && card.evidence && card.uncertainty
+  ).length;
+  const reflectionFieldsComplete = [
+    reflection.reflect_help,
+    reflection.reflect_verify,
+    reflection.reflect_responsibility,
+    reflection.reflect_next,
+  ].filter(Boolean).length;
+  return {
+    source_cards_total: sourceCards.length,
+    source_cards_complete: sourceCardsComplete,
+    accepted_sources: acceptedSources,
+    reflection_fields_complete: reflectionFieldsComplete,
+    chat_turns_total: chatTurns.length,
+    has_human_boundary: Boolean(worksheet.boundary),
+    has_revised_plan: Boolean(worksheet.revised_plan),
+    observer_check_count: Object.entries(observer)
+      .filter(([key, value]) => key !== 'note' && value === 'yes').length,
+  };
+}
+
 function buildRecord(body) {
   const worksheet = safeObject(body.worksheet || {});
   const reflection = safeObject(body.reflection || {}, {
@@ -105,12 +155,17 @@ function buildRecord(body) {
   });
   const summary = safeText(body.summary, FIELD_LIMITS.summary);
   const chatTurns = safeTurns(body.chat_turns || []);
+  const sourceCards = safeSourceCards(body.source_cards || []);
+  const observer = safeObject(body.observer || {}, OBSERVER_LIMITS);
   const serialized = JSON.stringify({
     worksheet: body.worksheet || {},
     reflection: body.reflection || {},
+    source_cards: body.source_cards || [],
+    observer: body.observer || {},
     summary: body.summary || '',
     chat_turns: body.chat_turns || [],
   });
+  const researchSignals = buildResearchSignals({ worksheet, reflection, sourceCards, chatTurns, observer });
 
   return {
     version: 'student_sandbox_session_v1',
@@ -129,7 +184,10 @@ function buildRecord(body) {
       reminder: 'Do not enter full names, school names, teacher names, addresses, or family details.',
     },
     worksheet,
+    source_cards: sourceCards,
     reflection,
+    observer,
+    research_signals: researchSignals,
     summary,
     chat_turns: chatTurns,
   };
@@ -152,6 +210,30 @@ function readRecord(sessionId) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function listRecords(limit = 20) {
+  if (!fs.existsSync(SESSION_DIR)) return [];
+  return fs.readdirSync(SESSION_DIR)
+    .filter(name => name.endsWith('.json') && name !== 'latest.json')
+    .map(name => path.join(SESSION_DIR, name))
+    .map(filePath => {
+      try {
+        const record = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return {
+          session_id: record.session_id,
+          saved_at: record.saved_at,
+          question: record.worksheet && record.worksheet.question,
+          private_pattern_detected: Boolean(record.privacy && record.privacy.private_pattern_detected),
+          research_signals: record.research_signals || {},
+        };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter(Boolean)
+    .sort((a, b) => String(b.saved_at || '').localeCompare(String(a.saved_at || '')))
+    .slice(0, limit);
+}
+
 module.exports = async function handler(request, response) {
   response.setHeader('Access-Control-Allow-Origin', process.env.HERMES_ALLOWED_ORIGIN || 'https://nousos.ai');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -165,6 +247,11 @@ module.exports = async function handler(request, response) {
 
   if (request.method === 'GET') {
     const url = new URL(request.url, 'http://127.0.0.1');
+    if (url.searchParams.get('list') === '1') {
+      const limit = Math.max(1, Math.min(50, Number(url.searchParams.get('limit') || 20)));
+      json(response, 200, { sessions: listRecords(limit) });
+      return;
+    }
     const sessionId = safeSessionId(url.searchParams.get('session_id'));
     const record = readRecord(sessionId);
     if (!record) {
@@ -201,9 +288,12 @@ module.exports = async function handler(request, response) {
 
 module.exports._private = {
   buildRecord,
+  buildResearchSignals,
   containsPrivatePattern,
+  listRecords,
   redactPrivateText,
   safeSessionId,
+  safeSourceCards,
   safeText,
   safeTurns,
   sessionPath,

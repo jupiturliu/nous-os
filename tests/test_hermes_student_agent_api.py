@@ -65,12 +65,17 @@ class HermesStudentAgentApiTests(unittest.TestCase):
             session_id: 'student-test-session',
             worksheet: { question: 'Email me at student@example.com about batteries' },
             reflection: { reflect_help: 'Call 415-555-1212' },
+            source_cards: [{ id: 'source-1', title: 'Study', author: 'NIH', date: '2025', evidence: 'Measured sleep', uncertainty: 'Small sample', decision: 'accepted' }],
+            observer: { student_explained_question: 'yes', named_source_issue: 'yes', kept_human_responsibility: 'yes', used_ai_for_hints: 'yes' },
             chat_turns: [{ role: 'student', text: 'My SSN is 123-45-6789' }]
           });
           if (!record.privacy.private_pattern_detected) process.exit(2);
           const dump = JSON.stringify(record);
           if (dump.includes('student@example.com') || dump.includes('415-555-1212') || dump.includes('123-45-6789')) process.exit(3);
           if (record.storage.backend !== 'local-filesystem' || record.storage.browser_storage !== false) process.exit(4);
+          if (record.source_cards.length !== 1 || record.source_cards[0].decision !== 'accepted') process.exit(5);
+          if (record.research_signals.accepted_sources !== 1) process.exit(6);
+          if (record.research_signals.observer_check_count !== 4) process.exit(7);
         """
         result = subprocess.run(
             ["node", "-e", script],
