@@ -66,10 +66,14 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("npx wrangler deploy", workflow)
         self.assertIn("CLOUDFLARE_ACCOUNT_ID", workflow)
         self.assertIn("CLOUDFLARE_API_TOKEN", workflow)
-        self.assertIn("NOUS_BACKEND_ORIGIN_URL", workflow)
-        self.assertIn("wrangler secret put NOUS_BACKEND_ORIGIN_URL", workflow)
         self.assertIn("configured=false", workflow)
         self.assertIn("Cloudflare deployment skipped", workflow)
+        # NOUS_BACKEND_ORIGIN_URL moved from a Worker secret (set via the
+        # workflow) to a Worker var in wrangler.toml. The hostname
+        # backend.nousos.ai is public, not sensitive.
+        wrangler_toml = (ROOT / "wrangler.toml").read_text()
+        self.assertIn("NOUS_BACKEND_ORIGIN_URL", wrangler_toml)
+        self.assertIn("https://backend.nousos.ai", wrangler_toml)
 
     def test_cloudflare_architecture_doc_explains_cutover_and_boundaries(self) -> None:
         doc = (ROOT / "docs" / "cloudflare-hermes-architecture.md").read_text()
