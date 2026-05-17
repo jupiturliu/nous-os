@@ -347,5 +347,100 @@ class TradingEvaluatorReadOnlyEnforcementTests(unittest.TestCase):
         self.assertEqual(write_modes, [], f"Evaluator opened files for writing: {write_modes}")
 
 
+class TradingVerticalDemoWiringTests(unittest.TestCase):
+    """Slice 3: trading_vertical demo mode routes through TradingEvaluator."""
+
+    def setUp(self) -> None:
+        self._tmp = Path(__import__("tempfile").mkdtemp(prefix="trading_evaluator_wiring_"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self._tmp, ignore_errors=True))
+
+        sys.path.insert(0, str(ROOT / "examples"))
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import nousos_heartbeat_demo as heartbeat_demo
+        self.heartbeat_demo = heartbeat_demo
+        self._orig_root = heartbeat_demo._trading_workspace_root
+
+    def tearDown(self) -> None:
+        self.heartbeat_demo._trading_workspace_root = self._orig_root
+
+    def _patch_workspace(self, workspace: Path) -> None:
+        self.heartbeat_demo._trading_workspace_root = lambda: workspace
+
+    def _baseline_benchmark(self) -> dict:
+        return {
+            "cls_v2": {
+                "score": 0.5,
+                "components": {field: 0.5 for field in CLS_V2_FIELDS},
+                "evidence_refs": ["runtime://round1"],
+            }
+        }
+
+    def test_non_trading_mode_marks_evidence_source_synthetic(self) -> None:
+        out = self.heartbeat_demo.maybe_apply_trading_evaluator(self._baseline_benchmark(), "student")
+        self.assertEqual(out["cls_v2"]["evidence_source"], "synthetic_demo")
+        self.assertNotIn("fallback_reason", out["cls_v2"])
+
+    def test_trading_mode_without_workspace_falls_back_with_reason(self) -> None:
+        self._patch_workspace(self._tmp / "no-such-dir")
+        out = self.heartbeat_demo.maybe_apply_trading_evaluator(self._baseline_benchmark(), "trading_vertical")
+        self.assertEqual(out["cls_v2"]["evidence_source"], "synthetic_demo_fallback")
+        self.assertTrue(out["cls_v2"]["fallback_reason"], "fallback_reason must be non-empty")
+
+    def test_trading_mode_with_real_artifacts_uses_evaluator(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "trader1",
+            proof_packs=[_proof_pack("ec-0001"), _proof_pack("ec-0002")],
+            market_proof={
+                "baseline_comparisons.jsonl": [
+                    {
+                        "artifact_type": "market_proof_baseline_comparison",
+                        "outcome_label": "matured",
+                        "outperformed_benchmark": True,
+                        "decision_id": "sd-1",
+                        "symbol": "X",
+                        "execution_boundary": _clean_boundary(),
+                    },
+                ],
+                "forecast_ledger_summary.json": {
+                    "artifact_type": "forecast_ledger_summary",
+                    "brier_improvement_over_baseline": 0.1,
+                    "execution_boundary": _clean_boundary(),
+                },
+            },
+        )
+        self._patch_workspace(workspace)
+        out = self.heartbeat_demo.maybe_apply_trading_evaluator(self._baseline_benchmark(), "trading_vertical")
+
+        self.assertEqual(out["cls_v2"]["evidence_source"], "trading_evaluator")
+        self.assertEqual(out["cls_v2"]["trading_username"], "trader1")
+        self.assertEqual(out["cls_v2"]["components"]["boundary_integrity"], 1.0)
+        self.assertEqual(out["cls_v2"]["components"]["human_agency_preservation"], 1.0)
+        self.assertEqual(out["cls_v2"]["components"]["outcome_quality_delta"], 1.0)
+        self.assertAlmostEqual(out["cls_v2"]["components"]["repeatability_gain"], 0.1, places=4)
+        self.assertTrue(any("baseline_comparisons.jsonl" in ref for ref in out["cls_v2"]["evidence_refs"]))
+        self.assertTrue(any("forecast_ledger_summary.json" in ref for ref in out["cls_v2"]["evidence_refs"]))
+        self.assertNotIn("fallback_reason", out["cls_v2"])
+        self.assertIn("correction_absorption", out["cls_v2"]["pending_components"])
+        self.assertIn("memory_reuse_precision", out["cls_v2"]["pending_components"])
+
+    def test_trading_mode_skips_user_with_only_index_json(self) -> None:
+        users_dir = self._tmp / "trading-agent" / "data" / "users"
+        (users_dir / "shellonly" / "promotion_reviews" / "proof_packs").mkdir(parents=True)
+        (users_dir / "shellonly" / "promotion_reviews" / "proof_packs" / "index.json").write_text(
+            json.dumps({"schema_version": 1, "packs": []})
+        )
+        real_workspace = _make_workspace(
+            self._tmp,
+            "real_user",
+            proof_packs=[_proof_pack("ec-0001")],
+            market_proof={},
+        )
+        self._patch_workspace(real_workspace)
+        out = self.heartbeat_demo.maybe_apply_trading_evaluator(self._baseline_benchmark(), "trading_vertical")
+
+        self.assertEqual(out["cls_v2"]["trading_username"], "real_user")
+
+
 if __name__ == "__main__":
     unittest.main()

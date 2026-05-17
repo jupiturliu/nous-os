@@ -27,6 +27,50 @@ import check_harness_inventory as harness_inventory
 
 
 class BenchmarkTests(unittest.TestCase):
+    def _sample_benchmark(self) -> dict:
+        return heartbeat_demo.build_benchmark(
+            round1={"metrics": {"avg_quality": 0.74, "tasks_dispatched": 2, "memory_hit_rate": 0.0}},
+            round2={"metrics": {"avg_quality": 0.93, "tasks_dispatched": 3, "memory_hit_rate": 1.0}},
+            alerts_count=2,
+            episodes_logged=2,
+            override={"kind": "risk", "reason": "Add a risk gate."},
+        )
+
+    def _write_trading_fixture(self, workspace: Path, username: str = "alice") -> None:
+        user_root = workspace / "trading-agent" / "data" / "users" / username
+        proof_dir = user_root / "promotion_reviews" / "proof_packs"
+        market_dir = user_root / "market_proof"
+        proof_dir.mkdir(parents=True)
+        market_dir.mkdir(parents=True)
+        boundary = {
+            "broker_action_allowed": False,
+            "creates_order_or_draft": False,
+            "creates_promotion_or_approval": False,
+            "mutates_runtime_live_state": False,
+            "production_config_changed": False,
+        }
+        (proof_dir / "ec-0001.json").write_text(json.dumps({
+            "candidate_id": "ec-0001",
+            "capital_action_authorized": False,
+            "execution_boundary": boundary,
+        }))
+        (market_dir / "baseline_comparisons.jsonl").write_text("\n".join([
+            json.dumps({
+                "outcome_label": "matured",
+                "outperformed_benchmark": True,
+                "execution_boundary": boundary,
+            }),
+            json.dumps({
+                "outcome_label": "matured",
+                "outperformed_benchmark": False,
+                "execution_boundary": boundary,
+            }),
+        ]))
+        (market_dir / "forecast_ledger_summary.json").write_text(json.dumps({
+            "brier_improvement_over_baseline": 0.25,
+            "execution_boundary": boundary,
+        }))
+
     def test_build_benchmark_computes_expected_cls(self) -> None:
         round1 = {
             "metrics": {
@@ -75,6 +119,33 @@ class BenchmarkTests(unittest.TestCase):
             },
         )
         self.assertEqual(benchmark["cls_v2"]["score"], compute_cls_v2(benchmark["cls_v2"]["components"]))
+
+    def test_trading_vertical_benchmark_uses_evidence_backed_evaluator_when_available(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            self._write_trading_fixture(workspace)
+            benchmark = heartbeat_demo.maybe_apply_trading_evaluator(
+                self._sample_benchmark(),
+                "trading_vertical",
+                workspace=workspace,
+            )
+
+        self.assertEqual(benchmark["evidence_source"], "trading_evaluator")
+        self.assertEqual(benchmark["evaluator_user"], "alice")
+        self.assertEqual(benchmark["cls_v2"]["components"]["outcome_quality_delta"], 0.5)
+        self.assertEqual(benchmark["cls_v2"]["components"]["repeatability_gain"], 0.25)
+        self.assertEqual(benchmark["cls_v2"]["components"]["boundary_integrity"], 1.0)
+
+    def test_trading_vertical_benchmark_marks_synthetic_fallback_when_artifacts_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark = heartbeat_demo.maybe_apply_trading_evaluator(
+                self._sample_benchmark(),
+                "trading_vertical",
+                workspace=Path(tmp),
+            )
+
+        self.assertEqual(benchmark["evidence_source"], "synthetic_demo_fallback")
+        self.assertIn("no user has populated", benchmark["fallback_reason"])
 
     def test_build_dashboard_snapshot_contains_contract_fields(self) -> None:
         round1 = {

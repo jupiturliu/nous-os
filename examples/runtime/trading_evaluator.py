@@ -92,6 +92,7 @@ class TradingEvaluator:
         repeatability_gain, repeatability_available = self._repeatability_gain(summary)
 
         evidence_refs = self._evidence_refs(proof_packs)
+        evidence_refs.extend(self._market_evidence_refs(outcome_resolved, repeatability_available))
         for name in _DEFERRED_COMPONENTS:
             evidence_refs.append(f"pending:{name}")
         if not outcome_resolved:
@@ -122,11 +123,18 @@ class TradingEvaluator:
             return []
         packs = []
         for path in sorted(directory.glob("*.json")):
+            if path.name == "index.json":
+                continue
             try:
                 with open(path, "r", encoding="utf-8") as fh:
-                    packs.append((path, json.load(fh)))
+                    pack = json.load(fh)
             except (OSError, json.JSONDecodeError):
                 continue
+            if not isinstance(pack, dict):
+                continue
+            if "candidate_id" not in pack and "experiment_id" not in pack:
+                continue
+            packs.append((path, pack))
         return packs
 
     def _boundary_integrity(self, proof_packs: list[tuple[Path, dict]]) -> float:
@@ -196,15 +204,22 @@ class TradingEvaluator:
         return round(clamped, 4), True
 
     def _evidence_refs(self, proof_packs: list[tuple[Path, dict]]) -> list[str]:
-        try:
-            base = self.workspace.resolve()
-        except OSError:
-            base = self.workspace
         refs = []
         for path, _ in proof_packs:
-            try:
-                rel = path.resolve().relative_to(base)
-                refs.append(str(rel))
-            except (OSError, ValueError):
-                refs.append(path.name)
+            refs.append(self._relative_ref(path))
         return refs
+
+    def _market_evidence_refs(self, outcome_resolved: bool, repeatability_available: bool) -> list[str]:
+        refs = []
+        if outcome_resolved:
+            refs.append(self._relative_ref(self._user_root / "market_proof" / "baseline_comparisons.jsonl"))
+        if repeatability_available:
+            refs.append(self._relative_ref(self._user_root / "market_proof" / "forecast_ledger_summary.json"))
+        return refs
+
+    def _relative_ref(self, path: Path) -> str:
+        try:
+            base = self.workspace.resolve()
+            return str(path.resolve().relative_to(base))
+        except (OSError, ValueError):
+            return path.name

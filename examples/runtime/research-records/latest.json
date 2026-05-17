@@ -1,6 +1,6 @@
 {
-  "run_id": "20260516T180056-student-privacy",
-  "generated_at": "2026-05-16T18:00:56",
+  "run_id": "20260516T183526-student-privacy",
+  "generated_at": "2026-05-16T18:35:26",
   "demo_mode": "student",
   "audience": "student",
   "human_intent": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
@@ -52,6 +52,6 @@
     "policy": "local/demo artifact only; do not collect real student private data"
   },
   "snapshot_ref": "examples/runtime/dashboard-data.json",
-  "artifact_path": "/Users/liyao/nousos/nous-os/examples/runtime/research-records/20260516T180056-student-privacy.json",
+  "artifact_path": "/Users/liyao/nousos/nous-os/examples/runtime/research-records/20260516T183526-student-privacy.json",
   "latest_path": "/Users/liyao/nousos/nous-os/examples/runtime/research-records/latest.json"
 }

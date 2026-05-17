@@ -50,6 +50,7 @@ if str(RUNTIME_DIR) not in sys.path:
     sys.path.insert(0, str(RUNTIME_DIR))
 
 from cls_v2 import compute_cls_v2
+from trading_evaluator import TradingEvaluator, CLS_V2_FIELDS as TRADING_CLS_FIELDS
 
 RUNTIME_AGENT_BUS = RUNTIME_DIR / "agent-bus"
 RUNTIME_EPISODE_LOGGER = RUNTIME_DIR / "episode_logger_local.py"
@@ -626,6 +627,86 @@ def build_benchmark(round1: Dict, round2: Dict, alerts_count: int, episodes_logg
     }
 
 
+TRADING_EVALUATOR_MODE = "trading_vertical"
+
+
+def _trading_workspace_root() -> Path:
+    return WORKSPACE
+
+
+def _first_populated_trading_user(workspace: Path) -> str | None:
+    users_dir = workspace / "trading-agent" / "data" / "users"
+    if not users_dir.exists():
+        return None
+    for path in sorted(users_dir.iterdir()):
+        if not path.is_dir():
+            continue
+        packs_dir = path / "promotion_reviews" / "proof_packs"
+        market_dir = path / "market_proof"
+        if not packs_dir.exists() or not market_dir.exists():
+            continue
+        for pack in packs_dir.glob("*.json"):
+            if pack.name != "index.json":
+                return path.name
+    return None
+
+
+def maybe_apply_trading_evaluator(
+    benchmark: Dict,
+    demo_mode: str,
+    workspace: Path | None = None,
+) -> Dict:
+    """Route trading_vertical CLS v2 through the real domain evaluator.
+
+    Other demo modes are unchanged. When trading-agent artifacts are not
+    available the benchmark is left synthetic but flagged with an explicit
+    fallback reason — never silently substituted.
+    """
+    if normalize_demo_mode(demo_mode) != TRADING_EVALUATOR_MODE:
+        benchmark["evidence_source"] = "synthetic_demo"
+        benchmark["cls_v2"]["evidence_source"] = "synthetic_demo"
+        return benchmark
+
+    workspace = workspace or _trading_workspace_root()
+    username = _first_populated_trading_user(workspace)
+    if username is None:
+        benchmark["evidence_source"] = "synthetic_demo_fallback"
+        benchmark["fallback_reason"] = (
+            f"trading-agent workspace not found or no user has populated "
+            f"market_proof plus promotion_reviews/proof_packs at {workspace}/trading-agent"
+        )
+        benchmark["cls_v2"]["evidence_source"] = "synthetic_demo_fallback"
+        benchmark["cls_v2"]["fallback_reason"] = (
+            f"trading-agent workspace not found or no user has populated "
+            f"market_proof plus promotion_reviews/proof_packs at {workspace}/trading-agent"
+        )
+        return benchmark
+
+    evaluator = TradingEvaluator(workspace=workspace, username=username)
+    real = evaluator.evaluate(run_context={"demo_mode": TRADING_EVALUATOR_MODE, "username": username})
+    pending = [ref for ref in real["evidence_refs"] if ref.startswith("pending:")]
+    missing = [ref for ref in real["evidence_refs"] if ref.startswith("missing:")]
+    if missing:
+        benchmark["evidence_source"] = "synthetic_demo_fallback"
+        benchmark["fallback_reason"] = ", ".join(missing)
+        benchmark["cls_v2"]["evidence_source"] = "synthetic_demo_fallback"
+        benchmark["cls_v2"]["fallback_reason"] = ", ".join(missing)
+        return benchmark
+
+    components = {field: real[field] for field in TRADING_CLS_FIELDS}
+    benchmark["evidence_source"] = "trading_evaluator"
+    benchmark["evaluator_user"] = username
+    benchmark["cls_v2"] = {
+        "score": compute_cls_v2(components),
+        "components": components,
+        "evidence_refs": real["evidence_refs"],
+        "evidence_source": "trading_evaluator",
+        "trading_username": username,
+        "pending_components": [marker.split(":", 1)[1] for marker in pending],
+    }
+    return benchmark
+
+
 def build_timeline(goal: str, runs: List[Dict], override: Dict, demo_mode: str = DEFAULT_DEMO_MODE) -> List[Dict]:
     round1 = runs[0]
     round2 = runs[1]
@@ -803,6 +884,7 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict, demo_m
     alerts_count = len(alerts.get("items", []))
     quality_delta = round(round2["metrics"]["avg_quality"] - round1["metrics"]["avg_quality"], 2)
     benchmark = build_benchmark(round1, round2, alerts_count, episodes_logged, override)
+    benchmark = maybe_apply_trading_evaluator(benchmark, demo_mode)
     return {
         "generated_at": now_local(),
         "demo_mode": demo_mode,
