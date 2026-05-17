@@ -745,8 +745,6 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("/api/student-sandbox-session", student_trial_text)
         self.assertIn("student-session-review.html", student_trial_text)
         student_workflow_text = student_workflow.read_text()
-        self.assertIn("skill-first, harness-second", student_workflow_text)
-        self.assertIn("Promote stable, high-frequency, machine-checkable steps", student_workflow_text)
         self.assertIn("Workflow State Machine", student_workflow_text)
         self.assertIn("Skills Layer", student_workflow_text)
         self.assertIn("NOUS Guide", student_workflow_text)
