@@ -1,0 +1,112 @@
+name: Research Line · L1 daily capture
+
+on:
+  schedule:
+    # 07:15 UTC daily = early morning Pacific. Single window per day.
+    - cron: "15 7 * * *"
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: "Override --max-age-days (default 2)"
+        required: false
+        default: "2"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: research-line-capture
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Run capture script
+        id: capture
+        run: |
+          set -euo pipefail
+          MAX_AGE="${{ github.event.inputs.max_age_days || '2' }}"
+          python scripts/research_line_capture.py --max-age-days "$MAX_AGE"
+          # Capture the dated filename for downstream steps.
+          DATE_LABEL="$(date -u +%Y-%m-%d)"
+          echo "date_label=${DATE_LABEL}" >> "$GITHUB_OUTPUT"
+          INBOX_FILE="docs/research-line/inbound/_inbox/${DATE_LABEL}.md"
+          echo "inbox_file=${INBOX_FILE}" >> "$GITHUB_OUTPUT"
+          if [ ! -f "$INBOX_FILE" ]; then
+            echo "::error::Capture script did not produce ${INBOX_FILE}"
+            exit 1
+          fi
+
+      - name: Detect changes
+        id: changes
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain ${{ steps.capture.outputs.inbox_file }})" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No changes from today's capture (file is byte-identical to existing)."
+          fi
+
+      - name: Open pull request
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE_LABEL: ${{ steps.capture.outputs.date_label }}
+          INBOX_FILE: ${{ steps.capture.outputs.inbox_file }}
+        run: |
+          set -euo pipefail
+
+          BRANCH="research-line/inbox-${DATE_LABEL}"
+
+          # Make sure we are not on top of a prior abandoned branch.
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "::notice::Branch ${BRANCH} already exists on origin; updating."
+          fi
+
+          git config user.name  "nous-os-bot"
+          git config user.email "noreply@nousos.ai"
+
+          git checkout -b "$BRANCH"
+          git add "$INBOX_FILE"
+          git commit -m "L1 capture · ${DATE_LABEL}" \
+            -m "Daily Research Line L1 capture produced by scripts/research_line_capture.py. Raw, keyword-filtered, awaiting L2 triage. Merge to publish into the inbox corpus; close to discard; transform an entry into a full inbound note via docs/research-line/inbound/_template.md before merging if it is worth keeping."
+
+          git push --force-with-lease origin "$BRANCH"
+
+          # Idempotent: if a PR already exists for this branch, reuse it.
+          if gh pr list --head "$BRANCH" --state open --json number --jq 'length' | grep -q "^0$"; then
+            gh pr create \
+              --base master \
+              --head "$BRANCH" \
+              --title "L1 capture · ${DATE_LABEL}" \
+              --body "$(cat <<EOF
+Daily Research Line L1 capture.
+
+**File:** \`${INBOX_FILE}\`
+
+**Triage options:**
+- **Merge** → entry list is preserved in the inbox corpus (visible in repo, not deployed to the site by default).
+- **Close** → entire day discarded; no record kept.
+- **Transform first** → promote 1–3 entries to full inbound notes under \`docs/research-line/inbound/\` using the inbound \`_template.md\`. Update \`docs/research-line/anchor-atlas.md\` and \`research-line-atlas.html\` to flip the corresponding entry from \`queued\`/\`scanned\` to \`note-written\`. Then merge.
+
+This PR was opened by \`.github/workflows/research-line-capture.yml\` on a daily cron. The bot does not auto-merge.
+EOF
+)" \
+              --label "research-line:inbox"
+          else
+            echo "::notice::A PR already exists for branch ${BRANCH}; new commit pushed."
+          fi
