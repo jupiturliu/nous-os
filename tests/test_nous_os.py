@@ -771,6 +771,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp -R demo/assets _site/demo/", workflow)
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
         self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", workflow)
+        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
         self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", workflow)
 

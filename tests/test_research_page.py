@@ -25,8 +25,11 @@ class ResearchPageTests(unittest.TestCase):
         self.assertIn("The website page is the user-friendly reading layer.", research)
         self.assertIn("Theory anchor MD", research)
         self.assertIn("Launch Student Sandbox", research)
+        self.assertIn("Read Student Guidelines", research)
+        self.assertIn("/demo/student-sandbox-v1-guide.html", research)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', research)
         self.assertIn("cp research.html _site/", workflow)
+        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", workflow)
 
 
 if __name__ == "__main__":
