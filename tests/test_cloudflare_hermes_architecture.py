@@ -58,6 +58,13 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
 
         self.assertIn("Browser -> Cloudflare Worker Static Assets", doc)
         self.assertIn("Browser -> local NOUS OS webserver", doc)
+        self.assertIn("Trading-Agent Precedent", doc)
+        self.assertIn("/Users/liyao/nousos/trading-agent", doc)
+        self.assertIn("docs/notes/deployment/DNS_SETUP_GUIDE.md", doc)
+        self.assertIn("web/server.py", doc)
+        self.assertIn("HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions", doc)
+        self.assertIn("ai.hermes.gateway", doc)
+        self.assertIn("com.trading.cloudflared", doc)
         self.assertIn("Hermes Gateway", doc)
         self.assertIn("GitHub Pages-only limitation", doc)
         self.assertIn("Disable the GitHub Pages workflow", doc)

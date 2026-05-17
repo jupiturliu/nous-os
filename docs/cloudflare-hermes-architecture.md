@@ -10,7 +10,31 @@ Local development:
 Browser -> local NOUS OS webserver -> /api/hermes-student-agent -> local Hermes Gateway
 ```
 
+This adapts the deployment pattern already proven in `trading-agent`:
+
+- Cloudflare is the public edge.
+- The app does not expose model-provider keys to the browser.
+- The web surface calls a first-party API boundary.
+- The API boundary calls Hermes Gateway through the OpenAI-compatible `/v1/chat/completions` endpoint.
+- Local development keeps the same request shape against `127.0.0.1`.
+
+`trading-agent` uses Cloudflare Tunnel into a local Python webserver because it owns private trading state, broker adapters, session files, and user ledgers. `nous-os` can use Cloudflare Worker Static Assets because the public site is static plus a narrow Hermes API route. The boundary is the same; the hosting substrate is lighter.
+
 This replaces the GitHub Pages-only limitation. GitHub Pages can publish HTML, but it cannot execute `/api/*`. Cloudflare Worker Static Assets can serve the website and run the Hermes API boundary in the same deployment.
+
+## Trading-Agent Precedent
+
+The source pattern already exists in `/Users/liyao/nousos/trading-agent`:
+
+| Concern | Trading-agent evidence | NOUS OS adaptation |
+|---|---|---|
+| Cloudflare public edge | `docs/notes/deployment/DNS_SETUP_GUIDE.md`, `docs/notes/product/release_runbook.md` | `wrangler.toml`, `.github/workflows/cloudflare.yml` |
+| Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `scripts/serve_nous_site.cjs` on `127.0.0.1:8787` |
+| Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | `HERMES_GATEWAY_URL=http://127.0.0.1:8642` |
+| Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | CI-gated Worker deploy plus local smoke checks |
+| Browser safety boundary | web calls first-party API routes, not model providers | browser calls `/api/hermes-student-agent` only |
+
+The naming differs slightly because `trading-agent` stores the full chat completions URL in `HERMES_API_SERVER_URL`, while `nous-os` stores the Gateway root in `HERMES_GATEWAY_URL` and appends `/v1/chat/completions` in the adapter. That keeps the Worker and local webserver contract identical.
 
 ## Runtime Boundary
 
