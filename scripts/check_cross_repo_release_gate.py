@@ -69,11 +69,27 @@ def run_command(cmd: list[str], cwd: Path, timeout: int = 60) -> dict[str, Any]:
 
 
 def git_status(repo_path: Path) -> tuple[bool, list[str], list[str]]:
-    result = run_command(["git", "status", "--short"], cwd=repo_path)
-    if not result["ok"]:
-        return True, [], [f"git status failed: {result['stderr'] or result['stdout']}"]
-    lines = [line for line in result["stdout"].splitlines() if line.strip()]
-    return bool(lines), lines, []
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+            cwd=repo_path,
+            capture_output=True,
+            timeout=60,
+        )
+    except FileNotFoundError as exc:
+        return True, [], [f"git status failed: {exc}"]
+    except subprocess.TimeoutExpired as exc:
+        return True, [], [f"git status failed: timeout after {exc.timeout}s"]
+    if result.returncode != 0:
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        stdout = result.stdout.decode("utf-8", errors="replace")
+        return True, [], [f"git status failed: {stderr or stdout}"]
+    entries = [
+        item.decode("utf-8", errors="replace")
+        for item in result.stdout.split(b"\0")
+        if item
+    ]
+    return bool(entries), entries, []
 
 
 def _git_status_path(line: str) -> str:
@@ -136,6 +152,8 @@ def check_repo(workspace: Path, name: str, config: dict[str, Any], run_tests: bo
     report: dict[str, Any] = {
         "exists": repo_path.exists(),
         "dirty": False,
+        "dirty_count": 0,
+        "dirty_allowlisted_count": 0,
         "dirty_entries": [],
         "dirty_allowlisted_entries": [],
         "issues": [],
@@ -150,6 +168,8 @@ def check_repo(workspace: Path, name: str, config: dict[str, Any], run_tests: bo
     _, entries, status_issues = git_status(repo_path)
     true_dirty, allowlisted = partition_dirty_entries(entries, config.get("dirty_allowlist", []))
     report["dirty"] = bool(true_dirty)
+    report["dirty_count"] = len(true_dirty)
+    report["dirty_allowlisted_count"] = len(allowlisted)
     report["dirty_entries"] = true_dirty[:50]
     report["dirty_allowlisted_entries"] = allowlisted[:50]
     report["issues"].extend(status_issues)

@@ -19,6 +19,8 @@ The default release gate checks:
 - repository exists
 - git status is readable
 - dirty/untracked state is reported, split into `dirty_entries` (true blockers) and `dirty_allowlisted_entries` (documented noise that does not block release)
+- dirty output is read with `git status --porcelain=v1 -z` so large worktrees and non-ASCII paths are not truncated or misparsed
+- `dirty_count` and `dirty_allowlisted_count` expose total counts, while the entry lists show the first 50 examples
 - public docs are scanned for obvious private absolute paths
 - public docs are scanned for conservative secret-like tokens
 
