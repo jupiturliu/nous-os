@@ -525,8 +525,9 @@
     line-height: 1.4;
   }
 
-  .topology-node.human { left: 11%; top: 18%; }
-  .topology-node.aria { left: 34%; top: 18%; }
+  .topology-node.human { left: 9%; top: 18%; }
+  .topology-node.obsidian { left: 25%; top: 18%; }
+  .topology-node.aria { left: 42%; top: 18%; }
   .topology-node.synapse { left: 58%; top: 18%; }
   .topology-node.research { left: 79%; top: 34%; }
   .topology-node.vibe { left: 79%; top: 68%; }
@@ -1166,8 +1167,10 @@
           <h2>Agent Topology</h2>
           <div class="topology-stage">
             <svg viewBox="0 0 1000 580" preserveAspectRatio="none">
-              <path class="edge" id="edge-human-aria" d="M130 105 C210 100, 265 100, 335 105"></path>
-              <path class="edge" id="edge-aria-synapse" d="M445 105 C500 100, 545 100, 610 105"></path>
+              <path class="edge" id="edge-human-obsidian" d="M105 105 C145 100, 190 100, 245 105"></path>
+              <path class="edge" id="edge-obsidian-aria" d="M315 105 C350 100, 380 100, 420 105"></path>
+              <path class="edge" id="edge-aria-synapse" d="M505 105 C540 100, 575 100, 610 105"></path>
+              <path class="edge" id="edge-obsidian-trustmem" d="M290 130 C350 255, 430 350, 525 405"></path>
               <path class="edge" id="edge-synapse-research" d="M700 118 C785 120, 830 155, 865 205"></path>
               <path class="edge" id="edge-synapse-vibe" d="M700 126 C785 150, 830 290, 865 390"></path>
               <path class="edge override-line" id="edge-human-override" d="M130 120 C145 250, 160 330, 240 410"></path>
@@ -1177,8 +1180,10 @@
               <path class="edge" id="edge-trustmem-synapse" d="M550 400 C590 320, 620 230, 640 140"></path>
               <path class="edge" id="edge-synapse-alerts" d="M610 130 C555 180, 475 240, 385 275"></path>
               <path class="edge" id="edge-alerts-aria" d="M330 245 C310 205, 320 155, 340 120"></path>
-              <circle class="flow-dot" id="dot-human-aria" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-human-obsidian" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-obsidian-aria" cx="0" cy="0" r="6"></circle>
               <circle class="flow-dot" id="dot-aria-synapse" cx="0" cy="0" r="6"></circle>
+              <circle class="flow-dot" id="dot-obsidian-trustmem" cx="0" cy="0" r="6"></circle>
               <circle class="flow-dot" id="dot-synapse-research" cx="0" cy="0" r="6"></circle>
               <circle class="flow-dot" id="dot-synapse-vibe" cx="0" cy="0" r="6"></circle>
               <circle class="flow-dot" id="dot-human-override" cx="0" cy="0" r="6"></circle>
@@ -1190,6 +1195,7 @@
               <circle class="flow-dot" id="dot-alerts-aria" cx="0" cy="0" r="6"></circle>
             </svg>
             <div class="topology-node human" id="node-human"><div class="node-label">Human</div><div class="node-meta">sets the goal</div></div>
+            <div class="topology-node obsidian" id="node-obsidian"><div class="node-label">Obsidian</div><div class="node-meta">readable notes</div></div>
             <div class="topology-node aria" id="node-aria"><div class="node-label">Aria</div><div class="node-meta">intent router</div></div>
             <div class="topology-node synapse" id="node-synapse"><div class="node-label">Synapse</div><div class="node-meta">event bus</div></div>
             <div class="topology-node research" id="node-research"><div class="node-label">Research</div><div class="node-meta">analysis lane</div></div>
@@ -1740,7 +1746,8 @@ function playTimeline() {
   });
 
   const topologySequence = [
-    { node: "human", edge: "edge-human-aria" },
+    { node: "human", edge: "edge-human-obsidian" },
+    { node: "obsidian", edge: "edge-obsidian-aria" },
     { node: "aria", edge: "edge-aria-synapse" },
     { node: "synapse", edge: "edge-synapse-research" },
     { node: "research", edge: "edge-research-trustmem" },
@@ -1756,10 +1763,13 @@ function playTimeline() {
     }, 240 + index * 280);
   });
   setTimeout(() => document.getElementById("edge-trustmem-synapse")?.classList.add("live"), 1750);
+  setTimeout(() => document.getElementById("edge-obsidian-trustmem")?.classList.add("live"), 1880);
   setTimeout(() => document.getElementById("edge-alerts-aria")?.classList.add("live"), 2100);
 
-  animateDot("dot-human-aria", "edge-human-aria", 0);
-  animateDot("dot-aria-synapse", "edge-aria-synapse", 260);
+  animateDot("dot-human-obsidian", "edge-human-obsidian", 0);
+  animateDot("dot-obsidian-aria", "edge-obsidian-aria", 220);
+  animateDot("dot-aria-synapse", "edge-aria-synapse", 360);
+  animateDot("dot-obsidian-trustmem", "edge-obsidian-trustmem", 1180);
   animateDot("dot-synapse-research", "edge-synapse-research", 620);
   animateDot("dot-synapse-vibe", "edge-synapse-vibe", 780);
   animateDot("dot-human-override", "edge-human-override", 940);

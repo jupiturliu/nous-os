@@ -667,6 +667,7 @@ def build_topology(goal: str, runs: List[Dict], override: Dict) -> Dict:
     return {
         "nodes": [
             {"id": "human", "label": "Human", "kind": "human", "meta": goal},
+            {"id": "obsidian", "label": "Obsidian", "kind": "knowledge", "meta": "readable notes"},
             {"id": "aria", "label": "Aria", "kind": "aria", "meta": "intent router"},
             {"id": "synapse", "label": "Synapse", "kind": "synapse", "meta": f"{round2['metrics']['tasks_dispatched']} tasks"},
             {"id": "research", "label": "Research", "kind": "agent", "meta": "research lane"},
@@ -676,12 +677,14 @@ def build_topology(goal: str, runs: List[Dict], override: Dict) -> Dict:
             {"id": "alerts", "label": "Alerts", "kind": "alerts", "meta": "return to Aria"},
         ],
         "edges": [
-            {"from": "human", "to": "aria", "label": "goal"},
+            {"from": "human", "to": "obsidian", "label": "notes"},
+            {"from": "obsidian", "to": "aria", "label": "context"},
             {"from": "aria", "to": "synapse", "label": "plan"},
             {"from": "synapse", "to": "research", "label": f"r1 {round1['metrics']['tasks_dispatched']}"},
             {"from": "synapse", "to": "vibe", "label": f"r2 {round2['metrics']['tasks_dispatched']}"},
             {"from": "human", "to": "override", "label": "feedback"},
             {"from": "override", "to": "trustmem", "label": "policy"},
+            {"from": "obsidian", "to": "trustmem", "label": "sediment"},
             {"from": "research", "to": "trustmem", "label": "episodes"},
             {"from": "vibe", "to": "trustmem", "label": "episodes"},
             {"from": "trustmem", "to": "synapse", "label": "recall"},

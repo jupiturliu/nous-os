@@ -135,7 +135,10 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(snapshot["first_vertical"]["name"], "trading-agent")
         self.assertEqual(len(snapshot["safety_boundaries"]), 4)
         self.assertEqual(len(snapshot["timeline"]), 7)
-        self.assertEqual(len(snapshot["topology"]["nodes"]), 8)
+        self.assertEqual(len(snapshot["topology"]["nodes"]), 9)
+        self.assertIn("obsidian", {node["id"] for node in snapshot["topology"]["nodes"]})
+        self.assertIn(("human", "obsidian"), {(edge["from"], edge["to"]) for edge in snapshot["topology"]["edges"]})
+        self.assertIn(("obsidian", "trustmem"), {(edge["from"], edge["to"]) for edge in snapshot["topology"]["edges"]})
         self.assertIn("benchmark", snapshot)
         self.assertIn("cls_score", snapshot["metrics"])
         self.assertIn("cls_v2_score", snapshot["metrics"])
@@ -326,6 +329,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Research Lab / Teacher View", dashboard)
         self.assertIn("Human Agency", dashboard)
         self.assertIn("Safety Boundaries", dashboard)
+        self.assertIn("node-obsidian", dashboard)
+        self.assertIn("edge-obsidian-trustmem", dashboard)
 
     def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
