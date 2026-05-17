@@ -1,0 +1,14 @@
+name = "nous-os"
+main = "worker/index.mjs"
+compatibility_date = "2026-05-17"
+
+[assets]
+directory = "./_site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"
+
+[vars]
+HERMES_GATEWAY_MODEL = "hermes-agent"
+HERMES_ALLOWED_ORIGIN = "https://nousos.ai"

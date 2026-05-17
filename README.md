@@ -87,6 +87,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [docs/memory-philosophy-v0.md](./docs/memory-philosophy-v0.md) — Memory rules for remember, challenge, decay, and forget
 - [docs/production-runtime.md](./docs/production-runtime.md) — Production backend policy for Redis/SQLite instead of memory-only runtime state
 - [docs/hermes-student-agent-gateway.md](./docs/hermes-student-agent-gateway.md) — Hermes Gateway deployment contract for the Student Sandbox chat agent
+- [docs/cloudflare-hermes-architecture.md](./docs/cloudflare-hermes-architecture.md) — Cloudflare Worker, local webserver, and Hermes Gateway deployment architecture
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
