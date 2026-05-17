@@ -36,6 +36,7 @@ Forbidden by default:
 | Domain evaluator interface | `docs/domain-evaluator-interface.md` | CLS v2 evaluator contract |
 | Cross-repo release gate | `docs/cross-repo-release-gate.md` | Read-only readiness check across NOUS OS repos |
 | Public release smoke docs | `docs/getting-started.md`, `docs/heartbeat-demo.md` | Demo/release verification path |
+| Handoffs | `docs/harness/handoffs/` | Cross-agent pickup notes (Claude ↔ Codex) |
 
 ## Standard Verification
 
