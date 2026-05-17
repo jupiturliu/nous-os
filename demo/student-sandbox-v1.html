@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOUS OS — Student Sandbox v1</title>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="description" content="A 20-minute AI-assisted research learning loop for high-school students with a local worksheet and Hermes Gateway-guided hints.">
+<meta name="description" content="A 20-minute AI-assisted research learning loop for high-school students with a local worksheet and NOUS Guide hints.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -910,7 +910,7 @@
     <div class="icon">🔒</div>
     <div class="body">
       <strong>Privacy:</strong> The worksheet runs in this browser tab and is
-      saved only to the NOUS OS local backend on this machine. Hermes chat sends
+      saved only to the NOUS OS local backend on this machine. NOUS Guide chat sends
       only the question and worksheet context when you click <strong>Ask</strong>,
       through a server-side Gateway route that keeps keys out of the browser.
       Software can detect emails, phones, and
@@ -922,12 +922,12 @@
   </div>
 
   <section>
-    <div class="section-label">Hermes Agent · ask any student question</div>
+    <div class="section-label">NOUS Guide · ask any student question</div>
     <div class="hermes-panel">
       <div class="hermes-card">
-        <h2>Hermes is optimized for this project.</h2>
+        <h2>NOUS Guide is optimized for this project.</h2>
         <p>
-          Hermes is the learning guide for this sandbox. Ask a research
+          NOUS Guide is the learning companion for this sandbox. Ask a research
           question, source question, or "what should I do next?" It will keep
           the session inside the NOUS OS rules: hints, boundaries, source
           checks, and human responsibility.
@@ -935,28 +935,28 @@
         <div class="hermes-rules">
           <div class="hermes-rule"><strong>It will not write your final answer.</strong> It turns questions into subquestions, checks, and next moves.</div>
           <div class="hermes-rule"><strong>It saves locally.</strong> Worksheet snapshots and chat turns are written to the local backend, not browser storage.</div>
-          <div class="hermes-rule"><strong>It calls Hermes Gateway through a secure API route.</strong> Gateway keys stay server-side in <code>/api/hermes-student-agent</code>; the browser never sees them.</div>
+          <div class="hermes-rule"><strong>It uses the secure NOUS backend route.</strong> Gateway keys stay server-side in <code>/api/hermes-student-agent</code>; the browser never sees them.</div>
         </div>
       </div>
 
-      <div class="hermes-window" aria-label="Hermes student learning agent chat">
+      <div class="hermes-window" aria-label="NOUS Guide student learning chat">
         <div class="hermes-top">
           <div>
-            <div class="hermes-name">Hermes Agent</div>
+            <div class="hermes-name">NOUS Guide</div>
             <div class="field-help">NOUS OS learning guide · hints_not_answers</div>
           </div>
           <div class="hermes-mode">LLM agent</div>
         </div>
         <div class="hermes-log" id="hermes-chat-log" aria-live="polite">
           <div class="hermes-message agent">
-            Hi, I'm Hermes. Ask me your research question. I will help you frame it, set one boundary, choose source checks, and decide your next learning move — but I will not write the final answer for you.
+            Hi, I'm NOUS Guide. Ask me your research question. I will help you frame it, set one boundary, choose source checks, and decide your next learning move — but I will not write the final answer for you.
           </div>
         </div>
         <div class="hermes-input-row">
-          <textarea id="hermes-input" placeholder="Ask Hermes: How should I research CRISPR ethics? What sources should I check? How do I avoid letting AI write my answer?"></textarea>
+          <textarea id="hermes-input" placeholder="Ask NOUS Guide: How should I research CRISPR ethics? What sources should I check? How do I avoid letting AI write my answer?"></textarea>
           <button id="hermes-send" type="button">Ask</button>
         </div>
-        <div class="hermes-chips" aria-label="Hermes quick prompts">
+        <div class="hermes-chips" aria-label="NOUS Guide quick prompts">
           <button type="button" data-hermes-prompt="Help me turn my topic into a better research question.">Improve my question</button>
           <button type="button" data-hermes-prompt="What sources should I check for this topic?">Suggest source checks</button>
           <button type="button" data-hermes-prompt="Help me choose a boundary so AI does not do my thinking.">Choose a boundary</button>
@@ -1341,7 +1341,7 @@
       const fields = Array.from(document.querySelectorAll('[data-summary-label]'));
       const lines = [
         'Student Sandbox v1.1 local summary',
-        'Privacy: worksheet notes are local and not saved; Hermes chat is sent only when I click Ask.',
+        'Privacy: worksheet notes are saved only to the local NOUS OS backend; NOUS Guide chat is sent only when I click Ask.',
         ''
       ];
       fields.forEach(field => {
@@ -1494,14 +1494,14 @@
       hermesInput.value = '';
       hermesSend.disabled = true;
       hermesSend.textContent = 'Thinking';
-      const pending = appendHermesMessage('agent', 'Hermes is thinking...');
+      const pending = appendHermesMessage('agent', 'NOUS Guide is thinking...');
       try {
         pending.textContent = await callHermesAgent(message);
         chatTurns[chatTurns.length - 1].text = pending.textContent;
         scheduleSave('hermes_reply');
       } catch (error) {
         pending.textContent = [
-          'Hermes Gateway is not connected yet.',
+          'NOUS Guide is not connected to the Gateway yet.',
           'Ask an adult or operator to deploy /api/hermes-student-agent with HERMES_API_SERVER_URL and, if needed, HERMES_API_SERVER_KEY on the backend server.',
           'No Gateway key is stored in the page.'
         ].join('\n');
