@@ -1855,6 +1855,14 @@ async function renderSnapshot(snapshot) {
   renderBenchmark(snapshot);
   renderNarration(snapshot);
   renderRuns(snapshot);
+  resetAnimation();
+}
+
+function playDemo(snapshot) {
+  if (!snapshot) {
+    setStatus("Run the demo first.");
+    return;
+  }
   playTimeline();
   playKeynoteSequence(snapshot);
 }
@@ -1882,7 +1890,7 @@ async function boot() {
     setMode(snapshot.demo_mode || selectedMode, false);
     setOverride(snapshot.override?.kind || selectedOverride);
     await renderSnapshot(snapshot);
-    setStatus(staticMode ? "Loaded hosted snapshot. Run button replays the story in static mode." : "Loaded latest snapshot.");
+    setStatus(staticMode ? "Loaded hosted snapshot. Click Run demo to replay the story." : "Loaded latest snapshot. Click Run demo to start.");
   } catch (err) {
     setStatus("No snapshot yet. Run the demo.");
   }
@@ -1893,8 +1901,7 @@ document.getElementById("runHeartbeat").addEventListener("click", async () => {
   const goal = document.getElementById("goalInput").value.trim();
   closeFinale();
   if (staticMode && latestSnapshot) {
-    playTimeline();
-    playKeynoteSequence(latestSnapshot);
+    playDemo(latestSnapshot);
     setStatus("Static hosted demo replayed from the latest published snapshot.");
     return;
   }
@@ -1909,6 +1916,7 @@ document.getElementById("runHeartbeat").addEventListener("click", async () => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const snapshot = await response.json();
     await renderSnapshot(snapshot);
+    playDemo(snapshot);
     setStatus(`Demo completed. Round 2 quality reached ${snapshot.metrics?.avg_quality ?? 0}.`);
   } catch (err) {
     setStatus(`Run failed: ${err.message}`);
@@ -1953,7 +1961,7 @@ document.getElementById("replayTimeline").addEventListener("click", () => {
     setStatus("Run the demo first.");
     return;
   }
-  playTimeline();
+  playDemo(latestSnapshot);
   setStatus("Replaying system motion.");
 });
 
@@ -1965,7 +1973,7 @@ document.getElementById("rerunFromFinale").addEventListener("click", () => {
 
 setMode("student", false);
 setOverride("privacy");
-setKeynoteMode(true);
+setKeynoteMode(false);
 setSpeakerMode(true);
 setAudienceMode(false);
 boot();
