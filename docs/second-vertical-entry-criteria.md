@@ -20,8 +20,8 @@ Second vertical work remains deferred until all criteria below are met.
 ## Current Progress
 
 - `examples/runtime/trading_evaluator.py` is the first read-only adapter from trading-agent proof artifacts to CLS v2 components.
-- Mapped signals (real evidence): `boundary_integrity`, `human_agency_preservation`, `outcome_quality_delta`, `repeatability_gain`.
-- Deferred signals (explicit `pending:` markers, no synthetic defaults): `correction_absorption`, `memory_reuse_precision`.
+- Mapped signals (real evidence): `boundary_integrity`, `human_agency_preservation`, `outcome_quality_delta`, `repeatability_gain`, `correction_absorption`, `memory_reuse_precision`.
+- Missing evaluator evidence still emits explicit `pending:` markers; no CLS v2 component is filled with optimistic defaults.
 - `examples/nousos_heartbeat_demo.py` routes `trading_vertical` demo mode through the evaluator when trading-agent artifacts exist, and falls back with `evidence_source: synthetic_demo_fallback` + an explicit `fallback_reason` otherwise. Other demo modes stay synthetic.
 - This advances criteria 2 and 3. Criterion 6 progress is partial (the evaluator's read-only contract and boundary-integrity check are tested; broader boundary documentation for the first vertical remains owned by trading-agent).
 - Criteria 1 is not yet closed by this evaluator alone.

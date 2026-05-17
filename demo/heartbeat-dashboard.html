@@ -917,6 +917,26 @@
     line-height: 1.6;
   }
 
+  .evidence-panel {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: rgba(15, 118, 110, 0.08);
+  }
+
+  .evidence-panel strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .evidence-panel code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--teal);
+  }
+
   .spec-list {
     display: grid;
     gap: 10px;
@@ -1613,6 +1633,17 @@ function renderImpact(snapshot) {
 function renderBenchmark(snapshot) {
   const benchmark = snapshot.benchmark || {};
   const cls = benchmark.cls || {};
+  const clsV2 = benchmark.cls_v2 || {};
+  const evidenceSource = benchmark.evidence_source || clsV2.evidence_source || "synthetic_demo";
+  const fallbackReason = benchmark.fallback_reason || clsV2.fallback_reason || "";
+  const sourceLabel = evidenceSource === "trading_evaluator"
+    ? "Evidence-backed evaluator"
+    : evidenceSource === "synthetic_demo_fallback"
+      ? "Synthetic fallback"
+      : "Synthetic demo benchmark";
+  const sourceDetail = evidenceSource === "trading_evaluator"
+    ? `CLS v2 is mapped from read-only trading-agent artifacts${benchmark.evaluator_user || clsV2.trading_username ? ` for ${benchmark.evaluator_user || clsV2.trading_username}` : ""}.`
+    : fallbackReason || "CLS v2 is computed from the local two-round demo snapshot, not from production domain artifacts.";
   document.getElementById("clsPanel").innerHTML = `
     <div class="small">Cognitive Loop Score</div>
     <div class="big">${(cls.score ?? 0).toFixed(3)}</div>
@@ -1621,6 +1652,11 @@ function renderBenchmark(snapshot) {
       quality improvement, correction absorption, memory reuse, and repeatability gain.
       This demo computes it live from baseline round 1 vs treatment round 2.
     </p>
+    <div class="evidence-panel">
+      <strong>Evidence source · ${sourceLabel}</strong>
+      <p>${sourceDetail}</p>
+      <code>${evidenceSource}</code>
+    </div>
   `;
 
   document.getElementById("benchmarkSpec").innerHTML = (benchmark.public_standard || []).map(item => `

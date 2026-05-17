@@ -60,16 +60,31 @@ def _clean_boundary() -> dict:
     }
 
 
-def _proof_pack(candidate_id: str, *, capital_authorized: bool = False, boundary_overrides: dict | None = None) -> dict:
+def _proof_pack(
+    candidate_id: str,
+    *,
+    capital_authorized: bool = False,
+    boundary_overrides: dict | None = None,
+    blocking_states: list[str] | None = None,
+    required_human_decision: str | None = "recalibrate_or_defer",
+    validated_claims: int = 10,
+    missing_evidence: int = 0,
+) -> dict:
     boundary = _clean_boundary()
     if boundary_overrides:
         boundary.update(boundary_overrides)
-    return {
+    pack = {
         "candidate_id": candidate_id,
         "capital_action_authorized": capital_authorized,
         "execution_boundary": boundary,
         "human_review_state": "pending",
+        "blocking_states": blocking_states if blocking_states is not None else ["human_review_required"],
+        "validated_claims": [f"claim-{candidate_id}-{i}" for i in range(validated_claims)],
+        "missing_evidence": [f"missing-{candidate_id}-{i}" for i in range(missing_evidence)],
     }
+    if required_human_decision is not None:
+        pack["required_human_decision"] = required_human_decision
+    return pack
 
 
 class TradingEvaluatorContractTests(unittest.TestCase):
@@ -143,7 +158,7 @@ class TradingEvaluatorContractTests(unittest.TestCase):
 
         self.assertEqual(result["human_agency_preservation"], 0.5)
 
-    def test_pending_components_return_zero_with_explicit_marker(self) -> None:
+    def test_unavailable_outcome_components_return_zero_with_explicit_marker(self) -> None:
         workspace = _make_workspace(
             self._tmp,
             "alice",
@@ -153,12 +168,15 @@ class TradingEvaluatorContractTests(unittest.TestCase):
         evaluator = TradingEvaluator(workspace=workspace, username="alice")
         result = evaluator.evaluate(run_context={"run_id": "r1"})
 
-        self.assertEqual(result["correction_absorption"], 0.0)
-        self.assertEqual(result["memory_reuse_precision"], 0.0)
+        self.assertEqual(result["correction_absorption"], 1.0)
+        self.assertEqual(result["memory_reuse_precision"], 1.0)
         self.assertEqual(result["outcome_quality_delta"], 0.0)
         self.assertEqual(result["repeatability_gain"], 0.0)
         pending = [ref for ref in result["evidence_refs"] if ref.startswith("pending:")]
-        self.assertTrue(pending, "Slice 1 must surface pending components, not paper them over")
+        self.assertIn("pending:outcome_quality_delta", pending)
+        self.assertIn("pending:repeatability_gain", pending)
+        self.assertNotIn("pending:correction_absorption", pending)
+        self.assertNotIn("pending:memory_reuse_precision", pending)
 
     def test_evidence_refs_point_to_consumed_artifacts(self) -> None:
         workspace = _make_workspace(
@@ -347,6 +365,93 @@ class TradingEvaluatorReadOnlyEnforcementTests(unittest.TestCase):
         self.assertEqual(write_modes, [], f"Evaluator opened files for writing: {write_modes}")
 
 
+class TradingEvaluatorSlice4Tests(unittest.TestCase):
+    """Slice 4: correction_absorption + memory_reuse_precision."""
+
+    def setUp(self) -> None:
+        self._tmp = Path(__import__("tempfile").mkdtemp(prefix="trading_evaluator_slice4_"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self._tmp, ignore_errors=True))
+
+    def test_correction_absorption_is_one_when_all_packs_hand_off_to_human(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[
+                _proof_pack("ec-0001"),
+                _proof_pack("ec-0002"),
+            ],
+            market_proof={},
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        self.assertEqual(result["correction_absorption"], 1.0)
+        self.assertNotIn("pending:correction_absorption", result["evidence_refs"])
+
+    def test_correction_absorption_drops_when_pack_skips_human_handoff(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[
+                _proof_pack("ec-0001"),
+                _proof_pack("ec-0002", blocking_states=[], required_human_decision=None),
+            ],
+            market_proof={},
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        self.assertEqual(result["correction_absorption"], 0.5)
+
+    def test_memory_reuse_precision_is_one_when_all_claims_validate(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[
+                _proof_pack("ec-0001", validated_claims=10, missing_evidence=0),
+                _proof_pack("ec-0002", validated_claims=20, missing_evidence=0),
+            ],
+            market_proof={},
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        self.assertEqual(result["memory_reuse_precision"], 1.0)
+        self.assertNotIn("pending:memory_reuse_precision", result["evidence_refs"])
+
+    def test_memory_reuse_precision_drops_with_missing_evidence(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[
+                _proof_pack("ec-0001", validated_claims=10, missing_evidence=10),
+            ],
+            market_proof={},
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        self.assertEqual(result["memory_reuse_precision"], 0.5)
+
+    def test_memory_reuse_precision_stays_pending_when_no_packs_carry_claims(self) -> None:
+        # Even with proof packs present, if none carry validated_claims (and
+        # missing_evidence) the precision signal cannot be computed; stay
+        # explicitly pending rather than papering it over with 0.0.
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[
+                _proof_pack("ec-0001", validated_claims=0, missing_evidence=0),
+            ],
+            market_proof={},
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        self.assertEqual(result["memory_reuse_precision"], 0.0)
+        self.assertIn("pending:memory_reuse_precision", result["evidence_refs"])
+
+
 class TradingVerticalDemoWiringTests(unittest.TestCase):
     """Slice 3: trading_vertical demo mode routes through TradingEvaluator."""
 
@@ -421,8 +526,7 @@ class TradingVerticalDemoWiringTests(unittest.TestCase):
         self.assertTrue(any("baseline_comparisons.jsonl" in ref for ref in out["cls_v2"]["evidence_refs"]))
         self.assertTrue(any("forecast_ledger_summary.json" in ref for ref in out["cls_v2"]["evidence_refs"]))
         self.assertNotIn("fallback_reason", out["cls_v2"])
-        self.assertIn("correction_absorption", out["cls_v2"]["pending_components"])
-        self.assertIn("memory_reuse_precision", out["cls_v2"]["pending_components"])
+        self.assertEqual(out["cls_v2"]["pending_components"], [])
 
     def test_trading_mode_skips_user_with_only_index_json(self) -> None:
         users_dir = self._tmp / "trading-agent" / "data" / "users"

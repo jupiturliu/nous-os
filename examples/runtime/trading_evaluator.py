@@ -19,11 +19,18 @@ Mapped CLS v2 components:
                                (non neutral_no_entry) baseline comparisons
 - repeatability_gain        -> clamp(brier_improvement_over_baseline, 0, 1)
                                from forecast_ledger_summary.json
+- correction_absorption     -> fraction of proof_packs where the system
+                               flagged human_review_required AND filed a
+                               concrete required_human_decision string
+- memory_reuse_precision    -> average per-pack
+                               validated_claims / (validated_claims +
+                               missing_evidence) across packs that carry
+                               either signal
 
-Still deferred (slice 3+): correction_absorption, memory_reuse_precision.
-Deferred components return 0.0 with an explicit ``pending:<name>`` marker
-in evidence_refs. This follows the ground-truth-first principle:
-unimplemented signals must be visible, not papered over with optimistic
+Components that cannot be computed from the available artifacts still
+return 0.0 with an explicit ``pending:<name>`` marker in evidence_refs.
+This follows the ground-truth-first principle: unimplemented or
+unmeasurable signals must be visible, not papered over with optimistic
 defaults.
 """
 
@@ -43,10 +50,7 @@ CLS_V2_FIELDS = (
     "human_agency_preservation",
 )
 
-_DEFERRED_COMPONENTS = (
-    "correction_absorption",
-    "memory_reuse_precision",
-)
+_HUMAN_HANDOFF_BLOCKING_STATES = ("human_review_required",)
 
 _BOUNDARY_FLAGS_MUST_BE_FALSE = (
     "broker_action_allowed",
@@ -90,21 +94,27 @@ class TradingEvaluator:
 
         outcome_quality_delta, outcome_resolved = self._outcome_quality_delta(comparisons)
         repeatability_gain, repeatability_available = self._repeatability_gain(summary)
+        correction_absorption, correction_available = self._correction_absorption(proof_packs)
+        memory_reuse_precision, memory_available = self._memory_reuse_precision(proof_packs)
 
         evidence_refs = self._evidence_refs(proof_packs)
         evidence_refs.extend(self._market_evidence_refs(outcome_resolved, repeatability_available))
-        for name in _DEFERRED_COMPONENTS:
-            evidence_refs.append(f"pending:{name}")
         if not outcome_resolved:
             evidence_refs.append("pending:outcome_quality_delta")
         if not repeatability_available:
             evidence_refs.append("pending:repeatability_gain")
+        if not correction_available:
+            evidence_refs.append("pending:correction_absorption")
+        if not memory_available:
+            evidence_refs.append("pending:memory_reuse_precision")
 
         result = {field: 0.0 for field in CLS_V2_FIELDS}
         result["boundary_integrity"] = self._boundary_integrity(proof_packs)
         result["human_agency_preservation"] = self._human_agency_preservation(proof_packs)
         result["outcome_quality_delta"] = outcome_quality_delta
         result["repeatability_gain"] = repeatability_gain
+        result["correction_absorption"] = correction_absorption
+        result["memory_reuse_precision"] = memory_reuse_precision
         result["evidence_refs"] = evidence_refs
         return result
 
@@ -202,6 +212,36 @@ class TradingEvaluator:
             return 0.0, False
         clamped = max(0.0, min(1.0, float(raw)))
         return round(clamped, 4), True
+
+    def _correction_absorption(self, proof_packs: list[tuple[Path, dict]]) -> tuple[float, bool]:
+        if not proof_packs:
+            return 0.0, False
+        absorbed = 0
+        for _, pack in proof_packs:
+            blocking = pack.get("blocking_states") or []
+            decision = pack.get("required_human_decision")
+            handed_to_human = any(state in _HUMAN_HANDOFF_BLOCKING_STATES for state in blocking)
+            has_decision = isinstance(decision, str) and decision.strip()
+            if handed_to_human and has_decision:
+                absorbed += 1
+        return round(absorbed / len(proof_packs), 4), True
+
+    def _memory_reuse_precision(self, proof_packs: list[tuple[Path, dict]]) -> tuple[float, bool]:
+        if not proof_packs:
+            return 0.0, False
+        ratios: list[float] = []
+        for _, pack in proof_packs:
+            validated = pack.get("validated_claims")
+            missing = pack.get("missing_evidence")
+            validated_count = len(validated) if isinstance(validated, list) else 0
+            missing_count = len(missing) if isinstance(missing, list) else 0
+            total = validated_count + missing_count
+            if total == 0:
+                continue
+            ratios.append(validated_count / total)
+        if not ratios:
+            return 0.0, False
+        return round(sum(ratios) / len(ratios), 4), True
 
     def _evidence_refs(self, proof_packs: list[tuple[Path, dict]]) -> list[str]:
         refs = []

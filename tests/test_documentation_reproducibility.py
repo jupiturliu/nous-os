@@ -83,25 +83,34 @@ class HeartbeatScriptIsRunnableTests(unittest.TestCase):
 
     def test_run_nous_heartbeat_exits_zero_and_writes_snapshot(self) -> None:
         snapshot_path = ROOT / "examples" / "runtime" / "dashboard-data.json"
+        latest_record_path = ROOT / "examples" / "runtime" / "research-records" / "latest.json"
+        original_snapshot = snapshot_path.read_bytes() if snapshot_path.exists() else None
+        original_latest_record = latest_record_path.read_bytes() if latest_record_path.exists() else None
         original_mtime = snapshot_path.stat().st_mtime if snapshot_path.exists() else 0
 
-        result = subprocess.run(
-            [sys.executable, "scripts/run_nous_heartbeat.py"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
+        try:
+            result = subprocess.run(
+                [sys.executable, "scripts/run_nous_heartbeat.py"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
-        self.assertEqual(
-            result.returncode, 0,
-            f"run_nous_heartbeat.py exited {result.returncode}; stderr={result.stderr[-1000:]}",
-        )
-        self.assertTrue(snapshot_path.exists(), "dashboard snapshot was not produced")
-        self.assertGreater(
-            snapshot_path.stat().st_mtime, original_mtime,
-            "dashboard snapshot mtime did not advance — script may have skipped writing",
-        )
+            self.assertEqual(
+                result.returncode, 0,
+                f"run_nous_heartbeat.py exited {result.returncode}; stderr={result.stderr[-1000:]}",
+            )
+            self.assertTrue(snapshot_path.exists(), "dashboard snapshot was not produced")
+            self.assertGreater(
+                snapshot_path.stat().st_mtime, original_mtime,
+                "dashboard snapshot mtime did not advance; script may have skipped writing",
+            )
+        finally:
+            if original_snapshot is not None:
+                snapshot_path.write_bytes(original_snapshot)
+            if original_latest_record is not None:
+                latest_record_path.write_bytes(original_latest_record)
 
 
 if __name__ == "__main__":
