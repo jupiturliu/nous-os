@@ -42,6 +42,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
 
         self.assertIn("stage_static_site.sh", server)
         self.assertIn("/api/hermes-student-agent", server)
+        self.assertIn("/api/student-sandbox-session", server)
         self.assertIn("/api/health", server)
         self.assertIn("HERMES_API_SERVER_URL", server)
         self.assertIn("API_SERVER_KEY", server)
@@ -50,6 +51,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("http://127.0.0.1:8642", server)
         self.assertIn("/v1/chat/completions", server)
         self.assertIn("require('../api/hermes-student-agent')", server)
+        self.assertIn("require('../api/student-sandbox-session')", server)
 
         wrapper = (ROOT / "scripts" / "serve_nous_site.cjs").read_text()
         self.assertIn("require('../backend/server.cjs').start()", wrapper)
@@ -135,6 +137,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
             ROOT / "backend" / "server.cjs",
             ROOT / "scripts" / "serve_nous_site.cjs",
             ROOT / "api" / "hermes-student-agent.js",
+            ROOT / "api" / "student-sandbox-session.js",
         ):
             result = subprocess.run(
                 ["node", "--check", str(path)],

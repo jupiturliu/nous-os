@@ -41,6 +41,7 @@ if (!process.env.HERMES_ALLOWED_ORIGIN) {
 }
 
 const hermesHandler = require('../api/hermes-student-agent');
+const studentSandboxSessionHandler = require('../api/student-sandbox-session');
 
 function stageSite() {
   const result = spawnSync('bash', [path.join(ROOT, 'scripts', 'stage_static_site.sh')], {
@@ -116,6 +117,12 @@ function createServer() {
     if (url.pathname === '/api/hermes-student-agent') {
       hermesHandler(request, response).catch(error => {
         sendJson(response, 500, { error: error.message || 'Hermes backend server failed.' });
+      });
+      return;
+    }
+    if (url.pathname === '/api/student-sandbox-session') {
+      studentSandboxSessionHandler(request, response).catch(error => {
+        sendJson(response, 500, { error: error.message || 'Student sandbox session save failed.' });
       });
       return;
     }

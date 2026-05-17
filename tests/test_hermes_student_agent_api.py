@@ -32,9 +32,48 @@ class HermesStudentAgentApiTests(unittest.TestCase):
         self.assertIn("resolveHermesApiServerKey", source)
 
     def test_api_route_has_valid_javascript_syntax(self) -> None:
-        route_path = ROOT / "api" / "hermes-student-agent.js"
+        for route_path in (
+            ROOT / "api" / "hermes-student-agent.js",
+            ROOT / "api" / "student-sandbox-session.js",
+        ):
+            result = subprocess.run(
+                ["node", "-c", str(route_path)],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_student_sandbox_session_api_saves_local_redacted_records(self) -> None:
+        route_path = ROOT / "api" / "student-sandbox-session.js"
+        self.assertTrue(route_path.exists(), "api/student-sandbox-session.js must exist")
+        source = route_path.read_text()
+
+        self.assertIn("student-sandbox-sessions", source)
+        self.assertIn("local-filesystem", source)
+        self.assertIn("browser_storage: false", source)
+        self.assertIn("redactPrivateText", source)
+        self.assertIn("containsPrivatePattern", source)
+        self.assertIn("module.exports._private", source)
+        self.assertNotIn("OPENAI_API_KEY", source)
+        self.assertNotIn("api.openai.com", source)
+
+        script = """
+          const route = require('./api/student-sandbox-session')._private;
+          const record = route.buildRecord({
+            session_id: 'student-test-session',
+            worksheet: { question: 'Email me at student@example.com about batteries' },
+            reflection: { reflect_help: 'Call 415-555-1212' },
+            chat_turns: [{ role: 'student', text: 'My SSN is 123-45-6789' }]
+          });
+          if (!record.privacy.private_pattern_detected) process.exit(2);
+          const dump = JSON.stringify(record);
+          if (dump.includes('student@example.com') || dump.includes('415-555-1212') || dump.includes('123-45-6789')) process.exit(3);
+          if (record.storage.backend !== 'local-filesystem' || record.storage.browser_storage !== false) process.exit(4);
+        """
         result = subprocess.run(
-            ["node", "-c", str(route_path)],
+            ["node", "-e", script],
             cwd=ROOT,
             text=True,
             capture_output=True,

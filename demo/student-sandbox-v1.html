@@ -865,6 +865,15 @@
     cursor: pointer;
   }
 
+  .save-status {
+    padding: 0 16px 14px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .save-status strong { color: var(--teal); }
+
   @media (max-width: 640px) {
     .shell { padding: 24px 16px 60px; }
     h1 { font-size: 30px; }
@@ -900,10 +909,11 @@
   <div class="privacy-banner">
     <div class="icon">🔒</div>
     <div class="body">
-      <strong>Privacy:</strong> The worksheet runs locally in your browser and is
-      not saved. Hermes chat sends only the question and worksheet context when
-      you click <strong>Ask</strong>, through a server-side Gateway route that
-      keeps keys out of the browser. Software can detect emails, phones, and
+      <strong>Privacy:</strong> The worksheet runs in this browser tab and is
+      saved only to the NOUS OS local backend on this machine. Hermes chat sends
+      only the question and worksheet context when you click <strong>Ask</strong>,
+      through a server-side Gateway route that keeps keys out of the browser.
+      Software can detect emails, phones, and
       SSN-style patterns — but it <strong>cannot</strong> catch your name,
       school name, or family details, so please don't type them. Use topic
       area ("CRISPR ethics for biology class"), not identifying context
@@ -924,7 +934,7 @@
         </p>
         <div class="hermes-rules">
           <div class="hermes-rule"><strong>It will not write your final answer.</strong> It turns questions into subquestions, checks, and next moves.</div>
-          <div class="hermes-rule"><strong>It updates the worksheet.</strong> If your question box is empty, Hermes uses your chat question as the session question.</div>
+          <div class="hermes-rule"><strong>It saves locally.</strong> Worksheet snapshots and chat turns are written to the local backend, not browser storage.</div>
           <div class="hermes-rule"><strong>It calls Hermes Gateway through a secure API route.</strong> Gateway keys stay server-side in <code>/api/hermes-student-agent</code>; the browser never sees them.</div>
         </div>
       </div>
@@ -951,6 +961,7 @@
           <button type="button" data-hermes-prompt="What sources should I check for this topic?">Suggest source checks</button>
           <button type="button" data-hermes-prompt="Help me choose a boundary so AI does not do my thinking.">Choose a boundary</button>
         </div>
+        <div class="save-status" id="save-status">Local backend save: waiting for notes.</div>
       </div>
     </div>
   </section>
@@ -960,7 +971,9 @@
     <p class="session-note">
       This is the execution surface. Fill in short notes here, ask Hermes only
       when you want guided help, or copy the prompt cards into another AI tool.
-      The worksheet itself stays local, and the page never saves your session.
+      The worksheet is saved only through the local backend so you can recover
+      session notes on this machine without exposing Gateway keys or using
+      browser storage.
     </p>
 
     <div class="execution-panel">
@@ -1186,7 +1199,7 @@
 
   <section>
     <div class="section-label">Reflection · finish before drafting</div>
-    <div class="reflection-privacy-note"><strong>Your answers stay only in this browser tab.</strong> Closing the tab discards them. That's the privacy promise — copy anything you want to keep into your own notes before you leave.</div>
+    <div class="reflection-privacy-note"><strong>Your answers save to the local NOUS OS backend.</strong> They are stored on this machine under the sandbox session runtime folder. Copy anything important into your own notes before you leave.</div>
     <div class="reflection-grid">
       <div class="reflection-block">
         <label>What did AI help with?</label>
@@ -1231,7 +1244,7 @@
 </main>
 
 <script>
-  // All state is in-memory only. Nothing here writes to disk, network, or any storage API.
+  // Browser state is in-memory only. Persistence goes through the local backend API, never browser storage.
   (function () {
     const PHASE_MINUTES = [3, 4, 3, 4, 3, 3]; // total 20
     const TOTAL_SECONDS = PHASE_MINUTES.reduce((a, b) => a + b, 0) * 60;
@@ -1250,9 +1263,14 @@
     const hermesInput = document.getElementById('hermes-input');
     const hermesSend = document.getElementById('hermes-send');
     const hermesEndpoint = window.NOUSOS_HERMES_ENDPOINT || '/api/hermes-student-agent';
+    const sessionEndpoint = window.NOUSOS_STUDENT_SESSION_ENDPOINT || '/api/student-sandbox-session';
+    const saveStatus = document.getElementById('save-status');
+    const sessionId = 'sandbox-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    const chatTurns = [];
 
     let timerHandle = null;
     let startMs = null;
+    let saveHandle = null;
 
     function clean(value, fallback) {
       const text = String(value || '').trim();
@@ -1332,6 +1350,7 @@
         lines.push(label + ': ' + value);
       });
       summaryEl.value = lines.join('\n');
+      scheduleSave('summary');
     }
 
     function clearWorksheet() {
@@ -1340,7 +1359,9 @@
       });
       boundaryEl.selectedIndex = 0;
       summaryEl.value = '';
+      chatTurns.length = 0;
       refreshPrompts();
+      scheduleSave('clear');
     }
 
     function copyPrompt(button) {
@@ -1374,12 +1395,64 @@
       };
     }
 
+    function reflectionContext() {
+      return {
+        reflect_help: document.getElementById('reflect-help').value.trim(),
+        reflect_verify: document.getElementById('reflect-verify').value.trim(),
+        reflect_responsibility: document.getElementById('reflect-responsibility').value.trim(),
+        reflect_next: document.getElementById('reflect-next').value.trim()
+      };
+    }
+
+    async function saveSession(reason) {
+      const payload = {
+        session_id: sessionId,
+        reason,
+        worksheet: worksheetContext(),
+        reflection: reflectionContext(),
+        summary: summaryEl.value.trim(),
+        chat_turns: chatTurns,
+        policy: {
+          storage: 'local_backend_only',
+          browser_storage: false,
+          privacy: 'redact_email_phone_ssn_patterns'
+        }
+      };
+      const response = await fetch(sessionEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Local session save failed.');
+      saveStatus.innerHTML = '<strong>Saved locally</strong> · ' + new Date(data.saved_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (data.private_pattern_detected) {
+        saveStatus.innerHTML += ' · private pattern redacted';
+      }
+    }
+
+    function scheduleSave(reason) {
+      clearTimeout(saveHandle);
+      saveStatus.textContent = 'Local backend save: pending...';
+      saveHandle = setTimeout(() => {
+        saveSession(reason).catch(() => {
+          saveStatus.textContent = 'Local backend save: unavailable. Keep your notes copied locally.';
+        });
+      }, 450);
+    }
+
     function appendHermesMessage(role, text) {
       const message = document.createElement('div');
       message.className = 'hermes-message ' + role;
       message.textContent = text;
       hermesLog.appendChild(message);
       hermesLog.scrollTop = hermesLog.scrollHeight;
+      chatTurns.push({
+        role: role === 'agent' ? 'agent' : 'student',
+        text,
+        created_at: new Date().toISOString()
+      });
+      if (chatTurns.length > 24) chatTurns.splice(0, chatTurns.length - 24);
       return message;
     }
 
@@ -1424,12 +1497,16 @@
       const pending = appendHermesMessage('agent', 'Hermes is thinking...');
       try {
         pending.textContent = await callHermesAgent(message);
+        chatTurns[chatTurns.length - 1].text = pending.textContent;
+        scheduleSave('hermes_reply');
       } catch (error) {
         pending.textContent = [
           'Hermes Gateway is not connected yet.',
           'Ask an adult or operator to deploy /api/hermes-student-agent with HERMES_API_SERVER_URL and, if needed, HERMES_API_SERVER_KEY on the backend server.',
           'No Gateway key is stored in the page.'
         ].join('\n');
+        chatTurns[chatTurns.length - 1].text = pending.textContent;
+        scheduleSave('hermes_error');
       } finally {
         hermesSend.disabled = false;
         hermesSend.textContent = 'Ask';
@@ -1525,6 +1602,12 @@
     [questionEl, priorEl, boundaryEl, planNotesEl, sourceNotesEl].forEach(el => {
       el.addEventListener('input', refreshPrompts);
       el.addEventListener('change', refreshPrompts);
+      el.addEventListener('input', () => scheduleSave('worksheet'));
+      el.addEventListener('change', () => scheduleSave('worksheet'));
+    });
+    [revisedPlanEl, document.getElementById('reflect-help'), document.getElementById('reflect-verify'), document.getElementById('reflect-responsibility'), document.getElementById('reflect-next')].forEach(el => {
+      el.addEventListener('input', () => scheduleSave('worksheet'));
+      el.addEventListener('change', () => scheduleSave('worksheet'));
     });
     document.querySelectorAll('.copy-btn').forEach(button => {
       button.addEventListener('click', () => copyPrompt(button));
