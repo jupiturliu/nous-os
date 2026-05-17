@@ -68,7 +68,6 @@ def validate_inventory(inventory_path: Path = DEFAULT_INVENTORY) -> dict:
         "review_template",
         "cross_repo_release_gate",
         "documentation_reproducibility_test",
-        "github_pages_workflow",
     }
     missing_ids = sorted(required_ids - seen_ids)
     if missing_ids:

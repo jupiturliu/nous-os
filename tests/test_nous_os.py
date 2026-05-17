@@ -653,7 +653,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("latest_research_record", surface_ids)
         self.assertIn("cross_repo_release_gate", surface_ids)
         self.assertIn("documentation_reproducibility_test", surface_ids)
-        self.assertIn("github_pages_workflow", surface_ids)
+        self.assertIn("cloudflare_worker_deployment", surface_ids)
         self.assertIn("live trading state", inventory["default_boundary"])
 
     def test_v2_roadmap_and_evaluator_docs_are_linked(self) -> None:
@@ -882,20 +882,25 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(record["memory_update"]["stored"])
         self.assertTrue(record["ai_second_pass"]["behavior_changed"])
 
-    def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
-        workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
+    def test_static_site_stage_script_publishes_demo_and_favicon(self) -> None:
+        """GitHub Pages CD has been removed; Cloudflare reads from _site/
+        which is produced by scripts/stage_static_site.sh. This test moved
+        from pages.yml to the stage script — the staging contract is
+        the same."""
 
-        self.assertIn("cp about.html _site/", workflow)
-        self.assertIn("cp favicon.svg _site/", workflow)
-        self.assertIn("cp docs/*.md _site/docs/", workflow)
-        self.assertIn("cp -R docs/harness _site/docs/", workflow)
-        self.assertIn("cp -R demo/assets _site/demo/", workflow)
-        self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
-        self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", workflow)
-        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", workflow)
-        self.assertIn("cp demo/student-session-review.html _site/demo/", workflow)
-        self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
-        self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", workflow)
+        stage_script = (ROOT / "scripts" / "stage_static_site.sh").read_text()
+
+        self.assertIn("cp about.html _site/", stage_script)
+        self.assertIn("cp favicon.svg _site/", stage_script)
+        self.assertIn("cp docs/*.md _site/docs/", stage_script)
+        self.assertIn("cp -R docs/harness _site/docs/", stage_script)
+        self.assertIn("cp -R demo/assets _site/demo/", stage_script)
+        self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", stage_script)
+        self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", stage_script)
+        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", stage_script)
+        self.assertIn("cp demo/student-session-review.html _site/demo/", stage_script)
+        self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", stage_script)
+        self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", stage_script)
 
     def test_site_pages_reference_favicon(self) -> None:
         homepage = (ROOT / "index.html").read_text()

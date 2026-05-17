@@ -11,7 +11,7 @@ class ResearchPageTests(unittest.TestCase):
     def test_research_track_uses_friendly_page_not_raw_markdown_as_primary_path(self) -> None:
         homepage = (ROOT / "index.html").read_text()
         research = (ROOT / "research.html").read_text()
-        workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
+        stage_script = (ROOT / "scripts" / "stage_static_site.sh").read_text()
 
         self.assertIn('<a href="/research.html">Research</a>', homepage)
         self.assertIn('href="/research.html#anchor"', homepage)
@@ -28,8 +28,10 @@ class ResearchPageTests(unittest.TestCase):
         self.assertIn("Read Student Guidelines", research)
         self.assertIn("/demo/student-sandbox-v1-guide.html", research)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', research)
-        self.assertIn("cp research.html _site/", workflow)
-        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", workflow)
+        # Cloudflare deploy reads from _site/ produced by stage_static_site.sh.
+        # GitHub Pages CD has been removed; pages.yml no longer exists.
+        self.assertIn("cp research.html _site/", stage_script)
+        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", stage_script)
 
 
 if __name__ == "__main__":

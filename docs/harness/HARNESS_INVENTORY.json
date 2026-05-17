@@ -173,8 +173,8 @@
       "verification": "python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json"
     },
     {
-      "id": "github_pages_workflow",
-      "path": ".github/workflows/pages.yml",
+      "id": "cloudflare_worker_deployment",
+      "path": ".github/workflows/cloudflare.yml",
       "kind": "deployment_workflow",
       "owner": "repo",
       "published": false,
