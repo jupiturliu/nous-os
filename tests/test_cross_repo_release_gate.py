@@ -88,6 +88,30 @@ def _init_trustmem_with_tracked_distilled(repo: Path) -> None:
     subprocess.run(["git", "commit", "-m", "init"], cwd=repo, check=True, capture_output=True)
 
 
+def _init_trustmem_with_runtime_lanes(repo: Path) -> None:
+    _init_trustmem_with_tracked_distilled(repo)
+    for directory in [
+        repo / "agent-bus",
+        repo / "data" / "episodes",
+        repo / "knowledge" / "ai-infra",
+        repo / "research" / "metrics",
+    ]:
+        directory.mkdir(parents=True, exist_ok=True)
+    tracked_files = [
+        repo / "agent-bus" / "handoff_queue.json",
+        repo / "data" / "episodes" / "episodes.jsonl",
+        repo / "research" / "metrics" / "citation_log.jsonl",
+    ]
+    for path in tracked_files:
+        path.write_text("[]\n", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", *(str(path.relative_to(repo)) for path in tracked_files)],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(["git", "commit", "-m", "runtime lanes"], cwd=repo, check=True, capture_output=True)
+
+
 def test_release_gate_allowlists_documented_noise_paths(tmp_path: Path) -> None:
     repo = tmp_path / "trustmem"
     _init_trustmem_with_tracked_distilled(repo)
@@ -122,6 +146,23 @@ def test_release_gate_does_not_mask_real_dirty_when_mixed_with_noise(tmp_path: P
     assert trustmem["dirty_allowlisted_count"] == 1
 
 
+def test_release_gate_allowlists_trustmem_runtime_sediment(tmp_path: Path) -> None:
+    repo = tmp_path / "trustmem"
+    _init_trustmem_with_runtime_lanes(repo)
+    (repo / "agent-bus" / "handoff_queue.json").write_text("[1]\n", encoding="utf-8")
+    (repo / "data" / "episodes" / "episodes.jsonl").write_text("{}\n", encoding="utf-8")
+    (repo / "data" / "episodes" / "episodes.jsonl.bak.20260430").write_text("backup\n", encoding="utf-8")
+    (repo / "knowledge" / "ai-infra" / "promoted-chat-bot-note.md").write_text("note\n", encoding="utf-8")
+    (repo / "research" / "metrics" / "citation_log.jsonl").write_text("{}\n", encoding="utf-8")
+
+    report = gate.build_report(tmp_path)
+    trustmem = report["repos"]["trustmem"]
+
+    assert trustmem["dirty"] is False
+    assert trustmem["dirty_count"] == 0
+    assert trustmem["dirty_allowlisted_count"] == 5
+
+
 def test_release_gate_does_not_truncate_large_git_status_output(tmp_path: Path) -> None:
     repo = tmp_path / "trustmem"
     _init_trustmem_with_tracked_distilled(repo)
@@ -130,8 +171,7 @@ def test_release_gate_does_not_truncate_large_git_status_output(tmp_path: Path) 
             "noise\n",
             encoding="utf-8",
         )
-    (repo / "agent-bus").mkdir()
-    (repo / "agent-bus" / "handoff_queue.json").write_text("[]\n", encoding="utf-8")
+    (repo / "README.md").write_text("# Test\n\nreal change\n", encoding="utf-8")
 
     report = gate.build_report(tmp_path)
     trustmem = report["repos"]["trustmem"]
@@ -139,7 +179,7 @@ def test_release_gate_does_not_truncate_large_git_status_output(tmp_path: Path) 
     assert trustmem["dirty"] is True
     assert trustmem["dirty_count"] == 1
     assert trustmem["dirty_allowlisted_count"] == 120
-    assert trustmem["dirty_entries"] == ["?? agent-bus/handoff_queue.json"]
+    assert trustmem["dirty_entries"] == [" M README.md"]
     assert len(trustmem["dirty_allowlisted_entries"]) == 50
 
 
@@ -223,6 +263,22 @@ class CrossRepoReleaseGateUnitTests(unittest.TestCase):
         self.assertEqual(trustmem["dirty_allowlisted_count"], 1)
         self.assertTrue(any("README.md" in entry for entry in trustmem["dirty_entries"]))
 
+    def test_allowlists_trustmem_runtime_sediment(self) -> None:
+        repo = self.workspace / "trustmem"
+        _init_trustmem_with_runtime_lanes(repo)
+        (repo / "agent-bus" / "handoff_queue.json").write_text("[1]\n", encoding="utf-8")
+        (repo / "data" / "episodes" / "episodes.jsonl").write_text("{}\n", encoding="utf-8")
+        (repo / "data" / "episodes" / "episodes.jsonl.bak.20260430").write_text("backup\n", encoding="utf-8")
+        (repo / "knowledge" / "ai-infra" / "promoted-chat-bot-note.md").write_text("note\n", encoding="utf-8")
+        (repo / "research" / "metrics" / "citation_log.jsonl").write_text("{}\n", encoding="utf-8")
+
+        report = gate.build_report(self.workspace)
+        trustmem = report["repos"]["trustmem"]
+
+        self.assertFalse(trustmem["dirty"])
+        self.assertEqual(trustmem["dirty_count"], 0)
+        self.assertEqual(trustmem["dirty_allowlisted_count"], 5)
+
     def test_does_not_truncate_large_git_status_output(self) -> None:
         repo = self.workspace / "trustmem"
         _init_trustmem_with_tracked_distilled(repo)
@@ -231,8 +287,7 @@ class CrossRepoReleaseGateUnitTests(unittest.TestCase):
                 "noise\n",
                 encoding="utf-8",
             )
-        (repo / "agent-bus").mkdir()
-        (repo / "agent-bus" / "handoff_queue.json").write_text("[]\n", encoding="utf-8")
+        (repo / "README.md").write_text("# Test\n\nreal change\n", encoding="utf-8")
 
         report = gate.build_report(self.workspace)
         trustmem = report["repos"]["trustmem"]
@@ -240,5 +295,5 @@ class CrossRepoReleaseGateUnitTests(unittest.TestCase):
         self.assertTrue(trustmem["dirty"])
         self.assertEqual(trustmem["dirty_count"], 1)
         self.assertEqual(trustmem["dirty_allowlisted_count"], 120)
-        self.assertEqual(trustmem["dirty_entries"], ["?? agent-bus/handoff_queue.json"])
+        self.assertEqual(trustmem["dirty_entries"], [" M README.md"])
         self.assertEqual(len(trustmem["dirty_allowlisted_entries"]), 50)
