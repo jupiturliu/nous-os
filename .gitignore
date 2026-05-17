@@ -3,5 +3,7 @@ examples/runtime/alerts.json
 examples/runtime/insights.json
 examples/runtime/data/
 examples/runtime/agent-bus/*.json
+examples/runtime/research-records/*.json
+!examples/runtime/research-records/latest.json
 __pycache__/
 *.pyc

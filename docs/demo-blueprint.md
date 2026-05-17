@@ -61,6 +61,27 @@ Dashboard 现在提供三个 narrative mode：
 
 每个 mode 都有对应 human boundary choices，并写入 `examples/runtime/dashboard-data.json`。Trading-agent 仍然是第一个垂直类应用 / research proof bed，但被明确解释为高约束边界研究案例，不是投资建议或商业化终点。
 
+## Research Harness Artifact
+
+当前 heartbeat demo 每次运行都会生成一个 structured research record：
+
+```text
+examples/runtime/research-records/<run_id>.json
+examples/runtime/research-records/latest.json
+```
+
+这个 record 让 demo 从“看起来有动效的页面”变成可复盘的 education/research harness。它记录：
+
+- human intent
+- AI first pass
+- selected human boundary
+- memory/evidence update
+- AI second pass behavior change
+- reflection prompt / student takeaway
+- correction absorption, memory reuse, boundary integrity, human agency preservation, reflection completeness, repeatability gain
+
+`latest.json` 会随 GitHub Pages 发布，历史 run files 只作为本地研究记录保留。
+
 ## 下一步替换成真实组件
 
 - 把 `AriaAdapter.plan()` 替换为真实 Aria 的 intent router / policy layer。

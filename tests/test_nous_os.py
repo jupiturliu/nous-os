@@ -133,6 +133,10 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("practice generation", snapshot["human_agency"]["ai_helps_with"])
         self.assertEqual(snapshot["reflection"]["prompt"], "What did the AI help with, and what remains my responsibility?")
         self.assertEqual(snapshot["first_vertical"]["name"], "trading-agent")
+        self.assertEqual(snapshot["research_record"]["demo_mode"], "student")
+        self.assertEqual(snapshot["research_record"]["human_boundary"]["kind"], "timing")
+        self.assertTrue(snapshot["research_record"]["memory_update"]["stored"])
+        self.assertFalse(snapshot["research_record"]["privacy"]["contains_private_student_data"])
         self.assertEqual(len(snapshot["safety_boundaries"]), 4)
         self.assertEqual(len(snapshot["timeline"]), 7)
         self.assertEqual(len(snapshot["topology"]["nodes"]), 9)
@@ -321,6 +325,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("human_sets_goal", snapshot["human_agency"])
         self.assertIn("safety_boundaries", snapshot)
         self.assertIn("reflection", snapshot)
+        self.assertIn("research_record", snapshot)
         self.assertEqual(snapshot["first_vertical"]["name"], "trading-agent")
         self.assertIn("not to recommend trades", snapshot["goal"].lower() + snapshot["first_vertical"]["not_for"].lower())
         self.assertIn("Humans and AI learn together — with boundaries", dashboard)
@@ -329,8 +334,30 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Research Lab / Teacher View", dashboard)
         self.assertIn("Human Agency", dashboard)
         self.assertIn("Safety Boundaries", dashboard)
+        self.assertIn("Research Record", dashboard)
+        self.assertIn("../examples/runtime/research-records/latest.json", dashboard)
         self.assertIn("node-obsidian", dashboard)
         self.assertIn("edge-obsidian-trustmem", dashboard)
+
+    def test_latest_research_record_is_published_and_private_by_default(self) -> None:
+        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
+        record_path = ROOT / "examples" / "runtime" / "research-records" / "latest.json"
+        record = json.loads(record_path.read_text())
+
+        self.assertTrue(record_path.exists())
+        self.assertEqual(snapshot["research_record"]["run_id"], record["run_id"])
+        self.assertEqual(record["demo_mode"], snapshot["demo_mode"])
+        self.assertIn(record["audience"], {"student", "parent", "teacher", "researcher"})
+        self.assertIn("human_intent", record)
+        self.assertIn("ai_first_pass", record)
+        self.assertIn("human_boundary", record)
+        self.assertIn("memory_update", record)
+        self.assertIn("ai_second_pass", record)
+        self.assertIn("reflection", record)
+        self.assertIn("metrics", record)
+        self.assertFalse(record["privacy"]["contains_private_student_data"])
+        self.assertTrue(record["memory_update"]["stored"])
+        self.assertTrue(record["ai_second_pass"]["behavior_changed"])
 
     def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
@@ -341,6 +368,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp -R demo/assets _site/demo/", workflow)
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
+        self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", workflow)
 
     def test_site_pages_reference_favicon(self) -> None:
         homepage = (ROOT / "index.html").read_text()

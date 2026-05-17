@@ -1273,6 +1273,11 @@
         </section>
 
         <section class="card section">
+          <h2>Research Record</h2>
+          <div class="narration-card" id="researchRecordCard"></div>
+        </section>
+
+        <section class="card section">
           <h2>Demo Narration</h2>
           <div class="narration-card" id="narrationCard"></div>
         </section>
@@ -1629,6 +1634,26 @@ function renderBenchmark(snapshot) {
   `).join("");
 }
 
+function renderResearchRecord(snapshot) {
+  const record = snapshot.research_record || {};
+  const metrics = record.metrics || {};
+  const latestPath = "../examples/runtime/research-records/latest.json";
+  document.getElementById("researchRecordCard").innerHTML = `
+    <div class="small">Structured artifact</div>
+    <div class="big">${record.run_id || "latest research record"}</div>
+    <p>
+      Each run produces a local education/research artifact with human intent, AI first pass,
+      human boundary, memory update, AI second pass, reflection, and agency metrics.
+    </p>
+    <p>
+      Boundary integrity: ${metrics.boundary_integrity ?? 0} ·
+      Human agency: ${metrics.human_agency_preservation ?? 0} ·
+      Reflection: ${metrics.reflection_completeness ?? 0}
+    </p>
+    <p><a href="${latestPath}" target="_blank" rel="noopener">Open latest.json</a></p>
+  `;
+}
+
 function renderNarration(snapshot) {
   const q = snapshot.metrics?.quality_delta ?? 0;
   const cls = snapshot.metrics?.cls_score ?? 0;
@@ -1853,6 +1878,7 @@ async function renderSnapshot(snapshot) {
   renderFirstVertical(snapshot);
   renderImpact(snapshot);
   renderBenchmark(snapshot);
+  renderResearchRecord(snapshot);
   renderNarration(snapshot);
   renderRuns(snapshot);
   resetAnimation();

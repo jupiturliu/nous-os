@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import threading
 import time
@@ -57,6 +58,7 @@ RUNTIME_INSIGHTS = RUNTIME_DIR / "insights.json"
 RUNTIME_EPISODES = RUNTIME_DIR / "data" / "episodes" / "episodes.jsonl"
 RUNTIME_EPISODES_SQLITE = RUNTIME_DIR / "data" / "episodes" / "episodes.sqlite"
 RUNTIME_DASHBOARD = RUNTIME_DIR / "dashboard-data.json"
+RUNTIME_RESEARCH_RECORDS = RUNTIME_DIR / "research-records"
 
 DEFAULT_DEMO_MODE = "student"
 DEFAULT_GOAL = "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking."
@@ -223,6 +225,10 @@ def now_local() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%S")
 
 
+def now_run_id() -> str:
+    return time.strftime("%Y%m%dT%H%M%S")
+
+
 def write_json(path: Path, payload: Dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -238,6 +244,15 @@ def count_episode_lines() -> int:
     if not RUNTIME_EPISODES.exists():
         return 0
     return sum(1 for line in RUNTIME_EPISODES.read_text().splitlines() if line.strip())
+
+
+def redact_demo_text(text: str | None) -> str:
+    if not text:
+        return ""
+    redacted = re.sub(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", "[redacted-email]", text)
+    redacted = re.sub(r"\b(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)\d{3}[-.\s]?\d{4}\b", "[redacted-phone]", redacted)
+    redacted = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[redacted-id]", redacted)
+    return redacted
 
 
 def normalize_demo_mode(demo_mode: str | None) -> str:
@@ -694,6 +709,90 @@ def build_topology(goal: str, runs: List[Dict], override: Dict) -> Dict:
     }
 
 
+def summarize_completed(completed: List[Dict]) -> str:
+    if not completed:
+        return "No completed agent outputs were recorded."
+    summaries = []
+    for item in completed[:3]:
+        output = item.get("output", {})
+        agent = output.get("agent") or item.get("topic") or "agent"
+        summary = redact_demo_text(output.get("summary") or output.get("task") or "")
+        quality = output.get("quality_score")
+        quality_text = f" q={quality}" if quality is not None else ""
+        summaries.append(f"{agent}{quality_text}: {summary}")
+    return " | ".join(summaries)
+
+
+def build_research_record(goal: str, runs: List[Dict], override: Dict, benchmark: Dict, demo_mode: str) -> Dict:
+    demo_mode = normalize_demo_mode(demo_mode)
+    mode = DEMO_MODES[demo_mode]
+    round1 = runs[0]
+    round2 = runs[1]
+    components = benchmark["cls_v2"]["components"]
+    run_id = f"{now_run_id()}-{demo_mode}-{override.get('kind', 'boundary')}"
+    return {
+        "run_id": run_id,
+        "generated_at": now_local(),
+        "demo_mode": demo_mode,
+        "audience": "student" if mode["audience"] == "high_school_student" else mode["audience"],
+        "human_intent": redact_demo_text(goal),
+        "ai_first_pass": {
+            "summary": summarize_completed(round1.get("completed", [])),
+            "risks": [
+                "first pass may be fluent without enough evidence",
+                "student/private context must stay minimized",
+            ],
+        },
+        "human_boundary": {
+            "kind": override.get("kind"),
+            "label": override.get("label") or OVERRIDE_PRESETS.get(override.get("kind"), {}).get("label", "Human boundary"),
+            "reason": redact_demo_text(override.get("reason")),
+        },
+        "memory_update": {
+            "stored": True,
+            "evidence_refs": [
+                "runtime://human_override",
+                "runtime://round1",
+                "runtime://round2",
+                "examples/runtime/dashboard-data.json",
+            ],
+        },
+        "ai_second_pass": {
+            "summary": summarize_completed(round2.get("completed", [])),
+            "behavior_changed": True,
+            "evidence_refs": benchmark["cls_v2"]["evidence_refs"],
+        },
+        "reflection": mode["reflection"],
+        "metrics": {
+            "correction_absorption": components["correction_absorption"],
+            "memory_reuse": components["memory_reuse_precision"],
+            "boundary_integrity": components["boundary_integrity"],
+            "human_agency_preservation": components["human_agency_preservation"],
+            "reflection_completeness": 1.0 if mode.get("reflection") else 0.0,
+            "repeatability_gain": components["repeatability_gain"],
+        },
+        "privacy": {
+            "contains_private_student_data": False,
+            "redaction_applied": True,
+            "policy": "local/demo artifact only; do not collect real student private data",
+        },
+        "snapshot_ref": "examples/runtime/dashboard-data.json",
+    }
+
+
+def write_research_record(snapshot: Dict) -> Path:
+    record = snapshot["research_record"]
+    record_path = RUNTIME_RESEARCH_RECORDS / f"{record['run_id']}.json"
+    latest_path = RUNTIME_RESEARCH_RECORDS / "latest.json"
+    record["artifact_path"] = str(record_path)
+    record["latest_path"] = str(latest_path)
+    write_json(record_path, record)
+    write_json(latest_path, record)
+    snapshot.setdefault("paths", {})["research_record"] = str(record_path)
+    snapshot["paths"]["latest_research_record"] = str(latest_path)
+    return record_path
+
+
 def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict, demo_mode: str = DEFAULT_DEMO_MODE) -> Dict:
     demo_mode = normalize_demo_mode(demo_mode)
     mode = DEMO_MODES[demo_mode]
@@ -716,6 +815,7 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict, demo_m
         "safety_boundaries": boundary_catalog(demo_mode, override.get("kind", default_override_for_mode(demo_mode))),
         "reflection": mode["reflection"],
         "first_vertical": FIRST_VERTICAL,
+        "research_record": build_research_record(goal, runs, override, benchmark, demo_mode),
         "current_round": 2,
         "runs": runs,
         "timeline": build_timeline(goal, runs, override, demo_mode=demo_mode),
@@ -774,6 +874,7 @@ def run_heartbeat_flow(goal: str = DEFAULT_GOAL, override_kind: str = DEFAULT_OV
     override = record_override(goal, round1["metrics"]["avg_quality"], override_kind=override_kind, demo_mode=demo_mode)
     round2 = run_round(orch, goal, 2, override_kind, demo_mode)
     snapshot = build_dashboard_snapshot(goal, [round1, round2], override, demo_mode=demo_mode)
+    write_research_record(snapshot)
     write_json(RUNTIME_DASHBOARD, snapshot)
     return snapshot
 

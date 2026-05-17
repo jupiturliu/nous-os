@@ -23,6 +23,7 @@ python3 scripts/run_nous_heartbeat.py
 
 ```bash
 examples/runtime/dashboard-data.json
+examples/runtime/research-records/latest.json
 ```
 
 ## 可视化页面
@@ -91,6 +92,15 @@ The generated snapshot includes:
   "first_vertical": "trading-agent research proof bed"
 }
 ```
+
+Every run also emits a structured education/research record:
+
+```text
+examples/runtime/research-records/<run_id>.json
+examples/runtime/research-records/latest.json
+```
+
+The per-run files are local research artifacts and are ignored by git. `latest.json` is tracked and published so reviewers can inspect the current demo's human intent, AI first pass, human boundary, memory/evidence update, AI second pass, reflection, and agency metrics.
 
 ## Benchmark Mapping
 
