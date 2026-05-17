@@ -32,6 +32,8 @@ class ResearchPageTests(unittest.TestCase):
         self.assertIn("N = 0 real student sessions", research)
         self.assertIn("/demo/student-session-review.html", research)
         self.assertIn("/docs/student-sandbox-deterministic-workflow.md", research)
+        self.assertIn("Copy or download the review packet", research)
+        self.assertIn("Obsidian 04 Reviews", research)
         self.assertIn("Only one focused product change", research)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', research)
         # Cloudflare deploy reads from _site/ produced by stage_static_site.sh.

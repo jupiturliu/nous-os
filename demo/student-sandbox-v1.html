@@ -152,6 +152,51 @@
   .privacy-banner .body { font-size: 14px; line-height: 1.55; }
   .privacy-banner strong { color: var(--teal); }
 
+  .trial-checklist {
+    border: 1px solid rgba(33,64,107,0.16);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.68);
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin: 18px 0 0;
+  }
+
+  .trial-checklist h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: var(--navy);
+  }
+
+  .trial-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .trial-step {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(15,118,110,0.045);
+    padding: 12px;
+    min-height: 118px;
+  }
+
+  .trial-step b {
+    display: block;
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .trial-step span {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
   .section-label {
     display: flex;
     align-items: center;
@@ -1007,6 +1052,7 @@
     .source-fields { grid-template-columns: 1fr; }
     .source-fields textarea { grid-column: span 1; }
     .readiness-grid { grid-template-columns: 1fr; }
+    .trial-steps { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -1040,6 +1086,17 @@
       school name, or family details, so please don't type them. Use topic
       area ("CRISPR ethics for biology class"), not identifying context
       ("Mrs. Smith's class at Lincoln HS").
+    </div>
+  </div>
+
+  <div class="trial-checklist" aria-label="First trial execution checklist">
+    <h2>First-trial run checklist</h2>
+    <p class="session-note">Use this page with one student or student-adjacent participant. The goal is not to grade the student; it is to see whether the protocol preserves thinking, evidence checks, and responsibility.</p>
+    <div class="trial-steps">
+      <div class="trial-step"><b>Before</b><span>Pick one topic, keep identities out of the page, and ask a parent/teacher/researcher to observe process only.</span></div>
+      <div class="trial-step"><b>During</b><span>Start the timer, let the student click Ask only when ready, and require two source cards before review.</span></div>
+      <div class="trial-step"><b>After</b><span>Open Session Review, export the Markdown packet, and copy it into Obsidian 04 Reviews.</span></div>
+      <div class="trial-step"><b>Next</b><span>Choose exactly one next-run change from review evidence before changing the product again.</span></div>
     </div>
   </div>
 

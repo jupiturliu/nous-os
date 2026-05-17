@@ -98,6 +98,11 @@
   }
   .badge.ready { background: rgba(15,118,110,0.12); color: var(--teal); }
   .export-box { display: grid; gap: 10px; }
+  .packet-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
   .export-box textarea {
     width: 100%;
     min-height: 320px;
@@ -138,6 +143,10 @@
     <section class="card export-box">
       <h2>Markdown review packet</h2>
       <p class="status">Copy this de-identified packet into Obsidian after a real or student-adjacent trial.</p>
+      <div class="packet-actions">
+        <button class="secondary" id="copy-packet-btn" type="button">Copy packet</button>
+        <button class="secondary" id="download-packet-btn" type="button">Download .md</button>
+      </div>
       <textarea id="export-output" readonly placeholder="Click Export packet after loading a session."></textarea>
     </section>
     <section class="card">
@@ -173,6 +182,8 @@
     const input = document.getElementById('session-id');
     const sessionListEl = document.getElementById('session-list');
     const exportOutput = document.getElementById('export-output');
+    const copyPacketBtn = document.getElementById('copy-packet-btn');
+    const downloadPacketBtn = document.getElementById('download-packet-btn');
     const endpoint = window.NOUSOS_STUDENT_SESSION_ENDPOINT || '/api/student-sandbox-session';
     let currentSessionId = '';
 
@@ -348,12 +359,46 @@
       statusEl.textContent = 'Exported de-identified Markdown review packet.';
     }
 
+    async function copyPacket() {
+      if (!exportOutput.value.trim()) await exportPacket();
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(exportOutput.value);
+      } else {
+        exportOutput.focus();
+        exportOutput.select();
+        document.execCommand('copy');
+      }
+      statusEl.textContent = 'Copied review packet.';
+    }
+
+    function downloadPacket() {
+      if (!exportOutput.value.trim()) {
+        statusEl.textContent = 'Export a review packet before downloading.';
+        return;
+      }
+      const safeId = (currentSessionId || input.value.trim() || 'student-session').replace(/[^a-zA-Z0-9_-]/g, '-');
+      const blob = new Blob([exportOutput.value], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = safeId + '-review-packet.md';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      statusEl.textContent = 'Downloaded review packet.';
+    }
+
     document.getElementById('load-btn').addEventListener('click', () => {
       loadSession().catch(error => { statusEl.textContent = error.message; });
     });
     document.getElementById('export-btn').addEventListener('click', () => {
       exportPacket().catch(error => { statusEl.textContent = error.message; });
     });
+    copyPacketBtn.addEventListener('click', () => {
+      copyPacket().catch(error => { statusEl.textContent = error.message; });
+    });
+    downloadPacketBtn.addEventListener('click', downloadPacket);
     loadSession().catch(error => { statusEl.textContent = error.message; });
   })();
 </script>
