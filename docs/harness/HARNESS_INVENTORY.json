@@ -133,6 +133,22 @@
       "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_recruitment_keeps_promises_honest -v"
     },
     {
+      "id": "research_line_spec",
+      "path": "docs/research-line/research-line.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_web",
+      "path": "research-line.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_spec_and_web_are_aligned -v"
+    },
+    {
       "id": "latest_research_record",
       "path": "examples/runtime/research-records/latest.json",
       "kind": "research_artifact",

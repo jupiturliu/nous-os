@@ -521,6 +521,62 @@ class BenchmarkTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, message_text, f"recruitment message must not promise {forbidden!r}")
 
+    def test_research_line_spec_and_web_are_aligned(self) -> None:
+        """The internal research-line spec and the public HTML mirror must keep
+        the same load-bearing claims. If one drifts, the test catches it."""
+
+        spec_path = ROOT / "docs" / "research-line" / "research-line.md"
+        web_path = ROOT / "research-line.html"
+        self.assertTrue(spec_path.exists(), "research-line spec markdown must exist")
+        self.assertTrue(web_path.exists(), "research-line.html public mirror must exist")
+
+        spec = spec_path.read_text()
+        html = web_path.read_text()
+
+        # 1. Same north-star phrasing in both surfaces (load-bearing string).
+        for north_star_anchor in (
+            "compounding wisdom",
+            "without the human outsourcing" if False else "human-AI pair",
+        ):
+            if north_star_anchor:
+                self.assertIn(north_star_anchor, spec, f"spec must contain {north_star_anchor!r}")
+                self.assertIn(north_star_anchor, html, f"web must contain {north_star_anchor!r}")
+
+        # 2. Three sub-lines present on both sides (case-insensitive on tokens
+        # that have both proper-noun and lowercase usage across documents).
+        spec_lower = spec.lower()
+        html_lower = html.lower()
+        for sub_line_token in ("l1", "l2", "l3", "student sandbox", "trading-agent", "personal knowledge"):
+            self.assertIn(sub_line_token, spec_lower, f"spec missing sub-line token {sub_line_token!r}")
+            self.assertIn(sub_line_token, html_lower, f"web missing sub-line token {sub_line_token!r}")
+
+        # 3. The "what this is not" list must remain visible on both surfaces.
+        # Strip markdown emphasis before checking so bolded prose still matches.
+        spec_flat = spec.replace("**", "")
+        for negation in ("not a tutoring product", "infrastructure work disguised as research"):
+            self.assertIn(negation, spec_flat, f"spec missing negation {negation!r}")
+        self.assertIn("infrastructure work disguised as research", html)
+        self.assertIn("tutoring product", html)
+
+        # 4. The honest-state markers must be visible on both surfaces.
+        for status_token in ("N = 0", "highest-leverage", "Student Sandbox"):
+            self.assertIn(status_token, html, f"web must surface honest status {status_token!r}")
+
+        # 5. Method commitments (the things that turn doc into research line).
+        for method_token in (
+            "Pre-register",
+            "Two raters",
+            "De-identified",
+            "Negative results",
+            "explicit about N",
+        ):
+            self.assertIn(method_token, spec, f"spec missing method commitment {method_token!r}")
+            self.assertIn(method_token, html, f"web missing method commitment {method_token!r}")
+
+        # 6. The page must not silently slip into product/marketing claims.
+        for forbidden in ("buy now", "free trial", "sign up", "we will grade your", "tutor product"):
+            self.assertNotIn(forbidden, html.lower(), f"web must not contain marketing claim {forbidden!r}")
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -689,7 +745,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("/api/student-sandbox-session", student_trial_text)
         self.assertIn("student-session-review.html", student_trial_text)
         student_workflow_text = student_workflow.read_text()
-        self.assertIn("deterministic software first", student_workflow_text)
+        self.assertIn("skill-first, harness-second", student_workflow_text)
+        self.assertIn("Promote stable, high-frequency, machine-checkable steps", student_workflow_text)
         self.assertIn("Workflow State Machine", student_workflow_text)
         self.assertIn("Skills Layer", student_workflow_text)
         self.assertIn("NOUS Guide", student_workflow_text)

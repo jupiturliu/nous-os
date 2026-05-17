@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS Research Line — Human-AI Co-Evolution Studies</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="The NOUS OS research line on human-AI co-evolution: north star, sub-lines, method, external positioning, and current state.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --panel: rgba(255,255,255,0.04);
+    --panel-strong: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.35);
+    --accent: #7b61ff;
+    --green: #00d4aa;
+    --gold: #ffc857;
+    --red: #ff6b6b;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.032) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.032) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84);
+    backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+  .nav-links a:hover { color: var(--text); }
+  main { position: relative; z-index: 1; }
+  .hero {
+    padding: 116px 40px 54px;
+    background:
+      radial-gradient(circle at 45% 16%, rgba(123,97,255,0.20), transparent 38%),
+      radial-gradient(circle at 78% 38%, rgba(0,212,170,0.12), transparent 30%);
+  }
+  .hero-inner, section { width: min(1060px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 13px;
+    border: 1px solid rgba(0,212,170,0.28);
+    border-radius: 999px;
+    background: rgba(0,212,170,0.08);
+    color: #8ff6dd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  h1 {
+    max-width: 940px;
+    font-size: clamp(40px, 6.4vw, 78px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    margin-bottom: 26px;
+  }
+  .lead {
+    max-width: 800px;
+    color: var(--muted);
+    font-size: clamp(16px, 2vw, 20px);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 34px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .btn-primary { background: var(--accent); border-color: rgba(123,97,255,0.55); }
+  .btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
+
+  section { padding: 68px 40px; }
+  .section-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    margin-bottom: 18px;
+    max-width: 920px;
+  }
+  section p { color: var(--muted); margin-bottom: 14px; max-width: 820px; }
+  section p strong { color: var(--text); font-weight: 500; }
+
+  /* North star block */
+  .northstar {
+    margin: 8px 0 28px;
+    padding: 26px 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(123,97,255,0.30);
+    background:
+      linear-gradient(135deg, rgba(123,97,255,0.10), rgba(0,212,170,0.06)),
+      var(--panel);
+    box-shadow: 0 22px 60px rgba(123,97,255,0.10);
+  }
+  .northstar .ns-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    color: #c4b6ff;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .northstar blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+    margin: 8px 0 12px;
+    color: var(--text);
+    font-size: clamp(18px, 2.2vw, 22px);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+  .northstar .ns-note {
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  /* Instruments table-cards */
+  .instrument-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 14px;
+    margin-top: 6px;
+  }
+  .instrument {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .instrument .ins-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .instrument h3 {
+    font-size: 17px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .instrument p { font-size: 13.5px; margin-bottom: 10px; }
+  .instrument .ins-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--faint);
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+  }
+
+  /* Sub-line cards */
+  .subline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .subline {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+  }
+  .subline .sl-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .subline h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .subline p { font-size: 13.5px; margin: 0 0 12px; color: var(--muted); }
+  .subline-meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 14px;
+    font-size: 12.5px;
+    border-top: 1px dashed var(--border);
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+  .subline-meta dt {
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .subline-meta dd { color: var(--text); }
+  .status-pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-top: 12px;
+  }
+  .status-pill.open { background: rgba(255,200,87,0.12); color: var(--gold); border: 1px solid rgba(255,200,87,0.30); }
+  .status-pill.running { background: rgba(0,212,170,0.10); color: var(--green); border: 1px solid rgba(0,212,170,0.30); }
+  .status-pill.unset { background: rgba(255,107,107,0.10); color: var(--red); border: 1px solid rgba(255,107,107,0.28); }
+
+  /* Method rules list */
+  .method-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: rule;
+    margin-top: 6px;
+  }
+  .method-list li {
+    counter-increment: rule;
+    position: relative;
+    padding: 16px 18px 16px 60px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .method-list li::before {
+    content: counter(rule, decimal-leading-zero);
+    position: absolute;
+    left: 18px;
+    top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .method-list strong { color: var(--text); font-weight: 500; }
+  .method-list span { color: var(--muted); }
+
+  /* Positioning table */
+  .position-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-top: 8px;
+  }
+  .position-table thead th {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .position-table tbody td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .position-table tbody td:first-child {
+    font-weight: 500;
+    color: var(--text);
+    width: 22%;
+  }
+  .position-table tbody td:nth-child(2) { color: var(--muted); width: 38%; }
+  .position-table tbody td:nth-child(3) { color: #c4b6ff; }
+
+  /* External-input tier */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .tier {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    background: var(--panel);
+  }
+  .tier .tier-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+  }
+  .tier h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .tier p { font-size: 13px; margin: 0 0 10px; color: var(--muted); }
+  .tier .tier-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--faint);
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+  }
+
+  /* State block */
+  .state {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .state ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+  }
+  .state li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+  }
+  .state li:last-child { border-bottom: none; }
+  .state .mark {
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .state .mark.done { color: var(--green); }
+  .state .mark.partial { color: var(--gold); }
+  .state .mark.todo { color: var(--red); }
+
+  /* Not-this block */
+  .not-this {
+    background: rgba(255,107,107,0.04);
+    border: 1px solid rgba(255,107,107,0.18);
+    border-radius: 14px;
+    padding: 22px 26px;
+  }
+  .not-this h3 {
+    color: var(--red);
+    font-size: 14px;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+  }
+  .not-this ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .not-this li {
+    padding: 6px 0;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .not-this li::before { content: "✕  "; color: var(--red); font-family: 'JetBrains Mono', monospace; }
+
+  footer.foot {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer.foot a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.12);
+  }
+  footer.foot a:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .hero, section { padding-left: 22px; padding-right: 22px; }
+    .position-table tbody td:first-child { width: 30%; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">
+    <span class="logo-mark">N</span>
+    <span>NOUS OS</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/research-line.html" style="color:var(--text);">Research Line</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="dot"></span> NOUS OS Research Line · HAICES · v0</span>
+    <h1>Toward compounding wisdom in human-AI pairs.</h1>
+    <p class="lead">
+      Most AI research measures how good the model became. Very few measure how
+      capable, calibrated, or wiser the human became — especially in the
+      moments when AI is no longer in the room. This research line is built
+      around that gap.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#north-star">Read the line ↓</a>
+      <a class="btn" href="/research.html">Theory overview →</a>
+      <a class="btn" href="/demo/student-sandbox-v1-guide.html">Student Sandbox v1 →</a>
+    </div>
+  </div>
+</section>
+
+<section id="north-star">
+  <span class="section-label">01 · North Star</span>
+  <h2>The long-horizon question this line exists to answer.</h2>
+
+  <div class="northstar">
+    <div class="ns-kicker">North Star · decade-horizon · philosophical</div>
+    <blockquote>
+      Under what conditions does a human-AI pair accumulate compounding
+      wisdom — not merely accelerated output, not merely personalized
+      convenience — over months and years?
+    </blockquote>
+    <div class="ns-note">
+      This question is intentionally not testable in a single session. The
+      two near-term instruments below feed it. If those instruments trend
+      upward across many cycles across many people, that is evidence for the
+      north star. If they do not, the north star is wishful.
+    </div>
+  </div>
+</section>
+
+<section id="instruments">
+  <span class="section-label">02 · Near-term instruments</span>
+  <h2>What we can actually measure on the way there.</h2>
+  <p>The north star is not directly testable. These two questions are.</p>
+
+  <div class="instrument-grid">
+    <div class="instrument">
+      <div class="ins-id">(a) capability-without-AI delta</div>
+      <h3>Does the human perform measurably better when AI is absent?</h3>
+      <p>After a scaffolded AI-assisted loop, the human is given a similar task without AI access. We compare to a no-AI baseline and a cold-chat-AI baseline. The reverse of the cognitive-offloading concern.</p>
+      <div class="ins-meta"><span>surface · Student Sandbox</span><span>horizon · per-session, weeks</span></div>
+    </div>
+    <div class="instrument">
+      <div class="ins-id">(b) calibrated trust + responsibility retention</div>
+      <h3>Does trust track evidence quality rather than fluency?</h3>
+      <p>Over repeated cycles, does the human delegate the right parts and retain the right parts; does over-reliance shrink; does the human get better at saying "the AI is wrong here"?</p>
+      <div class="ins-meta"><span>surface · trading-agent / cohort</span><span>horizon · per-cycle, months</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="sub-lines">
+  <span class="section-label">03 · Three sub-lines</span>
+  <h2>Three proof beds, three boundary conditions.</h2>
+  <p>Each sub-line has a clear study unit, a baseline condition, and the boundaries it primarily tests. We move sub-lines forward when evidence accumulates, not when arguments accumulate.</p>
+
+  <div class="subline-grid">
+    <div class="subline">
+      <div class="sl-id">L1 · Learning loop</div>
+      <h3>Student Sandbox</h3>
+      <p>Does a 20-minute scaffolded human-AI loop produce a measurable capability-without-AI delta vs (i) no-AI and (ii) cold-chat baselines?</p>
+      <dl class="subline-meta">
+        <dt>Unit</dt><dd>one 20-min session + delayed transfer task without AI</dd>
+        <dt>Baselines</dt><dd>no-AI · cold-chat AI</dd>
+        <dt>Boundaries</dt><dd>learning, fact, privacy, taste</dd>
+      </dl>
+      <span class="status-pill open">N = 0 real trials</span>
+    </div>
+
+    <div class="subline">
+      <div class="sl-id">L2 · Decision loop</div>
+      <h3>Trading-agent</h3>
+      <p>Does AI-augmented decision-making with explicit boundaries produce decisions the human can defend better, calibrate trust better, and learn from outcomes better over time?</p>
+      <dl class="subline-meta">
+        <dt>Unit</dt><dd>one promoted candidate + post-outcome review</dd>
+        <dt>Baseline</dt><dd>retrospective bin by boundary discipline</dd>
+        <dt>Boundaries</dt><dd>decision, responsibility, value</dd>
+      </dl>
+      <span class="status-pill running">running · co-evolution lens not yet applied</span>
+    </div>
+
+    <div class="subline">
+      <div class="sl-id">L3 · Knowledge loop</div>
+      <h3>Personal knowledge</h3>
+      <p>Does long-horizon human-AI memory interaction (Obsidian + TrustMem) produce compounding reflection capacity, or does it produce stale personalization and dependence?</p>
+      <dl class="subline-meta">
+        <dt>Unit</dt><dd>90-day Obsidian section + retrospective task</dd>
+        <dt>Baseline</dt><dd>pre-NOUS journaling segment, if available</dd>
+        <dt>Boundaries</dt><dd>identity, taste, responsibility</dd>
+      </dl>
+      <span class="status-pill unset">methodology not pinned</span>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <span class="section-label">04 · Method commitments</span>
+  <h2>The rules that turn a theory document into a research line.</h2>
+
+  <ul class="method-list">
+    <li><strong>Pre-register predictions before each session.</strong> <span>Five-minute single-page document committing to what we expect to see. Stored at <code>docs/research-line/preregistration/</code>.</span></li>
+    <li><strong>Two raters when feasible.</strong> <span>Observer + a second reviewer independently score the session using <code>self-evolution-metrics-v0.md</code>. Track inter-rater agreement even at N=1.</span></li>
+    <li><strong>De-identified review packets are the data.</strong> <span>Every session produces one review packet. Public publication is required (de-identified). They are the corpus, not folder-dust.</span></li>
+    <li><strong>Negative results are first-class.</strong> <span>If a session fails the prediction, write it up. Failure-to-publish-negatives is the single most common research-line corruption.</span></li>
+    <li><strong>Be explicit about N.</strong> <span>N=1 case studies are legitimate but must be labeled. Never write "students tend to…" at N ≤ 5.</span></li>
+    <li><strong>No instrument inflation.</strong> <span>Resist adding metrics ad-hoc. New metrics require a quarterly synthesis to justify.</span></li>
+  </ul>
+</section>
+
+<section id="atlas">
+  <span class="section-label">05 · Position in the literature</span>
+  <h2>What surrounds this work, and what is left empty.</h2>
+  <p>The full anchor atlas (academic + industry + products + voices) is being assembled at <code>docs/research-line/anchor-atlas.md</code> and will get its own page. Summary positioning:</p>
+
+  <table class="position-table">
+    <thead>
+      <tr><th>Tradition</th><th>Closest anchor</th><th>Where NOUS OS adds</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Augmentation</td><td>Engelbart 1962 · Bush 1945</td><td>LLM-era boundary taxonomy + capability-delta instrument</td></tr>
+      <tr><td>Cognitive offloading</td><td>Risko &amp; Gilbert 2016 · Storm &amp; Stone</td><td>Reverse question: when does offloading make people stronger?</td></tr>
+      <tr><td>Self-regulated learning</td><td>Zimmerman · Vygotsky ZPD</td><td>AI-native instantiation of forethought → performance → reflection</td></tr>
+      <tr><td>AI literacy</td><td>Long &amp; Magerko 2020 · UNESCO 2024</td><td>From descriptive taxonomy to instrumented loop</td></tr>
+      <tr><td>Tools for thought</td><td>Matuschak &amp; Nielsen 2019 · Bret Victor</td><td>From individual cognition tools to explicit symbiosis</td></tr>
+      <tr><td>Practical AI advice</td><td>Mollick · <em>Co-Intelligence</em> 2024</td><td>From descriptive heuristics for adults to prescriptive measured protocol</td></tr>
+      <tr><td>Industry products</td><td>Khanmigo · NotebookLM · Cursor · Claude Code</td><td>Product-agnostic protocol layered on any AI surface</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 24px;">The position the literature is most empty at: <strong>measuring whether a person is more capable when AI is absent.</strong> That is where this line is most concentrated.</p>
+</section>
+
+<section id="external-input">
+  <span class="section-label">06 · External-input loop</span>
+  <h2>How fresh thinking enters the system every day.</h2>
+  <p>The north star cannot be served by internal work alone. NOUS OS must continuously absorb external thinking — academic preprints, industry research, top products, individual essays and podcasts — without drowning in firehose noise. Three-tier discipline:</p>
+
+  <div class="tier-grid">
+    <div class="tier">
+      <div class="tier-id">L1 · Capture</div>
+      <h3>Daily</h3>
+      <p>Scheduled remote agent pulls ~5–8 narrow high-signal sources, filters by anchor keywords, writes raw daily inbox to <code>docs/research-line/inbound/_inbox/</code>.</p>
+      <div class="tier-meta">status · cron not yet live</div>
+    </div>
+    <div class="tier">
+      <div class="tier-id">L2 · Triage</div>
+      <h3>Weekly</h3>
+      <p>Scheduled agent (or human) promotes 1–3 candidates per week to full 1-page inbound notes. Each note has an HTML mirror and joins the public corpus.</p>
+      <div class="tier-meta">status · manual until L1 is live</div>
+    </div>
+    <div class="tier">
+      <div class="tier-id">L3 · Synthesis</div>
+      <h3>Quarterly</h3>
+      <p>Human + Claude write a synthesis tying inbound notes and session data to <em>"what we read, what we changed because of it."</em> Published quarterly.</p>
+      <div class="tier-meta">status · template pending</div>
+    </div>
+  </div>
+</section>
+
+<section id="state">
+  <span class="section-label">07 · Current state · 2026-05-17</span>
+  <h2>Where this line actually stands today.</h2>
+
+  <div class="state">
+    <ul>
+      <li><span class="mark done">✓</span><span><strong>Theory documents.</strong> human-ai-symbiosis-self-evolution, self-evolution-metrics-v0, human-ai-coevolution-model-v0, memory-philosophy-v0.</span></li>
+      <li><span class="mark done">✓</span><span><strong>Research-line spec.</strong> This page + <code>docs/research-line/research-line.md</code>.</span></li>
+      <li><span class="mark partial">~</span><span><strong>Anchor atlas.</strong> Drafted in this wave; full living atlas page pending.</span></li>
+      <li><span class="mark partial">~</span><span><strong>L1 sub-line (Student Sandbox).</strong> Scaffold + public web + recruitment templates complete. <strong>N = 0 real trials.</strong></span></li>
+      <li><span class="mark partial">~</span><span><strong>L2 sub-line (trading-agent).</strong> Active in production; no co-evolution lens applied to existing data yet.</span></li>
+      <li><span class="mark todo">○</span><span><strong>L3 sub-line (personal knowledge).</strong> Methodology not pinned.</span></li>
+      <li><span class="mark todo">○</span><span><strong>L1 capture cron.</strong> Architecture sketched; not yet implemented.</span></li>
+      <li><span class="mark todo">○</span><span><strong>Pre-registration template.</strong> Pending.</span></li>
+      <li><span class="mark todo">○</span><span><strong>First quarterly synthesis.</strong> Pending real session evidence.</span></li>
+    </ul>
+  </div>
+
+  <p style="margin-top: 24px;">The single highest-leverage action remains: <strong>run one real Student Sandbox session and produce N = 1.</strong></p>
+</section>
+
+<section id="not-this">
+  <span class="section-label">08 · What this line is not</span>
+  <h2>The deliberate negations.</h2>
+
+  <div class="not-this">
+    <h3>This research line is NOT —</h3>
+    <ul>
+      <li>a tutoring product or an EdTech offering</li>
+      <li>a benchmark suite</li>
+      <li>a substitute for peer review</li>
+      <li>an excuse to write theory papers without running experiments</li>
+      <li>infrastructure work disguised as research</li>
+    </ul>
+  </div>
+
+  <p style="margin-top: 24px;">If we find ourselves making more boundary types or more metrics rather than more sessions, we have drifted.</p>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div>NOUS OS · Research Line v0 · 2026-05-17</div>
+  <div>
+    <a href="/research.html">research overview</a> ·
+    <a href="/demo/student-sandbox-v1-guide.html">student sandbox</a> ·
+    <a href="/">home</a>
+  </div>
+</footer>
+
+</body>
+</html>
