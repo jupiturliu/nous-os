@@ -230,6 +230,21 @@
     font-weight: 500;
   }
 
+  .hero-about-link {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: -24px 0 34px;
+    color: var(--accent-2);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .hero-about-link:hover {
+    color: white;
+  }
+
   .hero-actions {
     display: flex;
     gap: 12px;
@@ -1248,8 +1263,6 @@
     NOUS OS
   </div>
   <ul class="nav-links">
-    <li><a href="#demo">Demo</a></li>
-    <li><a href="/about.html">About</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#how">How it works</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -1275,6 +1288,8 @@
     NOUS OS connects <strong>human intent, learning notes, verified memory, agent routing, outcome proof, and human authority</strong> —<br>
     with Trading Brain as the first vertical proof and production hardening in progress.
   </p>
+
+  <a class="hero-about-link" href="/about.html">About the name and story <span>→</span></a>
 
   <div class="hero-actions">
     <a href="#demo" class="btn-hero btn-hero-demo">
@@ -1822,7 +1837,6 @@
   <div class="footer-links">
     <a href="https://github.com/jupiturliu/trustmem">TrustMem</a>
     <a href="https://github.com/jupiturliu/synapse">Synapse</a>
-    <a href="/about.html">About</a>
     <a href="https://github.com/jupiturliu/nous-os">NOUS OS</a>
     <a href="#roadmap">Roadmap</a>
   </div>
