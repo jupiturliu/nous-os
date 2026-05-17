@@ -125,7 +125,16 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(snapshot["metrics"]["episodes_logged"], 2)
         self.assertEqual(snapshot["metrics"]["alerts_created"], 2)
         self.assertEqual(snapshot["override"]["kind"], "timing")
-        self.assertEqual(len(snapshot["timeline"]), 6)
+        self.assertEqual(snapshot["demo_mode"], "student")
+        self.assertEqual(snapshot["audience"], "high_school_student")
+        self.assertEqual(snapshot["north_star"], "education/research-first human-AI co-evolution")
+        self.assertTrue(snapshot["human_agency"]["human_keeps_final_responsibility"])
+        self.assertIn("final responsibility", snapshot["human_agency"]["human_keeps"])
+        self.assertIn("practice generation", snapshot["human_agency"]["ai_helps_with"])
+        self.assertEqual(snapshot["reflection"]["prompt"], "What did the AI help with, and what remains my responsibility?")
+        self.assertEqual(snapshot["first_vertical"]["name"], "trading-agent")
+        self.assertEqual(len(snapshot["safety_boundaries"]), 4)
+        self.assertEqual(len(snapshot["timeline"]), 7)
         self.assertEqual(len(snapshot["topology"]["nodes"]), 8)
         self.assertIn("benchmark", snapshot)
         self.assertIn("cls_score", snapshot["metrics"])
@@ -188,7 +197,7 @@ class DashboardApiTests(unittest.TestCase):
             "metrics": {"avg_quality": 0.9},
             "override": {"kind": "cost"},
         }
-        body = json.dumps({"goal": "Live goal", "override_kind": "cost"}).encode("utf-8")
+        body = json.dumps({"goal": "Live goal", "override_kind": "cost", "demo_mode": "research_lab"}).encode("utf-8")
         handler = self._make_handler(
             "/api/run-heartbeat",
             body=body,
@@ -199,7 +208,7 @@ class DashboardApiTests(unittest.TestCase):
             handler.do_POST()
         payload = json.loads(handler.wfile.getvalue().decode("utf-8"))
 
-        mocked.assert_called_once_with(goal="Live goal", override_kind="cost")
+        mocked.assert_called_once_with(goal="Live goal", override_kind="cost", demo_mode="research_lab")
         self.assertEqual(handler.status_code, 201)
         self.assertEqual(payload["override"]["kind"], "cost")
 
@@ -211,6 +220,10 @@ class SiteContractTests(unittest.TestCase):
         roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
         release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
+        demo_refresh_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-demo-refresh-plan.md"
+        education_research = ROOT / "docs" / "education-research-narrative.md"
+        harness_readme = ROOT / "docs" / "harness" / "README.md"
+        harness_context = ROOT / "docs" / "harness" / "context-index.md"
         second_vertical = ROOT / "docs" / "second-vertical-entry-criteria.md"
         one_pager = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.md"
         one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
@@ -218,17 +231,35 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
         self.assertTrue(release_gate.exists())
+        self.assertTrue(demo_refresh_plan.exists())
+        self.assertTrue(education_research.exists())
+        self.assertTrue(harness_readme.exists())
+        self.assertTrue(harness_context.exists())
         self.assertTrue(second_vertical.exists())
         self.assertTrue(one_pager.exists())
         self.assertTrue(one_pager_en.exists())
+        self.assertIn("education and research project", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
+        self.assertIn("docs/education-research-narrative.md", readme)
         self.assertIn("docs/domain-evaluator-interface.md", readme)
+        self.assertIn("docs/harness/README.md", readme)
         self.assertIn("docs/cross-repo-release-gate.md", readme)
         self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.md", readme)
         self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.en.md", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", phase3)
         self.assertIn("second-vertical-entry-criteria.md", roadmap.read_text())
+        self.assertIn("education and research project", roadmap.read_text())
+        self.assertIn("first vertical application", roadmap.read_text())
+        self.assertIn("education/research traction case", roadmap.read_text())
+        self.assertIn("Humans and AI learn together — with boundaries", demo_refresh_plan.read_text())
+        self.assertIn("Student Learning Companion", demo_refresh_plan.read_text())
+        self.assertIn("Trading Agent Research Proof", demo_refresh_plan.read_text())
+        self.assertIn("How should today's high-school students face AI", education_research.read_text())
+        self.assertIn("Privacy boundary", education_research.read_text())
+        self.assertIn("Trading Brain / `trading-agent` remains the first vertical application", education_research.read_text())
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
+        self.assertIn("context index + boundary map + artifact contracts + evaluator specs + release gates + evidence write-back", harness_readme.read_text())
+        self.assertIn("NOUS OS Harness Context Index", harness_context.read_text())
         self.assertIn("Second vertical work remains deferred", second_vertical.read_text())
         self.assertIn("Cognitive COO Operating System", one_pager_en.read_text())
         self.assertIn("TrustMem: agents' trustworthy hippocampus", one_pager_en.read_text())
@@ -274,6 +305,24 @@ class SiteContractTests(unittest.TestCase):
             },
         )
         self.assertEqual(snapshot["metrics"]["cls_v2_score"], snapshot["benchmark"]["cls_v2"]["score"])
+
+    def test_dashboard_snapshot_models_human_ai_coevolution(self) -> None:
+        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
+        dashboard = (ROOT / "demo" / "heartbeat-dashboard.html").read_text()
+
+        self.assertIn(snapshot["demo_mode"], {"student", "trading_vertical", "research_lab"})
+        self.assertEqual(snapshot["north_star"], "education/research-first human-AI co-evolution")
+        self.assertIn("human_sets_goal", snapshot["human_agency"])
+        self.assertIn("safety_boundaries", snapshot)
+        self.assertIn("reflection", snapshot)
+        self.assertEqual(snapshot["first_vertical"]["name"], "trading-agent")
+        self.assertIn("not to recommend trades", snapshot["goal"].lower() + snapshot["first_vertical"]["not_for"].lower())
+        self.assertIn("Humans and AI learn together — with boundaries", dashboard)
+        self.assertIn("Student Learning Companion", dashboard)
+        self.assertIn("Trading Agent Research Proof", dashboard)
+        self.assertIn("Research Lab / Teacher View", dashboard)
+        self.assertIn("Human Agency", dashboard)
+        self.assertIn("Safety Boundaries", dashboard)
 
     def test_pages_workflow_publishes_demo_and_favicon(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text()

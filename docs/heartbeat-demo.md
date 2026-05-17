@@ -51,6 +51,47 @@ http://127.0.0.1:8765/demo/heartbeat-dashboard.html
 
 页面里的 `Run heartbeat` 按钮会直接调用本地 `POST /api/run-heartbeat`，重新生成 snapshot。
 
+## Human-AI Co-Evolution Demo
+
+当前 heartbeat demo 展示两轮闭环，并把可视化目标从“agent 变强”升级为“人与 AI 共同演进，同时保留人类边界”：
+
+```text
+student/human intent
+  -> AI first pass
+  -> human boundary / correction
+  -> TrustMem memory + evidence update
+  -> AI second pass changes behavior
+  -> student reflection
+  -> human keeps goal, values, verification, and final responsibility
+```
+
+Implementation plan:
+
+```text
+docs/plans/2026-05-16-human-ai-coevolution-demo-refresh-plan.md
+```
+
+Required additions:
+
+- Demo Mode selector: Student Learning Companion / Trading Agent Research Proof / Research Lab.
+- Safety Boundaries panel: privacy, facts, learning, decision, values.
+- Human Agency panel: human keeps goal, values, verification, final responsibility.
+- Student Reflection final timeline stage.
+- First Vertical Explainer: trading-agent is a high-constraint education/research proof bed, not investing advice.
+
+The generated snapshot includes:
+
+```json
+{
+  "demo_mode": "student|trading_vertical|research_lab",
+  "north_star": "education/research-first human-AI co-evolution",
+  "human_agency": "...",
+  "safety_boundaries": "...",
+  "reflection": "...",
+  "first_vertical": "trading-agent research proof bed"
+}
+```
+
 ## Benchmark Mapping
 
 这个 demo 现在不仅展示效果，也展示 benchmark：

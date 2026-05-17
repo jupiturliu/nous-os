@@ -19,9 +19,47 @@ python3 examples/nousos_demo.py
 
 ## 这个 demo 证明什么
 
+当前 demo 证明了基础闭环：
+
 - 多 agent 可以在共享记忆之上执行，而不是每轮冷启动。
 - 人类 override 不只是日志，而是下一轮调度策略的输入。
 - Aria 可以先作为一个 adapter interface 存在，后面再替换成私有生产实现。
+
+## Current Demo North Star
+
+根据 NOUS OS 的 education/research-first 定位，当前 demo 不只展示“agent 变强”，而要展示“人与 AI 如何共同演进”：
+
+```text
+student/human intent
+  -> AI first pass
+  -> human boundary / correction
+  -> memory + evidence update
+  -> AI second pass changes behavior
+  -> student reflection
+  -> human keeps goal, values, verification, and final responsibility
+```
+
+具体实现计划见：
+
+```text
+docs/plans/2026-05-16-human-ai-coevolution-demo-refresh-plan.md
+```
+
+核心展示目标：
+
+1. 观众能看到人决定了什么。
+2. 观众能看到 AI 帮助了什么。
+3. 观众能看到人设置了什么边界。
+4. 观众能看到系统如何记住并改变下一轮。
+5. 观众能看到什么仍然必须由人负责。
+
+Dashboard 现在提供三个 narrative mode：
+
+1. Student Learning Companion
+2. Trading Agent Research Proof
+3. Research Lab / Teacher View
+
+每个 mode 都有对应 human boundary choices，并写入 `examples/runtime/dashboard-data.json`。Trading-agent 仍然是第一个垂直类应用 / research proof bed，但被明确解释为高约束边界研究案例，不是投资建议或商业化终点。
 
 ## 下一步替换成真实组件
 

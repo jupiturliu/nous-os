@@ -51,6 +51,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             snapshot = run_heartbeat_flow(
                 goal=payload.get("goal") or None,
                 override_kind=payload.get("override_kind") or None,
+                demo_mode=payload.get("demo_mode") or None,
             )
             self._send_json(snapshot, status=HTTPStatus.CREATED)
             return

@@ -58,23 +58,160 @@ RUNTIME_EPISODES = RUNTIME_DIR / "data" / "episodes" / "episodes.jsonl"
 RUNTIME_EPISODES_SQLITE = RUNTIME_DIR / "data" / "episodes" / "episodes.sqlite"
 RUNTIME_DASHBOARD = RUNTIME_DIR / "dashboard-data.json"
 
-DEFAULT_GOAL = "Build a demo for multi-agent memory and human override evolution in NOUS OS"
-DEFAULT_OVERRIDE_KIND = "risk"
+DEFAULT_DEMO_MODE = "student"
+DEFAULT_GOAL = "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking."
+DEFAULT_OVERRIDE_KIND = "privacy"
+HUMAN_AGENCY = {
+    "human_sets_goal": True,
+    "human_sets_boundary": True,
+    "human_verifies": True,
+    "human_keeps_final_responsibility": True,
+    "human_keeps": ["goal", "values", "verification", "final responsibility"],
+    "ai_helps_with": ["search", "decomposition", "simulation", "critique", "memory recall", "practice generation"],
+}
+FIRST_VERTICAL = {
+    "name": "trading-agent",
+    "role": "first vertical application / research proof bed",
+    "not_for": "not to recommend trades, not student investing advice, and not a commercialization endpoint",
+    "lesson": "High-stakes agents require approval gates, reconciliation, provenance, and review.",
+}
+DEMO_MODES = {
+    "student": {
+        "label": "Student Learning Companion",
+        "audience": "high_school_student",
+        "goal": DEFAULT_GOAL,
+        "lesson": "AI gets more useful after human feedback, but the human keeps goals, values, verification, and responsibility.",
+        "reflection": {
+            "prompt": "What did the AI help with, and what remains my responsibility?",
+            "student_takeaway": "AI can assist my thinking, but it should not replace my judgment.",
+        },
+        "boundaries": ["privacy", "facts", "learning", "values"],
+    },
+    "trading_vertical": {
+        "label": "Trading Agent Research Proof",
+        "audience": "researcher",
+        "goal": "Use trading-agent as a high-constraint research example to study AI boundaries, not to recommend trades.",
+        "lesson": "The first vertical shows why powerful agents need boundaries before autonomy.",
+        "reflection": {
+            "prompt": "Which approvals, evidence, and reconciliation steps must stay human-owned?",
+            "student_takeaway": "A high-stakes agent should prove boundary integrity before it earns more autonomy.",
+        },
+        "boundaries": ["capital_boundary", "evidence", "reconciliation", "no_action"],
+    },
+    "research_lab": {
+        "label": "Research Lab / Teacher View",
+        "audience": "teacher",
+        "goal": "Run an education/research experiment showing whether human feedback changes the next AI cycle.",
+        "lesson": "This is an experiment harness, not a product claim.",
+        "reflection": {
+            "prompt": "What changed after feedback, and can another observer reproduce the loop?",
+            "student_takeaway": "Human feedback should leave measurable evidence, not just a better-looking answer.",
+        },
+        "boundaries": ["rubric", "reflection", "repeatability", "boundary"],
+    },
+}
 OVERRIDE_PRESETS = {
+    "privacy": {
+        "label": "Privacy boundary",
+        "reason": "Human boundary: do not reveal private family, school, or friend information.",
+        "implementation_suffix": "Protect privacy while guiding the research project",
+        "quality_bonus": 0.04,
+        "role": "privacy_guard",
+    },
+    "facts": {
+        "label": "Fact-check boundary",
+        "reason": "Human boundary: add source checks before accepting the answer.",
+        "implementation_suffix": "Add source checks and evidence prompts before final claims",
+        "quality_bonus": 0.03,
+        "role": "fact_guard",
+    },
+    "learning": {
+        "label": "Learning-not-answering boundary",
+        "reason": "Human boundary: do not give final answers; guide with hints and practice.",
+        "implementation_suffix": "Convert final answers into hints, practice, and reflection",
+        "quality_bonus": 0.04,
+        "role": "learning_guard",
+    },
+    "values": {
+        "label": "Value/goal boundary",
+        "reason": "Human boundary: do not decide the student's goals or values for them.",
+        "implementation_suffix": "Keep goals and values with the human while AI supports options",
+        "quality_bonus": 0.03,
+        "role": "values_guard",
+    },
+    "capital_boundary": {
+        "label": "Capital approval boundary",
+        "reason": "Human boundary: no capital action without explicit human approval.",
+        "implementation_suffix": "Add explicit human approval before any capital action",
+        "quality_bonus": 0.04,
+        "role": "capital_guard",
+    },
+    "evidence": {
+        "label": "Evidence/provenance boundary",
+        "reason": "Human boundary: require provenance and measurable outcome before promotion.",
+        "implementation_suffix": "Attach provenance and outcome evidence before promotion",
+        "quality_bonus": 0.03,
+        "role": "evidence_guard",
+    },
+    "reconciliation": {
+        "label": "Reconciliation boundary",
+        "reason": "Human boundary: block new action until prior state is reconciled.",
+        "implementation_suffix": "Reconcile prior state before creating any new action",
+        "quality_bonus": 0.03,
+        "role": "reconciliation_guard",
+    },
+    "no_action": {
+        "label": "No-action boundary",
+        "reason": "Human boundary: preserve the right to decide that no action is the correct action.",
+        "implementation_suffix": "Keep no-action as an explicit valid decision",
+        "quality_bonus": 0.03,
+        "role": "no_action_guard",
+    },
+    "rubric": {
+        "label": "Rubric boundary",
+        "reason": "Human boundary: use a rubric before scoring quality.",
+        "implementation_suffix": "Score the run against an explicit rubric",
+        "quality_bonus": 0.03,
+        "role": "rubric_guard",
+    },
+    "reflection": {
+        "label": "Reflection checkpoint",
+        "reason": "Human boundary: add a student reflection checkpoint before closing the loop.",
+        "implementation_suffix": "Add a reflection checkpoint before finalizing the run",
+        "quality_bonus": 0.04,
+        "role": "reflection_guard",
+    },
+    "repeatability": {
+        "label": "Repeatability requirement",
+        "reason": "Human boundary: require the same loop to be reproducible.",
+        "implementation_suffix": "Make the loop reproducible for another observer",
+        "quality_bonus": 0.03,
+        "role": "repeatability_guard",
+    },
+    "boundary": {
+        "label": "Human agency boundary",
+        "reason": "Human boundary: fail the run if human agency is not preserved.",
+        "implementation_suffix": "Check human agency preservation before treating the run as valid",
+        "quality_bonus": 0.04,
+        "role": "agency_guard",
+    },
     "risk": {
-        "reason": "Human override: add an explicit risk gate before execution.",
+        "label": "Risk boundary",
+        "reason": "Human boundary: add an explicit risk gate before execution.",
         "implementation_suffix": "Apply risk guardrails before shipping",
         "quality_bonus": 0.04,
         "role": "risk_guard",
     },
     "cost": {
-        "reason": "Human override: execution is too expensive, reduce scope and budget burn.",
+        "label": "Cost boundary",
+        "reason": "Human boundary: execution is too expensive, reduce scope and budget burn.",
         "implementation_suffix": "Trim cost and scope before shipping",
         "quality_bonus": 0.02,
         "role": "cost_guard",
     },
     "timing": {
-        "reason": "Human override: timing is off, add a sequencing checkpoint before launch.",
+        "label": "Timing boundary",
+        "reason": "Human boundary: timing is off, add a sequencing checkpoint before launch.",
         "implementation_suffix": "Re-sequence the launch plan before shipping",
         "quality_bonus": 0.03,
         "role": "timing_guard",
@@ -103,6 +240,40 @@ def count_episode_lines() -> int:
     return sum(1 for line in RUNTIME_EPISODES.read_text().splitlines() if line.strip())
 
 
+def normalize_demo_mode(demo_mode: str | None) -> str:
+    return demo_mode if demo_mode in DEMO_MODES else DEFAULT_DEMO_MODE
+
+
+def default_override_for_mode(demo_mode: str) -> str:
+    return DEMO_MODES[normalize_demo_mode(demo_mode)]["boundaries"][0]
+
+
+def normalize_override_kind(override_kind: str | None, demo_mode: str) -> str:
+    mode = normalize_demo_mode(demo_mode)
+    if override_kind in DEMO_MODES[mode]["boundaries"]:
+        return override_kind
+    if override_kind in OVERRIDE_PRESETS:
+        return override_kind
+    return default_override_for_mode(mode)
+
+
+def boundary_catalog(demo_mode: str, selected_kind: str) -> List[Dict]:
+    mode = normalize_demo_mode(demo_mode)
+    boundaries = []
+    for kind in DEMO_MODES[mode]["boundaries"]:
+        preset = OVERRIDE_PRESETS[kind]
+        boundaries.append(
+            {
+                "id": kind,
+                "label": preset["label"],
+                "status": "active" if kind == selected_kind else "available",
+                "reason": preset["reason"],
+                "evidence_ref": "runtime://human_override" if kind == selected_kind else "runtime://boundary_catalog",
+            }
+        )
+    return boundaries
+
+
 def reset_runtime_files() -> None:
     write_json(RUNTIME_AGENT_BUS / "implementation_queue.json", {"items": []})
     write_json(RUNTIME_AGENT_BUS / "learning_queue.json", {"items": []})
@@ -116,17 +287,18 @@ def reset_runtime_files() -> None:
         RUNTIME_EPISODES_SQLITE.unlink()
 
 
-def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAULT_OVERRIDE_KIND) -> None:
+def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAULT_OVERRIDE_KIND, demo_mode: str = DEFAULT_DEMO_MODE) -> None:
     override_preset = OVERRIDE_PRESETS.get(override_kind, OVERRIDE_PRESETS[DEFAULT_OVERRIDE_KIND])
+    mode = DEMO_MODES[normalize_demo_mode(demo_mode)]
     impl_reason = (
-        f"Aria wants a visible prototype for: {goal}"
+        f"Aria wants a visible {mode['label']} first pass for: {goal}"
         if round_index == 1
-        else f"Aria wants a refined execution path with memory for: {goal}"
+        else f"Aria wants a refined second pass that applies the human boundary for: {goal}"
     )
     learning_reason = (
-        f"Aria needs a research narrative for: {goal}"
+        f"Aria needs an education/research narrative for: {goal}"
         if round_index == 1
-        else f"Aria wants the next run to reuse prior learning for: {goal}"
+        else f"Aria wants the next run to reuse prior learning and preserve human agency for: {goal}"
     )
     implementation_items = [
         {
@@ -139,6 +311,7 @@ def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAUL
             "created_at": now_local(),
             "round": round_index,
             "goal": goal,
+            "demo_mode": normalize_demo_mode(demo_mode),
         }
     ]
     learning_items = [
@@ -152,12 +325,13 @@ def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAUL
             "created_at": now_local(),
             "round": round_index,
             "goal": goal,
+            "demo_mode": normalize_demo_mode(demo_mode),
         }
     ]
     if round_index >= 2:
         implementation_items.append(
             {
-                "id": f"risk-demo-{round_index:03d}",
+                "id": f"boundary-demo-{round_index:03d}",
                 "task": f"{override_preset['implementation_suffix']}: {goal}",
                 "reason": f"TrustMem already contains the previous round and a human correction about {override_kind}.",
                 "type": "implementation_queue",
@@ -168,6 +342,8 @@ def seed_runtime_queues(goal: str, round_index: int, override_kind: str = DEFAUL
                 "goal": goal,
                 "role": override_preset["role"],
                 "override_kind": override_kind,
+                "boundary_label": override_preset["label"],
+                "demo_mode": normalize_demo_mode(demo_mode),
             }
         )
 
@@ -261,17 +437,20 @@ def append_alert(source: str, message: str, metadata: Dict) -> None:
     write_json(RUNTIME_ALERTS, alerts)
 
 
-def record_override(goal: str, round1_avg_quality: float, override_kind: str = DEFAULT_OVERRIDE_KIND) -> Dict:
+def record_override(goal: str, round1_avg_quality: float, override_kind: str = DEFAULT_OVERRIDE_KIND, demo_mode: str = DEFAULT_DEMO_MODE) -> Dict:
     override_preset = OVERRIDE_PRESETS.get(override_kind, OVERRIDE_PRESETS[DEFAULT_OVERRIDE_KIND])
     insights = read_json(RUNTIME_INSIGHTS)
     insight = {
         "id": f"override-{int(time.time() * 1000)}",
         "goal": goal,
+        "label": override_preset["label"],
         "reason": override_preset["reason"],
         "domain": "demo",
         "created_at": now_local(),
         "round_1_quality": round1_avg_quality,
         "kind": override_kind,
+        "demo_mode": normalize_demo_mode(demo_mode),
+        "evidence_ref": "runtime://human_override",
     }
     insights.setdefault("insights", []).append(insight)
     write_json(RUNTIME_INSIGHTS, insights)
@@ -432,45 +611,52 @@ def build_benchmark(round1: Dict, round2: Dict, alerts_count: int, episodes_logg
     }
 
 
-def build_timeline(goal: str, runs: List[Dict], override: Dict) -> List[Dict]:
+def build_timeline(goal: str, runs: List[Dict], override: Dict, demo_mode: str = DEFAULT_DEMO_MODE) -> List[Dict]:
     round1 = runs[0]
     round2 = runs[1]
+    mode = DEMO_MODES[normalize_demo_mode(demo_mode)]
     return [
         {
-            "stage": "Human Intent",
-            "title": "You set a goal",
+            "stage": "Step 1",
+            "title": "Student / human sets intent",
             "detail": goal,
             "accent": "intent",
         },
         {
-            "stage": "Aria Planning",
-            "title": "Aria decomposes the work",
-            "detail": f"Round 1 dispatched {round1['metrics']['tasks_dispatched']} tasks across implementation and research lanes.",
+            "stage": "Step 2",
+            "title": "AI first pass",
+            "detail": f"Aria and Synapse produce a first pass with {round1['metrics']['tasks_dispatched']} tasks and {round1['metrics']['avg_quality']:.2f} baseline quality.",
             "accent": "aria",
         },
         {
-            "stage": "Synapse Execution",
-            "title": "Workers complete the first pass",
-            "detail": f"Cold-start quality landed at {round1['metrics']['avg_quality']:.2f}.",
-            "accent": "synapse",
-        },
-        {
-            "stage": "Human Override",
-            "title": "The human tightens the policy",
+            "stage": "Step 3",
+            "title": "Human boundary / correction",
             "detail": override["reason"],
             "accent": "override",
         },
         {
-            "stage": "TrustMem Recall",
-            "title": "Memory changes the second run",
+            "stage": "Step 4",
+            "title": "Memory and evidence update",
             "detail": f"Round 2 recalled episode memory and expanded to {round2['metrics']['tasks_dispatched']} tasks.",
             "accent": "trustmem",
         },
         {
-            "stage": "Compounding Loop",
-            "title": "The system gets sharper",
+            "stage": "Step 5",
+            "title": "AI second pass changes behavior",
             "detail": f"Average quality improved from {round1['metrics']['avg_quality']:.2f} to {round2['metrics']['avg_quality']:.2f}.",
             "accent": "compound",
+        },
+        {
+            "stage": "Step 6",
+            "title": "Student reflection",
+            "detail": mode["reflection"]["student_takeaway"],
+            "accent": "reflection",
+        },
+        {
+            "stage": "Step 7",
+            "title": "What remains human-owned",
+            "detail": "Human keeps goal, values, verification, and final responsibility.",
+            "accent": "human",
         },
     ]
 
@@ -505,7 +691,9 @@ def build_topology(goal: str, runs: List[Dict], override: Dict) -> Dict:
     }
 
 
-def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict) -> Dict:
+def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict, demo_mode: str = DEFAULT_DEMO_MODE) -> Dict:
+    demo_mode = normalize_demo_mode(demo_mode)
+    mode = DEMO_MODES[demo_mode]
     round1 = runs[0]
     round2 = runs[1]
     alerts = read_json(RUNTIME_AGENT_BUS / "alerts.json")
@@ -515,10 +703,19 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict) -> Dic
     benchmark = build_benchmark(round1, round2, alerts_count, episodes_logged, override)
     return {
         "generated_at": now_local(),
+        "demo_mode": demo_mode,
+        "demo_mode_label": mode["label"],
+        "audience": mode["audience"],
+        "north_star": "education/research-first human-AI co-evolution",
+        "mode_lesson": mode["lesson"],
         "goal": goal,
+        "human_agency": HUMAN_AGENCY,
+        "safety_boundaries": boundary_catalog(demo_mode, override.get("kind", default_override_for_mode(demo_mode))),
+        "reflection": mode["reflection"],
+        "first_vertical": FIRST_VERTICAL,
         "current_round": 2,
         "runs": runs,
-        "timeline": build_timeline(goal, runs, override),
+        "timeline": build_timeline(goal, runs, override, demo_mode=demo_mode),
         "topology": build_topology(goal, runs, override),
         "override": override,
         "benchmark": benchmark,
@@ -547,18 +744,19 @@ def build_dashboard_snapshot(goal: str, runs: List[Dict], override: Dict) -> Dic
     }
 
 
-def run_round(orch: AriaOrchestrator, goal: str, round_index: int, override_kind: str) -> Dict:
-    seed_runtime_queues(goal, round_index, override_kind=override_kind)
+def run_round(orch: AriaOrchestrator, goal: str, round_index: int, override_kind: str, demo_mode: str) -> Dict:
+    seed_runtime_queues(goal, round_index, override_kind=override_kind, demo_mode=demo_mode)
     results = orch.publish_from_agent_bus()
     expected = sum(len(ids) for ids in results.values())
     completed = handle_completion_events(orch, expected)
     return summarize_round(round_index, results, completed)
 
 
-def run_heartbeat_flow(goal: str = DEFAULT_GOAL, override_kind: str = DEFAULT_OVERRIDE_KIND) -> Dict:
+def run_heartbeat_flow(goal: str = DEFAULT_GOAL, override_kind: str = DEFAULT_OVERRIDE_KIND, demo_mode: str = DEFAULT_DEMO_MODE) -> Dict:
     ensure_runtime_available()
-    goal = (goal or DEFAULT_GOAL).strip() or DEFAULT_GOAL
-    override_kind = override_kind if override_kind in OVERRIDE_PRESETS else DEFAULT_OVERRIDE_KIND
+    demo_mode = normalize_demo_mode(demo_mode)
+    goal = (goal or DEMO_MODES[demo_mode]["goal"]).strip() or DEMO_MODES[demo_mode]["goal"]
+    override_kind = normalize_override_kind(override_kind, demo_mode)
     reset_singletons()
     reset_runtime_files()
 
@@ -569,10 +767,10 @@ def run_heartbeat_flow(goal: str = DEFAULT_GOAL, override_kind: str = DEFAULT_OV
 
     start_workers()
     orch = AriaOrchestrator()
-    round1 = run_round(orch, goal, 1, override_kind)
-    override = record_override(goal, round1["metrics"]["avg_quality"], override_kind=override_kind)
-    round2 = run_round(orch, goal, 2, override_kind)
-    snapshot = build_dashboard_snapshot(goal, [round1, round2], override)
+    round1 = run_round(orch, goal, 1, override_kind, demo_mode)
+    override = record_override(goal, round1["metrics"]["avg_quality"], override_kind=override_kind, demo_mode=demo_mode)
+    round2 = run_round(orch, goal, 2, override_kind, demo_mode)
+    snapshot = build_dashboard_snapshot(goal, [round1, round2], override, demo_mode=demo_mode)
     write_json(RUNTIME_DASHBOARD, snapshot)
     return snapshot
 

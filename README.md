@@ -9,7 +9,7 @@
 
 ## What is NOUS OS
 
-NOUS OS is not an app. It is a **Cognitive COO operating system**: shared memory, event mesh, domain runtime, outcome proof, and human authority. The first vertical proof is Trading Brain / `trading-agent`.
+NOUS OS is not an app and not a commercialization-first product. It is an **education and research project** for studying a Cognitive COO operating system: shared memory, event mesh, domain runtime, outcome proof, and human authority. The first vertical research proof is Trading Brain / `trading-agent`.
 
 ```
 ┌─────────────────────────────────────┐
@@ -80,6 +80,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
 - [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
 - [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Cognitive COO V2 roadmap and first-vertical proof scope
+- [docs/education-research-narrative.md](./docs/education-research-narrative.md) — Education/research narrative for high-school students, human-AI co-evolution, and safety boundaries
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
@@ -89,6 +90,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [docs/demo-blueprint.md](./docs/demo-blueprint.md) — Runnable demo design
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
 - [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md) — Domain evaluator contract for CLS v2
+- [docs/harness/README.md](./docs/harness/README.md) — Harness engineering context, boundaries, and verification commands
 - [docs/cross-repo-release-gate.md](./docs/cross-repo-release-gate.md) — Read-only release readiness gate across NOUS OS repos
 
 ---

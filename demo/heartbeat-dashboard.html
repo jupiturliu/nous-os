@@ -1106,19 +1106,29 @@
     <section class="hero">
       <div class="card left">
         <div class="eyebrow"><span>INTERACTIVE DEMO</span><span id="generatedAt">No run yet</span></div>
-        <h1><span class="headline-gradient">Intent goes in. Better agents come back out.</span></h1>
+        <h1><span class="headline-gradient">Humans and AI learn together — with boundaries.</span></h1>
         <p class="lede">
-          Type a goal like a product ask. NOUS OS will replay the full story:
-          Aria interprets it, Synapse fans out work, TrustMem records the first pass, then the second run returns sharper after human correction.
+          Ask a question like a student, parent, teacher, or researcher. NOUS OS shows the loop:
+          human goal, AI first pass, human boundary, memory update, second pass, and reflection.
+          The point is not automation for its own sake; it is stronger human judgment with safer AI collaboration.
         </p>
-        <label class="label" for="goalInput">Goal</label>
-        <textarea id="goalInput">Build a demo for multi-agent memory and human override evolution in NOUS OS</textarea>
         <div class="override-picker">
-          <label class="label">Human Override</label>
+          <label class="label">Demo Mode</label>
           <div class="option-row">
-            <button class="override-chip active" data-override="risk">Risk was missed</button>
-            <button class="override-chip" data-override="cost">Cost is too high</button>
-            <button class="override-chip" data-override="timing">Timing is wrong</button>
+            <button class="override-chip mode-chip active" data-mode="student">Student Learning Companion</button>
+            <button class="override-chip mode-chip" data-mode="trading_vertical">Trading Agent Research Proof</button>
+            <button class="override-chip mode-chip" data-mode="research_lab">Research Lab / Teacher View</button>
+          </div>
+        </div>
+        <label class="label" for="goalInput">Goal</label>
+        <textarea id="goalInput">I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.</textarea>
+        <div class="override-picker">
+          <label class="label">Human Boundary</label>
+          <div class="option-row" id="boundaryOptions">
+            <button class="override-chip active" data-override="privacy">Privacy boundary</button>
+            <button class="override-chip" data-override="facts">Fact-check boundary</button>
+            <button class="override-chip" data-override="learning">Learning-not-answering boundary</button>
+            <button class="override-chip" data-override="values">Value/goal boundary</button>
           </div>
         </div>
         <div class="actions">
@@ -1140,7 +1150,7 @@
         <div class="status" id="statusLine">Ready.</div>
         <div class="mini-metrics" id="metrics"></div>
         <div class="note">
-          Product framing: this is not a backend monitor. It is a story engine for “human goal -> first pass -> override -> second pass gets stronger”.
+          Education/research framing: this is not autonomous action. It is a story engine for “human goal -> AI first pass -> human boundary -> memory update -> second pass -> reflection”.
         </div>
         <div class="speaker-stack">
           <div class="speaker-card" id="speakerCard">
@@ -1218,6 +1228,21 @@
         </section>
 
         <section class="card section">
+          <h2>Human Agency</h2>
+          <div class="impact-grid" id="agencyGrid"></div>
+        </section>
+
+        <section class="card section">
+          <h2>Safety Boundaries</h2>
+          <div class="spec-list" id="boundaryList"></div>
+        </section>
+
+        <section class="card section">
+          <h2>First Vertical Research Proof</h2>
+          <div class="narration-card" id="firstVerticalCard"></div>
+        </section>
+
+        <section class="card section">
           <h2>Realtime Stream</h2>
           <div class="stream" id="stream"></div>
         </section>
@@ -1275,7 +1300,8 @@ const hasLocalApi =
   window.location.port === "8765";
 let progressTimer = null;
 let latestSnapshot = null;
-let selectedOverride = "risk";
+let selectedMode = "student";
+let selectedOverride = "privacy";
 let motionRafs = [];
 let keynoteMode = true;
 let keynoteTimers = [];
@@ -1284,13 +1310,46 @@ let audienceMode = false;
 let staticMode = false;
 
 const progressStages = [
-  { title: "Goal", detail: "Human sets the target" },
-  { title: "Plan", detail: "Aria decomposes work" },
-  { title: "Run 1", detail: "Cold-start execution" },
-  { title: "Override", detail: "Human tightens policy" },
-  { title: "Recall", detail: "TrustMem injects memory" },
-  { title: "Run 2", detail: "Compounded second pass" },
+  { title: "Intent", detail: "Human sets the goal" },
+  { title: "First pass", detail: "AI proposes a plan" },
+  { title: "Boundary", detail: "Human corrects limits" },
+  { title: "Memory", detail: "Evidence is recorded" },
+  { title: "Second pass", detail: "AI changes behavior" },
+  { title: "Reflect", detail: "Human keeps responsibility" },
 ];
+
+const demoModes = {
+  student: {
+    label: "Student Learning Companion",
+    goal: "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+    boundaries: [
+      ["privacy", "Privacy boundary"],
+      ["facts", "Fact-check boundary"],
+      ["learning", "Learning-not-answering boundary"],
+      ["values", "Value/goal boundary"],
+    ],
+  },
+  trading_vertical: {
+    label: "Trading Agent Research Proof",
+    goal: "Use trading-agent as a high-constraint research example to study AI boundaries, not to recommend trades.",
+    boundaries: [
+      ["capital_boundary", "Capital approval boundary"],
+      ["evidence", "Evidence/provenance boundary"],
+      ["reconciliation", "Reconciliation boundary"],
+      ["no_action", "No-action boundary"],
+    ],
+  },
+  research_lab: {
+    label: "Research Lab / Teacher View",
+    goal: "Run an education/research experiment showing whether human feedback changes the next AI cycle.",
+    boundaries: [
+      ["rubric", "Rubric boundary"],
+      ["reflection", "Reflection checkpoint"],
+      ["repeatability", "Repeatability requirement"],
+      ["boundary", "Human agency boundary"],
+    ],
+  },
+};
 
 function metricCard(label, value) {
   return `<div class="metric"><div class="k">${label}</div><div class="v">${value}</div></div>`;
@@ -1312,8 +1371,30 @@ function clearKeynoteTimers() {
 function setOverride(kind) {
   selectedOverride = kind;
   document.querySelectorAll(".override-chip").forEach(node => {
-    node.classList.toggle("active", node.dataset.override === kind);
+    if (node.dataset.override) node.classList.toggle("active", node.dataset.override === kind);
   });
+}
+
+function renderBoundaryOptions() {
+  const mode = demoModes[selectedMode] || demoModes.student;
+  document.getElementById("boundaryOptions").innerHTML = mode.boundaries.map(([kind, label], index) => `
+    <button class="override-chip ${index === 0 ? "active" : ""}" data-override="${kind}">${label}</button>
+  `).join("");
+  document.querySelectorAll("[data-override]").forEach(node => {
+    node.addEventListener("click", () => setOverride(node.dataset.override));
+  });
+}
+
+function setMode(mode, overwriteGoal = true) {
+  selectedMode = demoModes[mode] ? mode : "student";
+  document.querySelectorAll(".mode-chip").forEach(node => {
+    node.classList.toggle("active", node.dataset.mode === selectedMode);
+  });
+  renderBoundaryOptions();
+  selectedOverride = demoModes[selectedMode].boundaries[0][0];
+  if (overwriteGoal) {
+    document.getElementById("goalInput").value = demoModes[selectedMode].goal;
+  }
 }
 
 function setKeynoteMode(enabled) {
@@ -1358,13 +1439,15 @@ function renderProgressRibbon() {
 }
 
 function updateHero(snapshot) {
+  selectedMode = snapshot.demo_mode || selectedMode;
   document.getElementById("generatedAt").textContent = snapshot.generated_at || "unknown";
   document.getElementById("intentTitle").textContent = snapshot.goal || "No goal";
   document.getElementById("intentDetail").textContent = "The human objective becomes the organizing principle of the whole loop.";
-  document.getElementById("ariaDetail").textContent = `Aria moved from ${snapshot.runs?.[0]?.metrics?.tasks_dispatched ?? 0} tasks on round 1 to ${snapshot.runs?.[1]?.metrics?.tasks_dispatched ?? 0} on round 2.`;
+  document.getElementById("ariaDetail").textContent = `AI first pass starts the loop; mode: ${snapshot.demo_mode_label || demoModes[selectedMode]?.label || "Student Learning Companion"}.`;
   document.getElementById("synapseDetail").textContent = `Synapse delivered ${snapshot.metrics?.tasks_completed ?? 0} completed tasks in the latest pass.`;
-  document.getElementById("trustmemDetail").textContent = `TrustMem logged ${snapshot.metrics?.episodes_logged ?? 0} episodes and lifted quality by ${snapshot.metrics?.quality_delta ?? 0}.`;
+  document.getElementById("trustmemDetail").textContent = `TrustMem logged ${snapshot.metrics?.episodes_logged ?? 0} episodes and changed the second pass after boundary feedback.`;
   document.getElementById("audienceGoal").textContent = snapshot.goal || "NOUS OS live demo";
+  document.querySelectorAll(".mode-chip").forEach(node => node.classList.toggle("active", node.dataset.mode === selectedMode));
 }
 
 function renderTopology(snapshot) {
@@ -1400,7 +1483,7 @@ function renderStream(snapshot) {
 
   if (snapshot.override) {
     events.push({
-      title: "Human override",
+      title: "Human boundary",
       text: snapshot.override.reason,
       badge: pill("policy shift", "red")
     });
@@ -1432,6 +1515,48 @@ function renderStream(snapshot) {
   `).join("");
 }
 
+function renderAgency(snapshot) {
+  const agency = snapshot.human_agency || {};
+  const humanKeeps = agency.human_keeps || ["goal", "values", "verification", "final responsibility"];
+  const aiHelps = agency.ai_helps_with || ["search", "decomposition", "simulation", "critique", "memory recall"];
+  document.getElementById("agencyGrid").innerHTML = `
+    <article class="impact-card highlight">
+      <div class="small">Human keeps</div>
+      <div class="copy">${humanKeeps.map(item => pill(item)).join(" ")}</div>
+    </article>
+    <article class="impact-card warn">
+      <div class="small">AI helps with</div>
+      <div class="copy">${aiHelps.map(item => pill(item, "gold")).join(" ")}</div>
+    </article>
+    <article class="impact-card rose">
+      <div class="small">Reflection prompt</div>
+      <div class="copy">${snapshot.reflection?.prompt || "What remains my responsibility?"}</div>
+    </article>
+  `;
+}
+
+function renderBoundaries(snapshot) {
+  document.getElementById("boundaryList").innerHTML = (snapshot.safety_boundaries || []).map(item => `
+    <article class="spec-row">
+      <header>
+        <strong>${item.label}</strong>
+        ${pill(item.status, item.status === "active" ? "red" : "")}
+      </header>
+      <p>${item.reason || item.evidence_ref || ""}</p>
+    </article>
+  `).join("");
+}
+
+function renderFirstVertical(snapshot) {
+  const vertical = snapshot.first_vertical || {};
+  document.getElementById("firstVerticalCard").innerHTML = `
+    <div class="small">${vertical.name || "trading-agent"}</div>
+    <div class="big">${vertical.role || "first vertical application / research proof bed"}</div>
+    <p>${vertical.lesson || "High-constraint domains show why powerful agents need boundaries before autonomy."}</p>
+    <p><strong>Not for:</strong> ${vertical.not_for || "student investing advice or commercialization endpoint"}</p>
+  `;
+}
+
 function renderTimeline(snapshot) {
   const timeline = document.getElementById("timeline");
   timeline.innerHTML = (snapshot.timeline || []).map((item, index) => {
@@ -1447,7 +1572,7 @@ function renderTimeline(snapshot) {
   document.getElementById("deltaBanner").innerHTML = `
     <strong>What changed on the second run</strong>
     Round 1 quality: ${snapshot.runs?.[0]?.metrics?.avg_quality ?? 0}. Round 2 quality: ${snapshot.runs?.[1]?.metrics?.avg_quality ?? 0}.
-    The human correction created a stronger plan, a risk gate, and a memory-backed second pass.
+    The human boundary changed the second pass while preserving goal, values, verification, and final responsibility.
   `;
 }
 
@@ -1467,8 +1592,8 @@ function renderImpact(snapshot) {
       <div class="copy">The second pass widens the plan from ${run1.tasks_dispatched ?? 0} to ${run2.tasks_dispatched ?? 0} tasks after Aria sees what the first pass missed.</div>
     </article>
     <article class="impact-card rose">
-      <div class="small">Human Policy</div>
-      <div class="big">${(snapshot.override?.kind || "").toUpperCase()}</div>
+      <div class="small">Human Boundary</div>
+      <div class="big">${snapshot.override?.label || (snapshot.override?.kind || "").toUpperCase()}</div>
       <div class="copy">${snapshot.override?.reason || ""}</div>
     </article>
   `;
@@ -1503,10 +1628,10 @@ function renderNarration(snapshot) {
   const cls = snapshot.metrics?.cls_score ?? 0;
   document.getElementById("narrationCard").innerHTML = `
     <div class="small">What the audience should notice</div>
-    <div class="big">The second run is not just faster. It is structurally wiser.</div>
+    <div class="big">The second run is not just stronger. It is more accountable to the human.</div>
     <p>
-      NOUS OS first produces a workable answer, then lets human correction become system policy.
-      The second run reuses memory, expands the task graph, and raises measured quality by ${q.toFixed(2)}.
+      NOUS OS first produces a workable answer, then lets a human boundary become system policy.
+      The second run reuses memory, expands the task graph, and raises measured quality by ${q.toFixed(2)} while keeping agency explicit.
       That is why the CLS settles at ${cls.toFixed(3)} instead of staying at a one-shot baseline.
     </p>
   `;
@@ -1713,6 +1838,9 @@ async function renderSnapshot(snapshot) {
   renderTopology(snapshot);
   renderStream(snapshot);
   renderTimeline(snapshot);
+  renderAgency(snapshot);
+  renderBoundaries(snapshot);
+  renderFirstVertical(snapshot);
   renderImpact(snapshot);
   renderBenchmark(snapshot);
   renderNarration(snapshot);
@@ -1741,6 +1869,8 @@ async function boot() {
   try {
     const snapshot = await loadSnapshot();
     document.getElementById("goalInput").value = snapshot.goal || document.getElementById("goalInput").value;
+    setMode(snapshot.demo_mode || selectedMode, false);
+    setOverride(snapshot.override?.kind || selectedOverride);
     await renderSnapshot(snapshot);
     setStatus(staticMode ? "Loaded hosted snapshot. Run button replays the story in static mode." : "Loaded latest snapshot.");
   } catch (err) {
@@ -1764,7 +1894,7 @@ document.getElementById("runHeartbeat").addEventListener("click", async () => {
     const response = await fetch(apiRunPath, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goal, override_kind: selectedOverride }),
+      body: JSON.stringify({ goal, override_kind: selectedOverride, demo_mode: selectedMode }),
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const snapshot = await response.json();
@@ -1777,8 +1907,15 @@ document.getElementById("runHeartbeat").addEventListener("click", async () => {
   }
 });
 
-document.querySelectorAll(".override-chip").forEach(node => {
+document.querySelectorAll("[data-override]").forEach(node => {
   node.addEventListener("click", () => setOverride(node.dataset.override));
+});
+
+document.querySelectorAll(".mode-chip").forEach(node => {
+  node.addEventListener("click", () => {
+    setMode(node.dataset.mode, true);
+    setStatus(`Demo mode set to ${demoModes[selectedMode].label}.`);
+  });
 });
 
 document.getElementById("autoPlaySwitch").addEventListener("click", () => {
@@ -1816,7 +1953,8 @@ document.getElementById("rerunFromFinale").addEventListener("click", () => {
   document.getElementById("runHeartbeat").click();
 });
 
-setOverride("risk");
+setMode("student", false);
+setOverride("privacy");
 setKeynoteMode(true);
 setSpeakerMode(true);
 setAudienceMode(false);

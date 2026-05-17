@@ -2,13 +2,13 @@
 
 ## North Star
 
-NOUS OS V2 is the Cognitive COO Operating System for human-AI co-evolution:
+NOUS OS V2 is an education and research project for studying the Cognitive COO Operating System pattern for human-AI co-evolution:
 
 ```text
 Human intent + Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof + human authority.
 ```
 
-The goal is not a fully autonomous agent company. The goal is a reusable operating system that runs real cognitive work, improves across measured cycles, and preserves human authority at every irreversible boundary.
+The goal is not a fully autonomous agent company or a commercialization-first SaaS. The goal is a reusable research and education harness that runs real cognitive work, improves across measured cycles, and preserves human authority at every irreversible boundary.
 
 ## Layer Map
 
@@ -18,7 +18,7 @@ The goal is not a fully autonomous agent company. The goal is a reusable operati
 | Knowledge sedimentation | Obsidian | Human-readable North Stars, playbooks, architecture maps, handoffs, reviews, and durable judgment notes |
 | Memory / trust substrate | TrustMem | Episodic memory, knowledge trust, verification, decay, promotion, cross-agent recall |
 | Signal / event mesh | Synapse | Event Bus, Blackboard, DAG execution, worker pool, budget routing |
-| Domain runtime | First proof: trading-agent | Account/runtime truth, risk and reconciliation gates, outcome ledgers, domain-specific constraints |
+| Domain runtime | First vertical application / research proof: trading-agent | Account/runtime truth, risk and reconciliation gates, outcome ledgers, domain-specific constraints used to study human-AI boundaries |
 | Interaction surfaces | Dashboard, Telegram / ARIA, CLI | Human-readable review, briefing, and operator workflow |
 
 ## Current Phase
@@ -31,9 +31,11 @@ V2 product-hardening / first-vertical proof consolidation
 
 NOUS OS already has a local/public demo, heartbeat dashboard, benchmark frame, CI, and Pages deployment. The next work is to make the first vertical proof loop repeatable before expanding the product surface.
 
-## First Vertical Proof
+## First Vertical Application / Research Proof
 
-Trading Brain / `trading-agent` is the first vertical proof bed because it has high stakes, measurable outcomes, strong feedback, and hard human authority boundaries.
+Trading Brain / `trading-agent` remains the first vertical application for NOUS OS. It is not the commercialization endpoint of NOUS OS; it is the education/research traction case. The point is to use a real, high-constraint, measurable domain to study how humans and AI collaborate, where boundaries should sit, how judgment is preserved, and how outcomes feed the next learning cycle.
+
+Trading Brain / `trading-agent` is a good first vertical because it has high stakes, measurable outcomes, strong feedback, and hard human authority boundaries.
 
 The generic loop:
 
