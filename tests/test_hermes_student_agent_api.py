@@ -14,6 +14,8 @@ class HermesStudentAgentApiTests(unittest.TestCase):
         self.assertTrue(route_path.exists(), "api/hermes-student-agent.js must exist")
         source = route_path.read_text()
 
+        self.assertIn("HERMES_API_SERVER_URL", source)
+        self.assertIn("HERMES_API_SERVER_KEY", source)
         self.assertIn("HERMES_GATEWAY_URL", source)
         self.assertIn("HERMES_GATEWAY_API_KEY", source)
         self.assertIn("HERMES_GATEWAY_MODEL", source)
@@ -26,6 +28,8 @@ class HermesStudentAgentApiTests(unittest.TestCase):
         self.assertIn("module.exports._private", source)
         self.assertNotIn("OPENAI_API_KEY", source)
         self.assertNotIn("api.openai.com", source)
+        self.assertIn("resolveHermesApiServerUrl", source)
+        self.assertIn("resolveHermesApiServerKey", source)
 
     def test_api_route_has_valid_javascript_syntax(self) -> None:
         route_path = ROOT / "api" / "hermes-student-agent.js"

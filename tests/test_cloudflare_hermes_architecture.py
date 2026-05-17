@@ -38,8 +38,12 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("stage_static_site.sh", server)
         self.assertIn("/api/hermes-student-agent", server)
         self.assertIn("/api/health", server)
+        self.assertIn("HERMES_API_SERVER_URL", server)
+        self.assertIn("API_SERVER_KEY", server)
+        self.assertIn(".hermes", server)
         self.assertIn("HERMES_GATEWAY_URL", server)
         self.assertIn("http://127.0.0.1:8642", server)
+        self.assertIn("/v1/chat/completions", server)
         self.assertIn("require('../api/hermes-student-agent')", server)
 
         wrapper = (ROOT / "scripts" / "serve_nous_site.cjs").read_text()

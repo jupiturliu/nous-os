@@ -8,8 +8,33 @@ const SITE_DIR = path.join(ROOT, '_site');
 const PORT = Number(process.env.PORT || process.env.NOUS_BACKEND_PORT || 8787);
 const HOST = process.env.HOST || process.env.NOUS_BACKEND_HOST || '127.0.0.1';
 
-if (!process.env.HERMES_GATEWAY_URL) {
-  process.env.HERMES_GATEWAY_URL = 'http://127.0.0.1:8642';
+function loadLocalHermesEnv() {
+  const hermesEnv = path.join(process.env.HOME || '', '.hermes', '.env');
+  if (!fs.existsSync(hermesEnv)) return;
+  const lines = fs.readFileSync(hermesEnv, 'utf8').split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+    const index = trimmed.indexOf('=');
+    const key = trimmed.slice(0, index).trim();
+    let value = trimmed.slice(index + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+  if (!process.env.HERMES_API_SERVER_KEY && process.env.API_SERVER_KEY) {
+    process.env.HERMES_API_SERVER_KEY = process.env.API_SERVER_KEY;
+  }
+}
+
+loadLocalHermesEnv();
+
+if (!process.env.HERMES_API_SERVER_URL) {
+  const gatewayRoot = String(process.env.HERMES_GATEWAY_URL || 'http://127.0.0.1:8642').replace(/\/+$/, '');
+  process.env.HERMES_API_SERVER_URL = `${gatewayRoot}/v1/chat/completions`;
 }
 if (!process.env.HERMES_ALLOWED_ORIGIN) {
   process.env.HERMES_ALLOWED_ORIGIN = process.env.NOUS_PUBLIC_ORIGIN || `http://${HOST}:${PORT}`;
@@ -82,7 +107,8 @@ function createServer() {
       sendJson(response, 200, {
         status: 'ok',
         service: 'nous-os-web-backend',
-        hermes_gateway_configured: Boolean(process.env.HERMES_GATEWAY_URL),
+        hermes_api_server_configured: Boolean(process.env.HERMES_API_SERVER_URL),
+        hermes_api_server_key_source: process.env.HERMES_API_SERVER_KEY ? 'local-env' : 'none',
         route: 'web-backend-to-hermes-gateway',
       });
       return;
@@ -102,7 +128,7 @@ function start() {
   const server = createServer();
   server.listen(PORT, HOST, () => {
     console.log(`NOUS OS web backend: http://${HOST}:${PORT}`);
-    console.log(`Hermes Gateway: ${process.env.HERMES_GATEWAY_URL}`);
+    console.log(`Hermes API server: ${process.env.HERMES_API_SERVER_URL}`);
   });
   return server;
 }

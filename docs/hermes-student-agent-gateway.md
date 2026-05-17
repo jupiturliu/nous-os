@@ -11,7 +11,7 @@ POST /api/hermes-student-agent
 That route calls Hermes Gateway through its OpenAI-compatible API:
 
 ```text
-POST ${HERMES_GATEWAY_URL}/v1/chat/completions
+POST ${HERMES_API_SERVER_URL}
 ```
 
 This keeps model selection, provider routing, tools, policy, and credentials behind Hermes Gateway instead of binding the website to a direct model vendor.
@@ -25,18 +25,18 @@ For the full Cloudflare/local-webserver architecture, see [cloudflare-hermes-arc
 Required server environment:
 
 ```text
-HERMES_GATEWAY_URL=https://your-hermes-gateway.example.com
+HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions
 ```
 
 Optional server environment:
 
 ```text
-HERMES_GATEWAY_API_KEY=...
-HERMES_GATEWAY_MODEL=hermes-agent
+HERMES_API_SERVER_KEY=...
+HERMES_API_SERVER_MODEL=hermes-agent
 HERMES_ALLOWED_ORIGIN=https://nousos.ai
 ```
 
-`HERMES_GATEWAY_URL` should be the Gateway root URL. The adapter appends `/v1/chat/completions`.
+This mirrors `trading-agent`'s HTTP Gateway mode. Compatibility aliases are also supported: `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY`.
 
 ## Hermes Gateway
 

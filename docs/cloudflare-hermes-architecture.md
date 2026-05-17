@@ -31,11 +31,11 @@ The source pattern already exists in `/Users/liyao/nousos/trading-agent`:
 |---|---|---|
 | Cloudflare public edge | `docs/notes/deployment/DNS_SETUP_GUIDE.md`, `docs/notes/product/release_runbook.md` | `wrangler.toml`, `.github/workflows/cloudflare.yml` |
 | Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `backend/server.cjs` on `127.0.0.1:8787` |
-| Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | backend uses `HERMES_GATEWAY_URL=http://127.0.0.1:8642` |
+| Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | backend uses `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` |
 | Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | CI-gated Worker deploy plus local smoke checks |
 | Browser safety boundary | web calls first-party API routes, not model providers | browser calls `/api/hermes-student-agent` only |
 
-The naming differs slightly because `trading-agent` stores the full chat completions URL in `HERMES_API_SERVER_URL`, while `nous-os` stores the Gateway root in `HERMES_GATEWAY_URL` and appends `/v1/chat/completions` in the backend adapter. That keeps Cloudflare, local development, and backend contracts stable.
+The backend uses the same primary environment names as `trading-agent`: `HERMES_API_SERVER_URL` and `HERMES_API_SERVER_KEY`. `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY` remain supported as compatibility aliases.
 
 ## Runtime Boundary
 
@@ -96,14 +96,14 @@ NOUS_BACKEND_ORIGIN_URL=https://<nous-backend-origin>
 Required backend environment:
 
 ```text
-HERMES_GATEWAY_URL=http://127.0.0.1:8642
+HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions
 ```
 
 Optional backend environment:
 
 ```text
-HERMES_GATEWAY_API_KEY
-HERMES_GATEWAY_MODEL=hermes-agent
+HERMES_API_SERVER_KEY
+HERMES_API_SERVER_MODEL=hermes-agent
 HERMES_ALLOWED_ORIGIN=https://nousos.ai
 ```
 
@@ -127,7 +127,7 @@ NOUS_BACKEND_ORIGIN_URL=http://127.0.0.1:8787 npm run worker:dev
 Use this when developing without Cloudflare:
 
 ```bash
-HERMES_GATEWAY_URL=http://127.0.0.1:8642 npm run site:dev
+HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions npm run site:dev
 ```
 
 Open:
@@ -148,7 +148,7 @@ GET /api/health
 1. Keep GitHub Pages running until the Cloudflare Worker is verified.
 2. Deploy the NOUS OS web backend server and expose it through a controlled origin, preferably Cloudflare Tunnel like `trading-agent`.
 3. Configure `NOUS_BACKEND_ORIGIN_URL` on the Cloudflare Worker.
-4. Set `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY` on the backend server.
+4. Set `HERMES_API_SERVER_URL` and, only if Hermes Gateway requires it, `HERMES_API_SERVER_KEY` on the backend server.
 5. Configure `nousos.ai` DNS to the Cloudflare Worker route.
 6. Smoke check the site HTML, `/api/health`, and `/api/hermes-student-agent`.
 7. Disable the GitHub Pages workflow after Cloudflare is the production path.

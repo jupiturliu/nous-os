@@ -1,5 +1,6 @@
 const MAX_MESSAGE_CHARS = 1200;
 const DEFAULT_GATEWAY_MODEL = 'hermes-agent';
+const DEFAULT_API_SERVER_URL = 'http://127.0.0.1:8642/v1/chat/completions';
 
 function json(response, status, payload) {
   response.statusCode = status;
@@ -42,6 +43,17 @@ function compactWorksheet(worksheet = {}) {
 
 function normalizeGatewayUrl(value) {
   return String(value || '').trim().replace(/\/+$/, '');
+}
+
+function resolveHermesApiServerUrl(env = process.env) {
+  const directUrl = String(env.HERMES_API_SERVER_URL || '').trim();
+  if (directUrl) return directUrl;
+  const gatewayUrl = normalizeGatewayUrl(env.HERMES_GATEWAY_URL || DEFAULT_API_SERVER_URL.replace(/\/v1\/chat\/completions$/, ''));
+  return `${gatewayUrl}/v1/chat/completions`;
+}
+
+function resolveHermesApiServerKey(env = process.env) {
+  return String(env.HERMES_API_SERVER_KEY || env.HERMES_GATEWAY_API_KEY || '');
 }
 
 function hermesSystemPrompt() {
@@ -113,9 +125,9 @@ module.exports = async function handler(request, response) {
     return;
   }
 
-  const gatewayUrl = normalizeGatewayUrl(process.env.HERMES_GATEWAY_URL);
-  if (!gatewayUrl) {
-    json(response, 503, { error: 'Hermes Gateway is not configured. Set HERMES_GATEWAY_URL on the server.' });
+  const apiServerUrl = resolveHermesApiServerUrl();
+  if (!apiServerUrl) {
+    json(response, 503, { error: 'Hermes Gateway is not configured. Set HERMES_API_SERVER_URL on the backend server.' });
     return;
   }
 
@@ -133,16 +145,17 @@ module.exports = async function handler(request, response) {
     return;
   }
 
-  const model = process.env.HERMES_GATEWAY_MODEL || DEFAULT_GATEWAY_MODEL;
+  const model = process.env.HERMES_API_SERVER_MODEL || process.env.HERMES_GATEWAY_MODEL || DEFAULT_GATEWAY_MODEL;
   const headers = {
     'Content-Type': 'application/json',
     'X-Hermes-Session-Key': 'nous-os-student-sandbox-v1',
   };
-  if (process.env.HERMES_GATEWAY_API_KEY) {
-    headers.Authorization = `Bearer ${process.env.HERMES_GATEWAY_API_KEY}`;
+  const apiServerKey = resolveHermesApiServerKey();
+  if (apiServerKey) {
+    headers.Authorization = `Bearer ${apiServerKey}`;
   }
 
-  const upstream = await fetch(`${gatewayUrl}/v1/chat/completions`, {
+  const upstream = await fetch(apiServerUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -176,4 +189,6 @@ module.exports._private = {
   extractGatewayReply,
   hermesSystemPrompt,
   normalizeGatewayUrl,
+  resolveHermesApiServerKey,
+  resolveHermesApiServerUrl,
 };
