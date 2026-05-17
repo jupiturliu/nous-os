@@ -10,6 +10,10 @@ mkdir -p _site/docs _site/demo _site/examples/runtime/research-records
 cp index.html _site/
 cp about.html _site/
 cp research.html _site/
+cp research-line.html _site/
+mkdir -p _site/docs/research-line/inbound _site/docs/research-line/preregistration _site/docs/research-line/synthesis
+cp docs/research-line/*.md _site/docs/research-line/ 2>/dev/null || true
+cp docs/research-line/inbound/*.md _site/docs/research-line/inbound/ 2>/dev/null || true
 cp favicon.svg _site/
 cp CNAME _site/
 cp .nojekyll _site/

@@ -530,8 +530,8 @@ class BenchmarkTests(unittest.TestCase):
         self.assertTrue(spec_path.exists(), "research-line spec markdown must exist")
         self.assertTrue(web_path.exists(), "research-line.html public mirror must exist")
 
-        spec = spec_path.read_text()
-        html = web_path.read_text()
+        spec = spec_path.read_text(encoding="utf-8")
+        html = web_path.read_text(encoding="utf-8")
 
         # 1. Same north-star phrasing in both surfaces (load-bearing string).
         for north_star_anchor in (
