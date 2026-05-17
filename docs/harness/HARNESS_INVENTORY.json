@@ -45,12 +45,44 @@
       "verification": "python3 scripts/run_nous_heartbeat.py"
     },
     {
+      "id": "domain_evaluator_interface",
+      "path": "docs/domain-evaluator-interface.md",
+      "kind": "evaluator_contract",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
       "id": "trading_evaluator",
       "path": "examples/runtime/trading_evaluator.py",
       "kind": "domain_evaluator",
       "owner": "repo",
       "published": false,
       "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
+      "id": "first_vertical_wiring_plan",
+      "path": "docs/plans/2026-05-16-first-vertical-proof-bed-wiring-plan.md",
+      "kind": "development_plan",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
+      "id": "harness_handoffs",
+      "path": "docs/harness/handoffs",
+      "kind": "cross_agent_handoff",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "documentation_reproducibility_test",
+      "path": "tests/test_documentation_reproducibility.py",
+      "kind": "reproducibility_smoke",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_documentation_reproducibility -v"
     },
     {
       "id": "student_sandbox_v0",
