@@ -50,6 +50,8 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("npx wrangler deploy", workflow)
         self.assertIn("CLOUDFLARE_ACCOUNT_ID", workflow)
         self.assertIn("CLOUDFLARE_API_TOKEN", workflow)
+        self.assertIn("configured=false", workflow)
+        self.assertIn("Cloudflare deployment skipped", workflow)
 
     def test_cloudflare_architecture_doc_explains_cutover_and_boundaries(self) -> None:
         doc = (ROOT / "docs" / "cloudflare-hermes-architecture.md").read_text()

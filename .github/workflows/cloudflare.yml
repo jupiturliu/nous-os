@@ -34,13 +34,29 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Check Cloudflare secrets
+        id: cloudflare
+        run: |
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Cloudflare deployment skipped because CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN is not configured."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
       - name: Install Wrangler
+        if: steps.cloudflare.outputs.configured == 'true'
         run: npm install
 
       - name: Stage static site
+        if: steps.cloudflare.outputs.configured == 'true'
         run: npm run site:stage
 
       - name: Deploy Worker
+        if: steps.cloudflare.outputs.configured == 'true'
         run: npx wrangler deploy
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
