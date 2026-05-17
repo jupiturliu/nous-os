@@ -324,8 +324,12 @@ class SiteContractTests(unittest.TestCase):
         surface_ids = {surface["id"] for surface in inventory["surfaces"]}
         self.assertIn("student_sandbox_v0", surface_ids)
         self.assertIn("trading_evaluator", surface_ids)
+        self.assertIn("domain_evaluator_interface", surface_ids)
+        self.assertIn("first_vertical_wiring_plan", surface_ids)
+        self.assertIn("harness_handoffs", surface_ids)
         self.assertIn("latest_research_record", surface_ids)
         self.assertIn("cross_repo_release_gate", surface_ids)
+        self.assertIn("documentation_reproducibility_test", surface_ids)
         self.assertIn("github_pages_workflow", surface_ids)
         self.assertIn("live trading state", inventory["default_boundary"])
 

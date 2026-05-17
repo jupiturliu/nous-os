@@ -56,11 +56,15 @@ def validate_inventory(inventory_path: Path = DEFAULT_INVENTORY) -> dict:
         "next_development_plan",
         "heartbeat_demo_dashboard",
         "heartbeat_runtime",
+        "domain_evaluator_interface",
         "trading_evaluator",
+        "first_vertical_wiring_plan",
+        "harness_handoffs",
         "student_sandbox_v0",
         "latest_research_record",
         "review_template",
         "cross_repo_release_gate",
+        "documentation_reproducibility_test",
         "github_pages_workflow",
     }
     missing_ids = sorted(required_ids - seen_ids)
