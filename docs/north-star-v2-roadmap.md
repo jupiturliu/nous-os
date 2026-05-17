@@ -2,7 +2,7 @@
 
 ## North Star
 
-NOUS OS V2 is an education and research project for studying the Cognitive COO Operating System pattern for human-AI co-evolution:
+NOUS OS V2 is an education and research project for studying a human-AI learning system pattern:
 
 ```text
 Human intent + Obsidian knowledge sedimentation + verified memory + event mesh + domain runtime + outcome proof + human authority.
@@ -14,7 +14,7 @@ The goal is not a fully autonomous agent company or a commercialization-first Sa
 
 | Layer | System | Responsibility |
 |-------|--------|----------------|
-| Consciousness / COO control plane | Hermes / Aria | Intent parsing, user alignment, specialist routing, operator synthesis, human decision capture |
+| Intent / orchestration control plane | Hermes / Aria | Intent parsing, user alignment, specialist routing, operator synthesis, human decision capture |
 | Knowledge sedimentation | Obsidian | Human-readable North Stars, playbooks, architecture maps, handoffs, reviews, and durable judgment notes |
 | Memory / trust substrate | TrustMem | Episodic memory, knowledge trust, verification, decay, promotion, cross-agent recall |
 | Signal / event mesh | Synapse | Event Bus, Blackboard, DAG execution, worker pool, budget routing |
