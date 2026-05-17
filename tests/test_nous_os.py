@@ -400,9 +400,12 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Trading Brain as the first vertical proof", html)
         self.assertIn("Production hardening is still in progress", html)
         self.assertEqual(html.count('href="/about.html"'), 1)
-        self.assertIn("About the name and story", html)
         self.assertNotIn('<li><a href="#demo">Demo</a></li>', html)
-        self.assertNotIn('<li><a href="/about.html">About</a></li>', html)
+        self.assertIn('<li><a href="/about.html">About</a></li>', html)
+        self.assertLess(
+            html.index('<li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>'),
+            html.index('<li><a href="/about.html">About</a></li>'),
+        )
         self.assertIn('class="btn-ghost btn-demo-nav">Demo</a>', html)
         self.assertIn("Follow the research build", html)
         self.assertIn("early reviewers", html)
