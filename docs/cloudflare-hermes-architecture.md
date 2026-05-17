@@ -32,7 +32,7 @@ The source pattern already exists in `/Users/liyao/nousos/trading-agent`:
 | Cloudflare public edge | `docs/notes/deployment/DNS_SETUP_GUIDE.md`, `docs/notes/product/release_runbook.md` | `wrangler.toml`, `.github/workflows/cloudflare.yml` |
 | Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `backend/server.cjs` on `127.0.0.1:8787` |
 | Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | backend uses `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` |
-| Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | CI-gated Worker deploy plus local smoke checks |
+| Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | `com.nousos.webbackend`, `com.nousos.cloudflared`, CI-gated Worker deploy |
 | Browser safety boundary | web calls first-party API routes, not model providers | browser calls `/api/hermes-student-agent` only |
 
 The backend uses the same primary environment names as `trading-agent`: `HERMES_API_SERVER_URL` and `HERMES_API_SERVER_KEY`. `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY` remain supported as compatibility aliases.
@@ -74,6 +74,10 @@ POST ${HERMES_GATEWAY_URL}/v1/chat/completions
 - `scripts/serve_nous_site.cjs` — compatibility wrapper for the backend server
 - `api/hermes-student-agent.js` — Node/CommonJS Hermes Gateway adapter used by the backend
 - `.github/workflows/cloudflare.yml` — CI-gated Cloudflare deploy workflow
+- `deploy/macos/install.sh` — macOS LaunchAgent installer for the local backend and Cloudflare Tunnel
+- `deploy/macos/launchagents/com.nousos.webbackend.plist` — keeps the NOUS OS backend running on `127.0.0.1:8787`
+- `deploy/macos/launchagents/com.nousos.cloudflared.plist` — keeps the backend tunnel running
+- `deploy/cloudflare/nous-os-backend.yml.template` — Cloudflare Tunnel ingress template for `backend.nousos.ai`
 
 ## Production Deploy
 
@@ -90,7 +94,7 @@ The deploy workflow writes `NOUS_BACKEND_ORIGIN_URL` into the Cloudflare Worker 
 Required Cloudflare Worker secret after deploy:
 
 ```text
-NOUS_BACKEND_ORIGIN_URL=https://<nous-backend-origin>
+NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai
 ```
 
 Required backend environment:
@@ -114,6 +118,33 @@ npm install
 npm run site:stage
 npx wrangler deploy
 ```
+
+Run the local production backend and tunnel like `trading-agent`:
+
+```bash
+npm run deploy:macos
+```
+
+This installs:
+
+```text
+com.nousos.webbackend
+com.nousos.cloudflared
+```
+
+The current tunnel template points `backend.nousos.ai` to:
+
+```text
+http://127.0.0.1:8787
+```
+
+The local `cloudflared` credential currently available on this machine is authenticated for the trading Cloudflare zone. Before the public DNS route can be completed, run `cloudflared tunnel login` with access to the `nousos.ai` zone, then route:
+
+```bash
+cloudflared tunnel route dns --overwrite-dns nous-os-backend backend.nousos.ai
+```
+
+If Cloudflare still appends another zone to the hostname, stop and fix the account or zone authorization in the Cloudflare dashboard before retrying.
 
 Run the Worker locally:
 
@@ -146,12 +177,13 @@ GET /api/health
 ## Cutover
 
 1. Keep GitHub Pages running until the Cloudflare Worker is verified.
-2. Deploy the NOUS OS web backend server and expose it through a controlled origin, preferably Cloudflare Tunnel like `trading-agent`.
-3. Configure `NOUS_BACKEND_ORIGIN_URL` on the Cloudflare Worker.
-4. Set `HERMES_API_SERVER_URL` and, only if Hermes Gateway requires it, `HERMES_API_SERVER_KEY` on the backend server.
-5. Configure `nousos.ai` DNS to the Cloudflare Worker route.
-6. Smoke check the site HTML, `/api/health`, and `/api/hermes-student-agent`.
-7. Disable the GitHub Pages workflow after Cloudflare is the production path.
+2. Deploy the NOUS OS web backend server with `npm run deploy:macos`.
+3. Expose `backend.nousos.ai` through Cloudflare Tunnel, using a `cloudflared` login that has access to the `nousos.ai` zone.
+4. Configure `NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai` on the Cloudflare Worker.
+5. Set `HERMES_API_SERVER_URL` and, only if Hermes Gateway requires it, `HERMES_API_SERVER_KEY` on the backend server.
+6. Configure `nousos.ai` DNS to the Cloudflare Worker route.
+7. Smoke check the site HTML, `/api/health`, and `/api/hermes-student-agent`.
+8. Disable the GitHub Pages workflow after Cloudflare is the production path.
 
 ## Safety
 

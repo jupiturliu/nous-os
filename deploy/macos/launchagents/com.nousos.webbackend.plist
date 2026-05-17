@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nousos.webbackend</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/node</string>
+        <string>backend/server.cjs</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{{REPO_ROOT}}</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOST</key>
+        <string>127.0.0.1</string>
+        <key>PORT</key>
+        <string>8787</string>
+        <key>NOUS_PUBLIC_ORIGIN</key>
+        <string>https://nousos.ai</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>{{REPO_ROOT}}/logs/webbackend.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{REPO_ROOT}}/logs/webbackend.stderr.log</string>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>

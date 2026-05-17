@@ -1,0 +1,7 @@
+tunnel: d149d690-3a16-40dc-8607-77a4cc00fe95
+credentials-file: {{HOME}}/.cloudflared/d149d690-3a16-40dc-8607-77a4cc00fe95.json
+
+ingress:
+  - hostname: backend.nousos.ai
+    service: http://127.0.0.1:8787
+  - service: http_status:404

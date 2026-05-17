@@ -77,11 +77,45 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions", doc)
         self.assertIn("ai.hermes.gateway", doc)
         self.assertIn("com.trading.cloudflared", doc)
+        self.assertIn("com.nousos.webbackend", doc)
+        self.assertIn("com.nousos.cloudflared", doc)
+        self.assertIn("backend.nousos.ai", doc)
         self.assertIn("NOUS_BACKEND_ORIGIN_URL", doc)
         self.assertIn("Hermes Gateway", doc)
         self.assertIn("GitHub Pages-only limitation", doc)
         self.assertIn("Disable the GitHub Pages workflow", doc)
         self.assertIn("website -> Cloudflare frontend -> NOUS OS web backend -> Hermes Gateway", doc)
+
+    def test_macos_launchagents_follow_trading_agent_local_tunnel_pattern(self) -> None:
+        package_json = (ROOT / "package.json").read_text()
+        install = (ROOT / "deploy" / "macos" / "install.sh").read_text()
+        backend_plist = (
+            ROOT / "deploy" / "macos" / "launchagents" / "com.nousos.webbackend.plist"
+        ).read_text()
+        cloudflared_plist = (
+            ROOT / "deploy" / "macos" / "launchagents" / "com.nousos.cloudflared.plist"
+        ).read_text()
+        tunnel_template = (
+            ROOT / "deploy" / "cloudflare" / "nous-os-backend.yml.template"
+        ).read_text()
+        runbook = (ROOT / "docs" / "cloudflare-tunnel-runbook.md").read_text()
+
+        self.assertIn('"deploy:macos": "bash deploy/macos/install.sh"', package_json)
+        self.assertIn("DEFAULT_SERVICES=(webbackend cloudflared)", install)
+        self.assertIn('full="com.nousos.$short"', install)
+        self.assertIn('$HOME/.cloudflared/nous-os-backend.yml', install)
+        self.assertIn("<string>com.nousos.webbackend</string>", backend_plist)
+        self.assertIn("<string>/opt/homebrew/bin/node</string>", backend_plist)
+        self.assertIn("<string>backend/server.cjs</string>", backend_plist)
+        self.assertIn("<string>8787</string>", backend_plist)
+        self.assertIn("<string>com.nousos.cloudflared</string>", cloudflared_plist)
+        self.assertIn("<string>/opt/homebrew/bin/cloudflared</string>", cloudflared_plist)
+        self.assertIn("<string>{{HOME}}/.cloudflared/nous-os-backend.yml</string>", cloudflared_plist)
+        self.assertIn("tunnel: d149d690-3a16-40dc-8607-77a4cc00fe95", tunnel_template)
+        self.assertIn("hostname: backend.nousos.ai", tunnel_template)
+        self.assertIn("service: http://127.0.0.1:8787", tunnel_template)
+        self.assertIn("cloudflared tunnel login", runbook)
+        self.assertIn("NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai", runbook)
 
     def test_javascript_entrypoints_have_valid_syntax(self) -> None:
         for path in (

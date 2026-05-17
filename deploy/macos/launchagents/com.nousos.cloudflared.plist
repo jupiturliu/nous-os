@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nousos.cloudflared</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/cloudflared</string>
+        <string>tunnel</string>
+        <string>--config</string>
+        <string>{{HOME}}/.cloudflared/nous-os-backend.yml</string>
+        <string>run</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{{REPO_ROOT}}</string>
+    <key>StandardOutPath</key>
+    <string>{{REPO_ROOT}}/logs/cloudflared.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{REPO_ROOT}}/logs/cloudflared.stderr.log</string>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
