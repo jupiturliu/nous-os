@@ -25,6 +25,11 @@ for path in (RUNTIME,):
         sys.path.insert(0, path_str)
 
 from trading_evaluator import TradingEvaluator, CLS_V2_FIELDS
+from domain_evaluator import (
+    CLS_V2_COMPONENT_FIELDS,
+    DomainEvaluator,
+    validate_cls_components,
+)
 
 
 REQUIRED_SCHEMA = set(CLS_V2_FIELDS) | {"evidence_refs"}
@@ -334,6 +339,87 @@ class TradingEvaluatorOutcomeSignalsTests(unittest.TestCase):
 
         self.assertEqual(result["repeatability_gain"], 0.0)
         self.assertIn("pending:repeatability_gain", result["evidence_refs"])
+
+
+class DomainEvaluatorProtocolConformanceTests(unittest.TestCase):
+    """TradingEvaluator must satisfy the generic DomainEvaluator contract."""
+
+    def setUp(self) -> None:
+        self._tmp = Path(__import__("tempfile").mkdtemp(prefix="trading_evaluator_protocol_"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self._tmp, ignore_errors=True))
+
+    def test_canonical_field_names_match_trading_evaluator_fields(self) -> None:
+        self.assertEqual(set(CLS_V2_COMPONENT_FIELDS), set(CLS_V2_FIELDS))
+
+    def test_trading_evaluator_is_a_domain_evaluator(self) -> None:
+        evaluator = TradingEvaluator(workspace=self._tmp, username="alice")
+        self.assertIsInstance(evaluator, DomainEvaluator)
+
+    def test_trading_evaluator_output_passes_validate_cls_components(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[_proof_pack("ec-0001"), _proof_pack("ec-0002")],
+            market_proof={
+                "baseline_comparisons.jsonl": [
+                    {
+                        "outcome_label": "matured",
+                        "outperformed_benchmark": True,
+                        "execution_boundary": _clean_boundary(),
+                    },
+                ],
+                "forecast_ledger_summary.json": {
+                    "brier_improvement_over_baseline": 0.2,
+                    "execution_boundary": _clean_boundary(),
+                },
+            },
+        )
+        evaluator = TradingEvaluator(workspace=workspace, username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        issues = validate_cls_components(result)
+        self.assertEqual(issues, [], f"contract violations: {issues}")
+
+    def test_trading_evaluator_empty_workspace_still_conforms(self) -> None:
+        evaluator = TradingEvaluator(workspace=self._tmp / "missing", username="alice")
+        result = evaluator.evaluate(run_context={"run_id": "r1"})
+
+        issues = validate_cls_components(result)
+        self.assertEqual(issues, [], f"contract violations on empty workspace: {issues}")
+
+
+class DomainEvaluatorContractValidatorTests(unittest.TestCase):
+    """Direct tests for the shape validator."""
+
+    def _good(self) -> dict:
+        return {field: 0.5 for field in CLS_V2_COMPONENT_FIELDS} | {"evidence_refs": []}
+
+    def test_good_result_returns_no_issues(self) -> None:
+        self.assertEqual(validate_cls_components(self._good()), [])
+
+    def test_missing_component_is_flagged(self) -> None:
+        result = self._good()
+        del result["boundary_integrity"]
+        issues = validate_cls_components(result)
+        self.assertTrue(any("boundary_integrity" in issue for issue in issues))
+
+    def test_out_of_range_component_is_flagged(self) -> None:
+        result = self._good()
+        result["correction_absorption"] = 1.5
+        issues = validate_cls_components(result)
+        self.assertTrue(any("out of range" in issue for issue in issues))
+
+    def test_missing_evidence_refs_is_flagged(self) -> None:
+        result = self._good()
+        del result["evidence_refs"]
+        issues = validate_cls_components(result)
+        self.assertTrue(any("evidence_refs" in issue for issue in issues))
+
+    def test_non_string_evidence_ref_is_flagged(self) -> None:
+        result = self._good()
+        result["evidence_refs"] = ["fine", 42]
+        issues = validate_cls_components(result)
+        self.assertTrue(any("evidence_refs" in issue for issue in issues))
 
 
 class TradingEvaluatorReadOnlyEnforcementTests(unittest.TestCase):

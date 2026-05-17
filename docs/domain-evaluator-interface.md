@@ -8,6 +8,12 @@ Domain evaluators convert domain-specific outcomes into NOUS OS CLS v2 component
 DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents
 ```
 
+The runtime side lives in `examples/runtime/domain_evaluator.py`. New
+domain evaluators should import `DomainEvaluator` (a runtime-checkable
+`Protocol`) and `validate_cls_components()` from that module so contract
+drift fails fast at the import and test boundary rather than at first
+production use.
+
 `run_context` should include the run id, domain, task type, memory inputs, human corrections, execution mode, and boundary policy.
 
 `outcome_artifacts` should include immutable references to evidence: logs, review packets, result records, scorecards, replay outputs, or domain runtime ledgers.

@@ -53,6 +53,14 @@
       "verification": "python3 -m unittest discover -s tests -v"
     },
     {
+      "id": "domain_evaluator_runtime",
+      "path": "examples/runtime/domain_evaluator.py",
+      "kind": "runtime_protocol",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
       "id": "trading_evaluator",
       "path": "examples/runtime/trading_evaluator.py",
       "kind": "domain_evaluator",

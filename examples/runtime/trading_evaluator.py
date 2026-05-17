@@ -41,14 +41,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-CLS_V2_FIELDS = (
-    "outcome_quality_delta",
-    "correction_absorption",
-    "memory_reuse_precision",
-    "repeatability_gain",
-    "boundary_integrity",
-    "human_agency_preservation",
-)
+from domain_evaluator import CLS_V2_COMPONENT_FIELDS as CLS_V2_FIELDS  # noqa: E402
 
 _HUMAN_HANDOFF_BLOCKING_STATES = ("human_review_required",)
 

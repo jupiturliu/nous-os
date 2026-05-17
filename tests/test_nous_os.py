@@ -325,6 +325,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("student_sandbox_v0", surface_ids)
         self.assertIn("trading_evaluator", surface_ids)
         self.assertIn("domain_evaluator_interface", surface_ids)
+        self.assertIn("domain_evaluator_runtime", surface_ids)
         self.assertIn("first_vertical_wiring_plan", surface_ids)
         self.assertIn("harness_handoffs", surface_ids)
         self.assertIn("latest_research_record", surface_ids)
