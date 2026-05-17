@@ -11,6 +11,7 @@ cp index.html _site/
 cp about.html _site/
 cp research.html _site/
 cp research-line.html _site/
+cp research-line-atlas.html _site/
 mkdir -p _site/docs/research-line/inbound _site/docs/research-line/preregistration _site/docs/research-line/synthesis
 cp docs/research-line/*.md _site/docs/research-line/ 2>/dev/null || true
 cp docs/research-line/inbound/*.md _site/docs/research-line/inbound/ 2>/dev/null || true

@@ -577,6 +577,81 @@ class BenchmarkTests(unittest.TestCase):
         for forbidden in ("buy now", "free trial", "sign up", "we will grade your", "tutor product"):
             self.assertNotIn(forbidden, html.lower(), f"web must not contain marketing claim {forbidden!r}")
 
+    def test_research_line_atlas_spec_and_web_are_aligned(self) -> None:
+        """The atlas markdown and HTML mirror must keep the load-bearing claims
+        and the six-bucket structure in sync."""
+
+        spec_path = ROOT / "docs" / "research-line" / "anchor-atlas.md"
+        web_path = ROOT / "research-line-atlas.html"
+        self.assertTrue(spec_path.exists(), "anchor-atlas markdown must exist")
+        self.assertTrue(web_path.exists(), "research-line-atlas.html must exist")
+
+        spec = spec_path.read_text(encoding="utf-8").lower()
+        html = web_path.read_text(encoding="utf-8").lower()
+
+        # Six buckets must appear in both surfaces.
+        for bucket in (
+            "foundational",
+            "cognitive science",
+            "ai literacy",
+            "industry",
+            "top products",
+            "individual essays",
+        ):
+            self.assertIn(bucket, spec, f"atlas spec missing bucket {bucket!r}")
+            self.assertIn(bucket, html, f"atlas web missing bucket {bucket!r}")
+
+        # Key anchors that have inbound notes must appear in both. Use distinctive
+        # single tokens to be robust to different name orderings ("Long & Magerko"
+        # in HTML vs "Duri Long & Brian Magerko" in spec markdown).
+        for anchor in ("magerko", "matuschak", "notebooklm"):
+            self.assertIn(anchor, spec, f"atlas spec missing anchor {anchor!r}")
+            self.assertIn(anchor, html, f"atlas web missing anchor {anchor!r}")
+
+        # Status taxonomy must be present.
+        for status in ("note-written", "scanned", "queued"):
+            self.assertIn(status, spec, f"atlas spec missing status {status!r}")
+            self.assertIn(status, html, f"atlas web missing status {status!r}")
+
+        # The empty-position claim is the load-bearing thesis of the atlas.
+        self.assertIn("more capable", html, "atlas web must surface the capability-without-AI thesis")
+        self.assertIn("ai's absence", html, "atlas web must surface the 'AI absence' angle")
+
+        # No marketing drift.
+        for forbidden in ("buy now", "free trial", "sign up"):
+            self.assertNotIn(forbidden, html, f"atlas web must not contain marketing claim {forbidden!r}")
+
+    def test_research_line_templates_exist_and_are_well_formed(self) -> None:
+        """Inbound and preregistration templates must exist and keep their
+        structural anchors so operators can fill them quickly."""
+
+        inbound_template = ROOT / "docs" / "research-line" / "inbound" / "_template.md"
+        prereg_template = ROOT / "docs" / "research-line" / "preregistration" / "_template.md"
+        self.assertTrue(inbound_template.exists(), "inbound _template.md must exist")
+        self.assertTrue(prereg_template.exists(), "preregistration _template.md must exist")
+
+        inbound = inbound_template.read_text(encoding="utf-8")
+        for required in (
+            "## What it is",
+            "## Where we share",
+            "## Where we differ",
+            "## What this changes in our practice",
+            "## Limitations",
+            "## Open questions",
+        ):
+            self.assertIn(required, inbound, f"inbound template missing section {required!r}")
+
+        prereg = prereg_template.read_text(encoding="utf-8")
+        for required in (
+            "## 1 · The single prediction",
+            "## 2 · What would make me revise my model",
+            "## 3 · What I am NOT predicting",
+            "## 4 · Conditions",
+            "## 5 · Honest priors",
+            "confirmed / partial / disconfirmed / inconclusive",
+        ):
+            self.assertIn(required, prereg, f"preregistration template missing section {required!r}")
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:

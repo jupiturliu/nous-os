@@ -149,6 +149,38 @@
       "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_spec_and_web_are_aligned -v"
     },
     {
+      "id": "research_line_atlas_spec",
+      "path": "docs/research-line/anchor-atlas.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_atlas_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_atlas_web",
+      "path": "research-line-atlas.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_atlas_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_inbound_template",
+      "path": "docs/research-line/inbound/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_templates_exist_and_are_well_formed -v"
+    },
+    {
+      "id": "research_line_preregistration_template",
+      "path": "docs/research-line/preregistration/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_templates_exist_and_are_well_formed -v"
+    },
+    {
       "id": "latest_research_record",
       "path": "examples/runtime/research-records/latest.json",
       "kind": "research_artifact",

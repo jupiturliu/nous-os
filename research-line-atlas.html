@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS Research Line — Anchor Atlas</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="Curated map of academic research, industry work, top products, and individual essays/podcasts that surround the NOUS OS research line on human-AI co-evolution.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --panel: rgba(255,255,255,0.04);
+    --panel-strong: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.35);
+    --accent: #7b61ff;
+    --green: #00d4aa;
+    --gold: #ffc857;
+    --red: #ff6b6b;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.032) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.032) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84);
+    backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+  .nav-links a:hover { color: var(--text); }
+  main { position: relative; z-index: 1; }
+
+  .hero {
+    padding: 84px 40px 40px;
+    background:
+      radial-gradient(circle at 30% 16%, rgba(123,97,255,0.18), transparent 38%),
+      radial-gradient(circle at 78% 38%, rgba(0,212,170,0.10), transparent 30%);
+  }
+  .hero-inner, section { width: min(1100px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 13px;
+    border: 1px solid rgba(0,212,170,0.28);
+    border-radius: 999px;
+    background: rgba(0,212,170,0.08);
+    color: #8ff6dd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 22px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  h1 {
+    max-width: 940px;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+  .lead {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: clamp(15px, 1.6vw, 18px);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--panel);
+  }
+  .legend .pill { width: 8px; height: 8px; border-radius: 50%; }
+  .legend .note   { background: var(--green); }
+  .legend .scan   { background: var(--gold); }
+  .legend .queued { background: var(--faint); }
+
+  /* TOC */
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin: 32px 0 8px;
+  }
+  .toc a {
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--panel);
+    display: block;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .toc a:hover {
+    border-color: rgba(123,97,255,0.35);
+    background: var(--panel-strong);
+  }
+  .toc .toc-id {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .toc .toc-title { font-size: 14.5px; font-weight: 500; }
+
+  section { padding: 56px 40px; }
+  .section-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .section-sub {
+    color: var(--muted);
+    margin-bottom: 22px;
+    max-width: 800px;
+    font-size: 14.5px;
+  }
+
+  .anchor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 12px;
+  }
+  .anchor {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: border-color 0.18s, transform 0.18s, background 0.18s;
+  }
+  .anchor:hover {
+    border-color: rgba(123,97,255,0.28);
+    transform: translateY(-1px);
+    background: var(--panel-strong);
+  }
+  .anchor.note { border-color: rgba(0,212,170,0.28); }
+  .anchor.scan { border-color: rgba(255,200,87,0.22); }
+
+  .anchor-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .anchor-name {
+    font-weight: 500;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .anchor-name em { color: var(--muted); font-style: normal; font-size: 12.5px; display: block; margin-top: 2px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em; }
+  .status {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .status.note   { color: var(--green);     border-color: rgba(0,212,170,0.32); background: rgba(0,212,170,0.06); }
+  .status.scan   { color: var(--gold);      border-color: rgba(255,200,87,0.30); background: rgba(255,200,87,0.06); }
+  .status.queued { color: var(--faint);     border-color: var(--border); }
+
+  .anchor dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 4px 14px;
+    margin-top: 8px;
+    font-size: 12.5px;
+  }
+  .anchor dt {
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-top: 2px;
+  }
+  .anchor dd {
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .anchor dd a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(123,97,255,0.35); }
+  .anchor dd a:hover { text-decoration-color: var(--accent); }
+
+  /* Empty position callout */
+  .empty-position {
+    margin: 12px 0 0;
+    padding: 26px 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,200,87,0.30);
+    background: linear-gradient(135deg, rgba(255,200,87,0.10), rgba(255,107,107,0.04));
+  }
+  .empty-position .ep-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .empty-position blockquote {
+    border-left: 3px solid var(--gold);
+    padding-left: 18px;
+    margin: 8px 0 12px;
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .empty-position .ep-note {
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  /* Reading discipline */
+  .discipline {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .discipline ol {
+    margin: 14px 0 0 22px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .discipline ol li { margin-bottom: 8px; }
+  .discipline ol li strong { color: var(--text); font-weight: 500; }
+  .discipline .footnote {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border);
+    color: var(--faint);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  footer.foot {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer.foot a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.12);
+  }
+  footer.foot a:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .hero, section { padding-left: 22px; padding-right: 22px; }
+    nav { padding: 14px 22px; }
+    .anchor dl { grid-template-columns: 1fr; }
+    .anchor dt { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">
+    <span class="logo-mark">N</span>
+    <span>NOUS OS</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/research-line.html">Research Line</a></li>
+    <li><a href="/research-line-atlas.html" style="color:var(--text);">Atlas</a></li>
+    <li><a href="/about.html">About</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="dot"></span> NOUS OS Research Line · Anchor Atlas · living document</span>
+    <h1>What surrounds this work, and what is empty.</h1>
+    <p class="lead">
+      Curated map of academic research, industry voices, top products, and
+      individual essays and podcasts that surround the NOUS OS research line.
+      Each entry has the same four lines — what it is, the core claim, where
+      we share, where we differ and what we add — plus a status flag for our
+      depth of engagement.
+    </p>
+    <div class="legend">
+      <span><span class="pill note"></span> note-written · full 1-page inbound note exists</span>
+      <span><span class="pill scan"></span> scanned · positioning recorded, no full note yet</span>
+      <span><span class="pill queued"></span> queued · known to exist, awaiting next reading cycle</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="section-label">Contents</span>
+  <h2>Six buckets.</h2>
+  <p class="section-sub">Each bucket is an angle the research line connects to. Move sub-line forward when evidence accumulates, not when arguments accumulate.</p>
+  <div class="toc">
+    <a href="#foundational"><div class="toc-id">01</div><div class="toc-title">Foundational thought</div></a>
+    <a href="#cognitive-science"><div class="toc-id">02</div><div class="toc-title">Academic · Cognitive science</div></a>
+    <a href="#ai-literacy"><div class="toc-id">03</div><div class="toc-title">Academic · AI literacy &amp; HCI</div></a>
+    <a href="#industry"><div class="toc-id">04</div><div class="toc-title">Industry research &amp; alignment</div></a>
+    <a href="#products"><div class="toc-id">05</div><div class="toc-title">Top products</div></a>
+    <a href="#voices"><div class="toc-id">06</div><div class="toc-title">Individual essays &amp; podcasts</div></a>
+  </div>
+</section>
+
+<section id="foundational">
+  <span class="section-label">01 · Foundational</span>
+  <h2>The lineage we walk in.</h2>
+  <p class="section-sub">Pre-LLM thinkers who already articulated the augmentation vs replacement question. Their ground is firm; our addition is the LLM-era boundary taxonomy and the capability-without-AI instrument.</p>
+  <div class="anchor-grid">
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Vannevar Bush<em>"As We May Think" · 1945 · essay</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Knowledge work is bottlenecked by retrieval, not generation; the right tool extends memory without replacing thinking.</dd>
+        <dt>Share</dt><dd>Augmentation framing — tools extend, do not replace.</dd>
+        <dt>Diff</dt><dd>Bush imagined hardware; we instrument the loop between human and AI as the measurable unit.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Doug Engelbart<em>"Augmenting Human Intellect" · 1962 · SRI report</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Capability is a coupling of human, language, tool, training; the right design loop raises civilization's H-LAM/T capability.</dd>
+        <dt>Share</dt><dd>Explicit "human at the center" language; system-level thinking.</dd>
+        <dt>Diff</dt><dd>Did not live to confront LLM misalignment; our boundary taxonomy + capability-delta instrument are LLM-era additions.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Seymour Papert<em>Mindstorms · 1980 · book</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Children learn most when they build; computers should enable construction, not deliver answers.</dd>
+        <dt>Share</dt><dd>Student-as-builder framing; Sandbox is constructionism re-instantiated with AI.</dd>
+        <dt>Diff</dt><dd>Papert used LOGO + minimal scaffolding; we add explicit boundary phases because LLM output is confident in ways LOGO never was.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Lev Vygotsky<em>Zone of Proximal Development · 1934/1978</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Learning happens in the zone between what a learner can do alone and what they can do with help; scaffolding withdraws as competence grows.</dd>
+        <dt>Share</dt><dd>The Sandbox loop is dynamic AI-as-scaffold in the ZPD.</dd>
+        <dt>Diff</dt><dd>We make the <em>withdrawal</em> of scaffolding measurable via the capability-without-AI delta.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">J.C.R. Licklider<em>"Man-Computer Symbiosis" · 1960</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Most productive computing will be symbiosis between human and machine, not full automation.</dd>
+        <dt>Share</dt><dd>The literal word <em>symbiosis</em> — same lineage.</dd>
+        <dt>Diff</dt><dd>Licklider's symbiosis was speculative; ours is operational with measurable boundary integrity.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="cognitive-science">
+  <span class="section-label">02 · Cognitive science</span>
+  <h2>The reverse front.</h2>
+  <p class="section-sub">Empirical and theoretical work showing offloading cognition onto tools changes what's encoded internally. NOUS OS sits in the literature gap that asks the inverse: under what conditions does offloading make people <em>stronger</em>?</p>
+  <div class="anchor-grid">
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Risko &amp; Gilbert<em>Cognitive Offloading · 2016 · Trends in Cognitive Sciences</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Humans systematically offload memory, calculation, decision; this changes internal cognition, often costing native capability.</dd>
+        <dt>Share</dt><dd>The descriptive framing — offloading happens, does cost.</dd>
+        <dt>Diff</dt><dd>The core NOUS OS question is the reverse: under what <em>conditions</em> does offloading make humans stronger?</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Sparrow, Liu &amp; Wegner<em>"Google Effects on Memory" · 2011 · Science</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>People remember less when they know they can re-look-up; access to external info changes encoding.</dd>
+        <dt>Share</dt><dd>Validates that the offloading concern is empirically real.</dd>
+        <dt>Diff</dt><dd>They did not test interventions that flip the effect. We do.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Benjamin Storm et al.<em>"Saving effect" on memory · 2014+</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Externalizing memory can free or impoverish the internal trace, depending on conditions.</dd>
+        <dt>Share</dt><dd>"Depending on conditions" — exactly the conditional we want to characterize.</dd>
+        <dt>Diff</dt><dd>We move from file-saving to AI-mediated learning; conditions become design parameters of a scaffold.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Barry Zimmerman<em>Self-Regulated Learning · 1989+ corpus</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Effective learners cycle forethought → performance → self-reflection; SRL is teachable.</dd>
+        <dt>Share</dt><dd>The Sandbox 6-phase loop is an AI-native SRL instantiation; reflection card maps to SRL's self-reflection phase.</dd>
+        <dt>Diff</dt><dd>SRL is silent on what happens when a confident AI is in the middle. Our boundary phases are an AI-era addition.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">John Sweller<em>Cognitive Load Theory · 1988+</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Intrinsic / extraneous / germane load determines what is learned; design that minimizes extraneous load wins.</dd>
+        <dt>Share</dt><dd>Our 20-min / 6-phase / 3-4 min-per-phase structure is implicitly CLT-respectful.</dd>
+        <dt>Diff</dt><dd>We should explicitly cite CLT going forward; current docs do not.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="ai-literacy">
+  <span class="section-label">03 · AI literacy &amp; HCI</span>
+  <h2>The contemporary peers.</h2>
+  <p class="section-sub">Same audience, same era, but mostly descriptive taxonomies and policy frameworks. We sit downstream as an instrumented loop with measured outcomes.</p>
+  <div class="anchor-grid">
+
+    <article class="anchor note">
+      <div class="anchor-head"><div class="anchor-name">Long &amp; Magerko<em>"What is AI Literacy?" · 2020 · CHI</em></div><span class="status note">note-written</span></div>
+      <dl>
+        <dt>Claim</dt><dd>16-competency framework for AI literacy across understand / use / evaluate / ethics dimensions.</dd>
+        <dt>Share</dt><dd>Same target audience; their critical-evaluation competency maps to Sandbox phase 4.</dd>
+        <dt>Diff</dt><dd>Descriptive taxonomy vs prescriptive 20-min protocol with measurable outcomes.</dd>
+        <dt>Note</dt><dd><a href="/docs/research-line/inbound/2026-05-17-long-magerko-2020.md">2026-05-17-long-magerko-2020</a></dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">UNESCO<em>AI Competency Framework for Students · 2024</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>International policy framework — four dimensions × twelve competencies students should develop around AI.</dd>
+        <dt>Share</dt><dd>Student-facing focus, public-interest framing.</dd>
+        <dt>Diff</dt><dd>UNESCO writes standards; we run experiments. They consume evidence; we produce (small-N) evidence.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Stanford HAI<em>Human-Centered AI Institute · ongoing</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>AI should be developed alongside humans, not at them; CRAFT classroom materials.</dd>
+        <dt>Share</dt><dd>"Human-centered" framing.</dd>
+        <dt>Diff</dt><dd>Publishing institution vs instrumented practice. Worth importing CRAFT lessons.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">MIT Media Lab<em>Lifelong Kindergarten · Personal Robots Group</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Learning compounds best when projects, peers, passion, play are present; AI partners can support these if authorship is preserved.</dd>
+        <dt>Share</dt><dd>The "preserve authorship" line is identical to ours.</dd>
+        <dt>Diff</dt><dd>They focus on creative-project authorship; we focus on research-loop authorship.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">CHI / CSCW / Learning Sciences<em>Prompt scaffolding empirical work · 2024–2026</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Specific prompt designs improve learning outcomes (e.g., "ask AI to ask you questions first").</dd>
+        <dt>Share</dt><dd>We are downstream practitioners of these patterns.</dd>
+        <dt>Diff</dt><dd>Most measure satisfaction or correctness; we measure capability without AI, which is rare.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="industry">
+  <span class="section-label">04 · Industry research</span>
+  <h2>Same problem from the lab side.</h2>
+  <p class="section-sub">Labs publishing on alignment, scalable oversight, and model-side boundary design. Their evidence is on AI capability; ours is on human capability when AI is present.</p>
+  <div class="anchor-grid">
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Anthropic<em>Constitutional AI · tool use · interpretability</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Structured human feedback + explicit constitutional rules produce better-aligned model behavior.</dd>
+        <dt>Share</dt><dd>The explicit-boundary design philosophy.</dd>
+        <dt>Diff</dt><dd>Anthropic's boundaries are model-side; ours are interaction-side. Complementary halves of a symbiosis.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">DeepMind<em>Scalable oversight · AlphaFold/AlphaProof/AlphaProteo</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>AI can augment scientific discovery; scalable oversight is solvable.</dd>
+        <dt>Share</dt><dd>The augmentation thesis.</dd>
+        <dt>Diff</dt><dd>DeepMind's evidence is on AI capability; ours is on human capability when AI is present.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">OpenAI<em>GPTs in the classroom · educator partnerships</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Deployment studies of GPTs as tutors, study helpers, etc.</dd>
+        <dt>Share</dt><dd>Practical "AI in education" focus.</dd>
+        <dt>Diff</dt><dd>They measure usage + satisfaction; we measure human capability delta.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Stuart Russell<em>Human Compatible · 2019 · book</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>AI safety requires AI that explicitly defers to humans and remains uncertain about goals.</dd>
+        <dt>Share</dt><dd>Responsibility-stays-with-human stance.</dd>
+        <dt>Diff</dt><dd>Russell is at alignment-policy layer; we are at daily-interaction-design layer. His policy implies our interaction design.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Dario Amodei<em>"Machines of Loving Grace" · 2024 · essay</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>If alignment is solved, the next decade could see profound gains in health, science, education, freedom.</dd>
+        <dt>Share</dt><dd>The optimistic-but-conditional vision.</dd>
+        <dt>Diff</dt><dd>Amodei describes the destination; we propose the per-session protocol that makes a human less likely to lose capability on the way there.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="products">
+  <span class="section-label">05 · Top products</span>
+  <h2>Same-shape attempts in production.</h2>
+  <p class="section-sub">Commercial systems instantiating pieces of our protocol — sometimes one phase, sometimes a sibling philosophy. Useful benchmarks and design references; we are product-agnostic by design.</p>
+  <div class="anchor-grid">
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Khanmigo (Khan Academy)<em>AI tutor product</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Socratic AI tutoring at scale with safety rails for under-18 users.</dd>
+        <dt>Share</dt><dd>Socratic / hints-not-answers stance.</dd>
+        <dt>Diff</dt><dd>Khanmigo <em>is</em> the AI; Sandbox is a protocol that wraps any AI. Closest commercial cousin to study.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor note">
+      <div class="anchor-head"><div class="anchor-name">NotebookLM (Google)<em>Source-grounded research notebook</em></div><span class="status note">note-written</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Source-grounded AI is more trustworthy and useful; answers cite source passages.</dd>
+        <dt>Share</dt><dd>Phase 4 (source check) directly aligned with NotebookLM's source-grounding ethos.</dd>
+        <dt>Diff</dt><dd>NotebookLM optimizes one phase; we structure the full 6-phase loop including boundary + reflection.</dd>
+        <dt>Note</dt><dd><a href="/docs/research-line/inbound/2026-05-17-notebooklm-product-walk.md">2026-05-17-notebooklm-product-walk</a></dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Cursor<em>AI pair programmer · editor</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Developer productivity rises when AI suggestions are explicitly accept-or-reject rather than silently applied.</dd>
+        <dt>Share</dt><dd>The explicit accept-or-reject boundary — directly analogous to our boundary phase.</dd>
+        <dt>Diff</dt><dd>Cursor proves the pattern in the code domain; we propose the same in research/learning.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Claude Code (Anthropic)<em>Terminal-native agentic coding assistant</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Agents can do real engineering work safely if boundaries — permissions, plan mode, transparent diffs — are explicit.</dd>
+        <dt>Share</dt><dd>Every key design choice — explicit permissions, plan mode, transparent diffs.</dd>
+        <dt>Diff</dt><dd>Claude Code is the <em>engineering</em> instantiation of NOUS OS principles; Sandbox is the <em>learning</em> instantiation.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Cognition Devin · Replit Agent · OpenAI Operator<em>Autonomy-maximizing agent products</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Agents can do longer-horizon tasks unattended.</dd>
+        <dt>Share</dt><dd>Shared agentic substrate.</dd>
+        <dt>Diff</dt><dd>Autonomy-maximizing vs symbiosis-maximizing. Useful contrast points.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Granola · Mem · similar<em>AI + your notes</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Drafting is cheap; human curation is the value-add.</dd>
+        <dt>Share</dt><dd>Human-curates-before-commits pattern.</dd>
+        <dt>Diff</dt><dd>They optimize a workflow product; we extract the pattern and codify it as a loop principle.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Perplexity · Phind<em>Cited-search AI</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>AI search with cited sources beats non-cited AI chat.</dd>
+        <dt>Share</dt><dd>Source primacy.</dd>
+        <dt>Diff</dt><dd>They optimize answer-with-citations as the whole interaction; we make source-check one explicitly-bounded phase.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="voices">
+  <span class="section-label">06 · Individual voices</span>
+  <h2>The living thinkers.</h2>
+  <p class="section-sub">Essays, podcasts, and contemporary writing that move faster than papers. The L1 capture cron will pull selectively from these.</p>
+  <div class="anchor-grid">
+
+    <article class="anchor note">
+      <div class="anchor-head"><div class="anchor-name">Andy Matuschak<em>Tools for thought · andymatuschak.org</em></div><span class="status note">note-written</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Most "tools for thought" are not transformative; transformative ones change the medium of thought itself.</dd>
+        <dt>Share</dt><dd>Medium-changes-thought framing.</dd>
+        <dt>Diff</dt><dd>Individual cognition vs explicit symbiosis with boundary taxonomy. His vocabulary will inform L3.</dd>
+        <dt>Note</dt><dd><a href="/docs/research-line/inbound/2026-05-17-matuschak-nielsen-2019.md">2026-05-17-matuschak-nielsen-2019</a></dd>
+      </dl>
+    </article>
+
+    <article class="anchor scan">
+      <div class="anchor-head"><div class="anchor-name">Michael Nielsen<em>Reinventing Discovery · Matuschak collab essays</em></div><span class="status scan">scanned</span></div>
+      <dl>
+        <dt>Claim</dt><dd>New mediums of representation enable new kinds of thought.</dd>
+        <dt>Share</dt><dd>Representation-as-cognitive-substrate stance.</dd>
+        <dt>Diff</dt><dd>His essays are inspirational and largely ungrounded in trials; we run trials.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Bret Victor<em>"Inventing on Principle" · Dynamicland</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Thought is constrained by representation; better representation enables better thought.</dd>
+        <dt>Share</dt><dd>Deep belief in representation-as-cognition.</dd>
+        <dt>Diff</dt><dd>Victor's work is largely demonstrative; we add empirical loops.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Ethan Mollick<em>Co-Intelligence · 2024 · One Useful Thing Substack</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Treat AI as a co-worker; experiment widely; expect rapid capability shifts.</dd>
+        <dt>Share</dt><dd>Practical-empirical attitude.</dd>
+        <dt>Diff</dt><dd>Descriptive + adult-facing; ours is prescriptive + instrumented + student-facing.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Cal Newport<em>Deep Work · Slow Productivity · podcast</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Deep cognitive work requires uninterrupted attention; modern tools fight against this.</dd>
+        <dt>Share</dt><dd>The concern that AI use without design can shred attention.</dd>
+        <dt>Diff</dt><dd>His stance leans minimalist; we propose scaffolded AI use can produce deep work, not destroy it.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Dwarkesh Patel<em>Dwarkesh Podcast (formerly Lunar Society)</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Long-form interviews with top AI researchers — N/A; format.</dd>
+        <dt>Share</dt><dd>Access to current AI-research thinking before it surfaces in papers.</dd>
+        <dt>Diff</dt><dd>Consumer relationship — pick 1-2 episodes per quarter for inbound notes.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Ezra Klein Show<em>NYT podcast · AI/society episodes</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Mainstream public-interest podcast with frequent AI episodes (Karen Hao, Demis Hassabis, Dario Amodei).</dd>
+        <dt>Share</dt><dd>Connection to broader societal AI discourse.</dd>
+        <dt>Diff</dt><dd>Mainstream-discourse-shaping; we feed our research-line writing back into that discourse over time.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Tyler Cowen<em>Marginal Revolution · Conversations with Tyler</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Economist's takes on AI's distributional + cognitive impact, often contrarian and useful.</dd>
+        <dt>Share</dt><dd>Asking "what does this do to people" rather than "what can it do".</dd>
+        <dt>Diff</dt><dd>Macro-economic vs individual-cognitive lens.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Ben Thompson<em>Stratechery · paid newsletter</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>AI is a platform shift; strategy logic from prior platform shifts applies.</dd>
+        <dt>Share</dt><dd>Product-strategy literacy informs our "what is happening in product land" tracking.</dd>
+        <dt>Diff</dt><dd>Product-strategy-focused vs research-method-focused.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Latent Space (Swyx)<em>AI engineering podcast</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Practitioner format — N/A.</dd>
+        <dt>Share</dt><dd>Stays current on what's deployable.</dd>
+        <dt>Diff</dt><dd>Principles-and-evidence layer vs deployable-engineering layer.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">Lex Fridman Podcast<em>Long-form AI conversations</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Interview format — N/A.</dd>
+        <dt>Share</dt><dd>Broad-public AI discourse.</dd>
+        <dt>Diff</dt><dd>Signal-to-noise variable; pick selectively.</dd>
+      </dl>
+    </article>
+
+    <article class="anchor">
+      <div class="anchor-head"><div class="anchor-name">晚点 LatePost · 张小珺商业访谈<em>Chinese tech publication + podcast</em></div><span class="status queued">queued</span></div>
+      <dl>
+        <dt>Claim</dt><dd>Interview / journalism format.</dd>
+        <dt>Share</dt><dd>Access to Chinese AI ecosystem thinking, often missing from Western feeds.</dd>
+        <dt>Diff</dt><dd>L1 cron cannot reach (no clean RSS); manual L2 promotion for Chinese sources.</dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section id="empty">
+  <span class="section-label">07 · Empty position</span>
+  <h2>Where we actually stand.</h2>
+
+  <div class="empty-position">
+    <div class="ep-kicker">After mapping all of the above, the position the literature is most empty at</div>
+    <blockquote>
+      Empirical, instrumented, public protocols that measure whether a <em>human</em> becomes more capable in AI's absence after AI-assisted work.
+    </blockquote>
+    <p class="ep-note">
+      Most cognitive-offloading work measures the negative case. Most AI-literacy work writes taxonomies. Most product studies measure usage and satisfaction. Most industry research measures the AI. Most individual essays speculate. The protocol-with-measured-capability-delta position is largely empty. That is where this research line lives.
+    </p>
+  </div>
+</section>
+
+<section id="discipline">
+  <span class="section-label">08 · Reading discipline</span>
+  <h2>How this atlas stays alive.</h2>
+  <p class="section-sub">An atlas is not a reading list. It is the cumulative record of what we have engaged with, how engaged we are, and where we differ.</p>
+
+  <div class="discipline">
+    <ol>
+      <li><strong>L1 capture (daily).</strong> Scheduled remote agent pulls 5–8 narrow high-signal sources, filters by anchor keywords, writes raw daily inbox.</li>
+      <li><strong>L2 triage (weekly).</strong> Scheduled agent + human approval promotes 1–3 candidates per week to full 1-page inbound notes. Each note has an HTML mirror and joins the public corpus.</li>
+      <li><strong>L3 synthesis (quarterly).</strong> Human + Claude write a synthesis: <em>"what we read, what we changed because of it."</em></li>
+      <li><strong>Atlas update.</strong> New inbound notes are appended to the appropriate bucket above with status flipped to <code>note-written</code> and a link to the inbound markdown.</li>
+    </ol>
+    <div class="footnote">
+      When you cannot answer "where do we differ?" for an entry, the entry has not really been read.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div>NOUS OS · Anchor Atlas · 2026-05-17 · living document</div>
+  <div>
+    <a href="/research-line.html">research line</a> ·
+    <a href="/research.html">research</a> ·
+    <a href="/">home</a>
+  </div>
+</footer>
+
+</body>
+</html>
