@@ -580,6 +580,136 @@
     transition: width 0.35s linear;
   }
 
+  .execution-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .worksheet-grid, .prompt-stack {
+    display: grid;
+    gap: 12px;
+  }
+
+  .field-card, .prompt-card, .summary-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  .field-card label, .prompt-card label, .summary-card label {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .field-card input, .field-card textarea, .field-card select, .prompt-card textarea, .summary-card textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 11px 12px;
+    font: inherit;
+    color: var(--ink);
+    outline: none;
+    resize: vertical;
+  }
+
+  .field-card textarea { min-height: 74px; }
+  .prompt-card textarea { min-height: 150px; font-size: 13px; line-height: 1.5; }
+  .summary-card textarea { min-height: 190px; font-size: 13px; line-height: 1.55; }
+
+  .field-card input:focus, .field-card textarea:focus, .field-card select:focus, .prompt-card textarea:focus, .summary-card textarea:focus {
+    border-color: rgba(15,118,110,0.45);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.10);
+  }
+
+  .field-help {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .prompt-head, .summary-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .prompt-head label, .summary-actions label { margin-bottom: 0; }
+
+  .copy-btn, .plain-btn {
+    border: 1px solid rgba(15,118,110,0.28);
+    background: rgba(15,118,110,0.08);
+    color: var(--teal);
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover, .plain-btn:hover { background: rgba(15,118,110,0.13); }
+
+  .copy-btn.copied {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .session-note {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 780px;
+  }
+
+  .summary-hint {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .observer-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 10px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .observer-checklist label {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .observer-panel textarea {
+    width: 100%;
+    min-height: 72px;
+    margin-top: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 10px 12px;
+    font: inherit;
+    resize: vertical;
+  }
+
   @media (max-width: 640px) {
     .shell { padding: 24px 16px 60px; }
     h1 { font-size: 30px; }
@@ -587,6 +717,8 @@
     .phase-row dt { padding-top: 0; }
     .phase-id-sub { margin-left: 0; }
     .timer-bar .timer-display { min-width: auto; }
+    .execution-panel { grid-template-columns: 1fr; }
+    .prompt-head, .summary-actions { align-items: flex-start; flex-direction: column; }
   }
 </style>
 </head>
@@ -620,6 +752,96 @@
       ("Mrs. Smith's class at Lincoln HS").
     </div>
   </div>
+
+  <section>
+    <div class="section-label">Guided worksheet · no prompt engineering required</div>
+    <p class="session-note">
+      This is the execution surface. Fill in short notes here, copy the prompt
+      cards into whatever AI tool you already use, then paste only the useful
+      learning notes back into the worksheet. The page never talks to an AI,
+      never uploads your text, and never saves your session.
+    </p>
+
+    <div class="execution-panel">
+      <div class="worksheet-grid" aria-label="Student session worksheet">
+        <div class="field-card">
+          <label for="student-question">My question</label>
+          <input id="student-question" data-summary-label="Question" type="text" placeholder="Example: How should I research CRISPR ethics for biology class?">
+          <div class="field-help">Use topic area only. Do not type your full name, school, teacher, email, or family details.</div>
+        </div>
+
+        <div class="field-card">
+          <label for="prior-belief">What I think before asking AI</label>
+          <textarea id="prior-belief" data-summary-label="Prior belief" placeholder="One sentence about what you currently believe or what you are unsure about."></textarea>
+        </div>
+
+        <div class="field-card">
+          <label for="student-boundary">My boundary</label>
+          <select id="student-boundary" data-summary-label="Boundary">
+            <option value="AI should not choose my opinion.">AI should not choose my opinion.</option>
+            <option value="AI should not write my conclusion.">AI should not write my conclusion.</option>
+            <option value="AI should not use private personal details.">AI should not use private personal details.</option>
+            <option value="AI should not accept weak sources.">AI should not accept weak sources.</option>
+            <option value="AI should show uncertainty instead of sounding final.">AI should show uncertainty instead of sounding final.</option>
+          </select>
+          <div class="field-help">A boundary is one thing AI is not allowed to do for you in this session.</div>
+        </div>
+
+        <div class="field-card">
+          <label for="ai-plan-notes">AI plan notes</label>
+          <textarea id="ai-plan-notes" data-summary-label="AI plan notes" placeholder="Paste or summarize the useful parts of the AI's learning plan. Do not paste private information."></textarea>
+        </div>
+
+        <div class="field-card">
+          <label for="source-notes">Sources I checked</label>
+          <textarea id="source-notes" data-summary-label="Source notes" placeholder="Source 1: author/date/evidence. Source 2: author/date/evidence. What looked weak?"></textarea>
+        </div>
+
+        <div class="field-card">
+          <label for="revised-plan">Revised plan after boundary + sources</label>
+          <textarea id="revised-plan" data-summary-label="Revised plan" placeholder="What changed after your boundary and source check?"></textarea>
+        </div>
+      </div>
+
+      <div class="prompt-stack" aria-label="Copyable AI prompts">
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-plan">Copy prompt to AI · learning plan</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-plan">Copy prompt</button>
+          </div>
+          <textarea id="prompt-plan" readonly data-prompt-template="plan"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-critique">Copy prompt to AI · source critique</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-critique">Copy prompt</button>
+          </div>
+          <textarea id="prompt-critique" readonly data-prompt-template="critique"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-revise">Copy prompt to AI · revise plan</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-revise">Copy prompt</button>
+          </div>
+          <textarea id="prompt-revise" readonly data-prompt-template="revise"></textarea>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-actions">
+            <label for="session-summary">Local session summary</label>
+            <div>
+              <button class="plain-btn" id="build-summary" type="button">Build local summary</button>
+              <button class="plain-btn" id="clear-worksheet" type="button">Clear</button>
+            </div>
+          </div>
+          <textarea id="session-summary" readonly placeholder="Your local summary appears here. It is not saved or uploaded."></textarea>
+          <div class="summary-hint">Copy this summary into your own notes if you want to keep it. Closing this tab discards the worksheet.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section>
     <div class="section-label">20-minute loop · 6 phases</div>
@@ -767,29 +989,31 @@
     <div class="reflection-grid">
       <div class="reflection-block">
         <label>What did AI help with?</label>
-        <textarea placeholder="One concrete thing — vocabulary, a subquestion, a trap to avoid…"></textarea>
+        <textarea id="reflect-help" data-summary-label="AI helped with" placeholder="One concrete thing — vocabulary, a subquestion, a trap to avoid…"></textarea>
       </div>
       <div class="reflection-block">
         <label>What did I verify?</label>
-        <textarea placeholder="Which source survived the checklist? What was the evidence?"></textarea>
+        <textarea id="reflect-verify" data-summary-label="I verified" placeholder="Which source survived the checklist? What was the evidence?"></textarea>
       </div>
       <div class="reflection-block">
         <label>What remains my responsibility?</label>
-        <textarea placeholder="The claim. The values. The boundary. Anything else?"></textarea>
+        <textarea id="reflect-responsibility" data-summary-label="My responsibility" placeholder="The claim. The values. The boundary. Anything else?"></textarea>
       </div>
       <div class="reflection-block">
         <label>What would I ask differently next time?</label>
-        <textarea placeholder="What kind of prompt would have saved you 5 minutes?"></textarea>
+        <textarea id="reflect-next" data-summary-label="Next time" placeholder="What kind of prompt would have saved you 5 minutes?"></textarea>
       </div>
     </div>
 
     <details class="observer-panel">
-      <summary>Parent / teacher observation prompts (optional)</summary>
-      <ul>
-        <li>Could the student explain the question without AI?</li>
-        <li>Did the student identify a source-quality issue?</li>
-        <li>Did the student preserve their own judgment before drafting?</li>
+      <summary>Parent / teacher observation checklist (optional)</summary>
+      <ul class="observer-checklist">
+        <li><label><input type="checkbox"> <span>The student could explain the research question without AI reading it back.</span></label></li>
+        <li><label><input type="checkbox"> <span>The student named one source-quality issue or uncertainty.</span></label></li>
+        <li><label><input type="checkbox"> <span>The student kept their own claim, values, and final responsibility.</span></label></li>
+        <li><label><input type="checkbox"> <span>The AI was used for hints, critique, or planning, not final-answer writing.</span></label></li>
       </ul>
+      <textarea placeholder="Observer note: what did the student do differently after AI feedback? Do not record names, school, or raw prompt text."></textarea>
       <div class="observer-note">
         Record process observations only — not student identity or raw prompt
         text. The trial guide's 8-field safe-observation format is the
@@ -814,9 +1038,125 @@
     const fills = Array.from(document.querySelectorAll('.progress-fill'));
     const startBtn = document.getElementById('start-btn');
     const elapsedEl = document.getElementById('time-elapsed');
+    const questionEl = document.getElementById('student-question');
+    const priorEl = document.getElementById('prior-belief');
+    const boundaryEl = document.getElementById('student-boundary');
+    const planNotesEl = document.getElementById('ai-plan-notes');
+    const sourceNotesEl = document.getElementById('source-notes');
+    const revisedPlanEl = document.getElementById('revised-plan');
+    const summaryEl = document.getElementById('session-summary');
 
     let timerHandle = null;
     let startMs = null;
+
+    function clean(value, fallback) {
+      const text = String(value || '').trim();
+      return text || fallback;
+    }
+
+    function promptText(kind) {
+      const question = clean(questionEl.value, '[my research question]');
+      const prior = clean(priorEl.value, '[what I currently think or wonder]');
+      const boundary = clean(boundaryEl.value, 'AI should not choose my opinion.');
+      const planNotes = clean(planNotesEl.value, '[my first AI plan notes]');
+      const sources = clean(sourceNotesEl.value, '[my two source notes]');
+
+      if (kind === 'plan') {
+        return [
+          'Act like a research tutor. Do not write my final answer.',
+          'My research question: ' + question,
+          'What I currently think or wonder: ' + prior,
+          'My boundary: ' + boundary,
+          '',
+          'Help me make a learning plan. Give me:',
+          '1. three subquestions I could investigate,',
+          '2. key vocabulary I should understand,',
+          '3. source types I should look for,',
+          '4. common traps or weak evidence to avoid.',
+          '',
+          'Keep it as hints and planning, not a final paragraph.'
+        ].join('\n');
+      }
+
+      if (kind === 'critique') {
+        return [
+          'Act like a source-check coach. Do not decide my final opinion.',
+          'My research question: ' + question,
+          'My boundary: ' + boundary,
+          'My source notes: ' + sources,
+          '',
+          'Help me critique these sources. For each one, ask:',
+          '1. Who is the author or institution?',
+          '2. Is the date current enough?',
+          '3. What is evidence and what is opinion?',
+          '4. What would change my mind?',
+          '',
+          'End with questions I should answer myself.'
+        ].join('\n');
+      }
+
+      return [
+        'Act like a tutor revising a research plan. Do not write my final answer.',
+        'My research question: ' + question,
+        'My boundary: ' + boundary,
+        'First AI plan notes: ' + planNotes,
+        'Source notes: ' + sources,
+        '',
+        'Revise the plan using my boundary and source checks.',
+        'Show what changed, what is still uncertain, and what I should do next.',
+        'Keep the final claim and final wording as my responsibility.'
+      ].join('\n');
+    }
+
+    function refreshPrompts() {
+      document.querySelectorAll('[data-prompt-template]').forEach(el => {
+        el.value = promptText(el.dataset.promptTemplate);
+      });
+    }
+
+    function buildSummary() {
+      const fields = Array.from(document.querySelectorAll('[data-summary-label]'));
+      const lines = [
+        'Student Sandbox v1.1 local summary',
+        'Privacy: local-only; not saved or uploaded.',
+        ''
+      ];
+      fields.forEach(field => {
+        const label = field.dataset.summaryLabel;
+        const value = field.value && field.value.trim() ? field.value.trim() : '[not filled]';
+        lines.push(label + ': ' + value);
+      });
+      summaryEl.value = lines.join('\n');
+    }
+
+    function clearWorksheet() {
+      document.querySelectorAll('.field-card input, .field-card textarea, .reflection-block textarea, .observer-panel textarea').forEach(el => {
+        el.value = '';
+      });
+      boundaryEl.selectedIndex = 0;
+      summaryEl.value = '';
+      refreshPrompts();
+    }
+
+    function copyPrompt(button) {
+      const target = document.getElementById(button.dataset.copyTarget);
+      target.focus();
+      target.select();
+      const done = () => {
+        button.classList.add('copied');
+        button.textContent = 'Copied';
+        setTimeout(() => {
+          button.classList.remove('copied');
+          button.textContent = 'Copy prompt';
+        }, 1200);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(target.value).then(done).catch(done);
+      } else {
+        document.execCommand('copy');
+        done();
+      }
+    }
 
     function fmt(sec) {
       sec = Math.max(0, Math.min(TOTAL_SECONDS, Math.floor(sec)));
@@ -903,6 +1243,17 @@
         if (!wasActive) card.classList.add('active');
       });
     });
+
+    [questionEl, priorEl, boundaryEl, planNotesEl, sourceNotesEl].forEach(el => {
+      el.addEventListener('input', refreshPrompts);
+      el.addEventListener('change', refreshPrompts);
+    });
+    document.querySelectorAll('.copy-btn').forEach(button => {
+      button.addEventListener('click', () => copyPrompt(button));
+    });
+    document.getElementById('build-summary').addEventListener('click', buildSummary);
+    document.getElementById('clear-worksheet').addEventListener('click', clearWorksheet);
+    refreshPrompts();
   })();
 </script>
 </body>

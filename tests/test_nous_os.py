@@ -400,6 +400,19 @@ class BenchmarkTests(unittest.TestCase):
 
         self.assertIn("local-only", html.lower(), "web page must surface local-only privacy framing")
         self.assertIn("hints_not_answers", html, "web page must surface AI support policy explicitly")
+        self.assertIn("Guided worksheet", html)
+        self.assertIn("no prompt engineering required", html)
+        self.assertIn("Student session worksheet", html)
+        self.assertIn("Copy prompt to AI", html)
+        self.assertIn("Build local summary", html)
+        self.assertIn("Parent / teacher observation checklist", html)
+        self.assertIn("data-prompt-template=\"plan\"", html)
+        self.assertIn("data-prompt-template=\"critique\"", html)
+        self.assertIn("data-prompt-template=\"revise\"", html)
+        self.assertIn("navigator.clipboard.writeText", html)
+        self.assertNotIn("localStorage", html)
+        self.assertNotIn("sessionStorage", html)
+        self.assertNotIn("fetch(", html)
         self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
 
     def test_student_sandbox_v1_guide_explains_why_and_how(self) -> None:
@@ -416,6 +429,8 @@ class BenchmarkTests(unittest.TestCase):
             "hints, not answers",
             "no login",
             "20 minutes",
+            "structured worksheet",
+            "copy-to-ai prompt cards",
             "boundary",
             "reflection",
         ):
