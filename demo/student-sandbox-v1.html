@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS — Student Sandbox v1</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="description" content="A local-only 20-minute AI-assisted research learning loop for high-school students. Hints, not answers.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #eef5f2;
+    --ink: #162018;
+    --muted: #5b645d;
+    --line: rgba(24, 49, 43, 0.13);
+    --panel: rgba(255, 255, 255, 0.88);
+    --panel-strong: rgba(255, 255, 255, 0.98);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.12);
+    --teal-glow: rgba(15, 118, 110, 0.22);
+    --gold: #b7791f;
+    --gold-soft: rgba(183, 121, 31, 0.14);
+    --red: #b42318;
+    --red-soft: rgba(180, 35, 24, 0.11);
+    --navy: #21406b;
+    --navy-soft: rgba(33, 64, 107, 0.10);
+    --shadow: 0 28px 80px rgba(24, 49, 43, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 24%),
+      radial-gradient(circle at 18% 14%, rgba(33, 64, 107, 0.12), transparent 22%),
+      radial-gradient(circle at left 62%, rgba(183, 121, 31, 0.07), transparent 26%),
+      linear-gradient(180deg, #f8fbf8 0%, var(--bg) 100%);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(15, 118, 110, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 118, 110, 0.025) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+  }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 36px 22px 80px;
+    position: relative;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .topbar a {
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(15,118,110,0.35);
+  }
+  .topbar a:hover { color: var(--ink); }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  .eyebrow .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 4px var(--teal-soft);
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(34px, 4.4vw, 58px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+  }
+
+  .headline-gradient {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--teal) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .lede {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 44rem;
+  }
+
+  .privacy-banner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(15,118,110,0.22);
+    background: linear-gradient(135deg, rgba(15,118,110,0.08), rgba(183,121,31,0.05));
+    color: var(--ink);
+    margin-bottom: 36px;
+    box-shadow: var(--shadow);
+  }
+
+  .privacy-banner .icon {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    background: var(--teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .privacy-banner .body { font-size: 14px; line-height: 1.55; }
+  .privacy-banner strong { color: var(--teal); }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 36px 0 16px;
+  }
+
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .phase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .phase-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 20px 20px 22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .phase-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(15,118,110,0.28);
+  }
+
+  .phase-card.active {
+    border-color: rgba(15,118,110,0.55);
+    box-shadow: 0 28px 60px rgba(15,118,110,0.18), 0 0 0 4px rgba(15,118,110,0.10);
+    background: var(--panel-strong);
+  }
+
+  .phase-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .phase-id {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .phase-min {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .phase-card.active .phase-min {
+    background: rgba(15,118,110,0.14);
+    color: var(--teal);
+  }
+
+  .phase-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 8px 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .phase-row dt {
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 2px;
+  }
+
+  .phase-row dd {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .total-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .total-bar strong { color: var(--ink); font-weight: 600; }
+
+  .checklist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .checklist-item:hover { border-color: rgba(15,118,110,0.28); }
+
+  .checklist-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(33,47,35,0.30);
+    background: #fff;
+    cursor: pointer;
+    margin-top: 1px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.18s;
+  }
+
+  .checklist-item input[type="checkbox"]:checked {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+
+  .checklist-item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px; top: 1px;
+    width: 5px; height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checklist-item input:checked + span {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(91,100,93,0.5);
+  }
+
+  .reflection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  .reflection-block {
+    padding: 18px 18px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .reflection-block label {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .reflection-block textarea {
+    width: 100%;
+    min-height: 90px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .reflection-block textarea:focus {
+    border-color: rgba(15,118,110,0.45);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.10);
+  }
+
+  .observer-panel {
+    margin-top: 16px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    border: 1px dashed rgba(33,47,35,0.20);
+    background: rgba(255,250,242,0.55);
+  }
+
+  .observer-panel summary {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--navy);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .observer-panel ul {
+    margin: 14px 0 4px;
+    padding-left: 20px;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .observer-panel ul li { margin-bottom: 6px; }
+
+  .observer-panel .observer-note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  footer.foot {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  footer.foot code {
+    background: var(--gold-soft);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 640px) {
+    .shell { padding: 24px 16px 60px; }
+    h1 { font-size: 30px; }
+    .phase-row { grid-template-columns: 1fr; }
+    .phase-row dt { padding-top: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <div class="topbar">
+    <span>NOUS OS · Student Sandbox v1 · local-only</span>
+    <a href="../index.html">← back to NOUS OS</a>
+  </div>
+
+  <span class="eyebrow"><span class="dot"></span> 20-minute AI-assisted research loop</span>
+  <h1 class="headline-gradient">Hints, not answers.</h1>
+  <p class="lede">
+    Use AI like a tutor, not a ghostwriter. In 20 minutes you frame a research
+    question, set one human boundary, check two sources, revise with AI, and
+    end with a reflection that names what AI helped with, what you verified,
+    and what remains yours. Click a phase to focus on it.
+  </p>
+
+  <div class="privacy-banner">
+    <div class="icon">🔒</div>
+    <div class="body">
+      <strong>Privacy:</strong> This page runs entirely in your browser.
+      Nothing you type is sent anywhere, saved to disk, or shared. Closing
+      the tab discards everything. Software can detect emails, phones, and
+      SSN-style patterns — but it <strong>cannot</strong> catch your name,
+      school name, or family details, so please don't type them. Use topic
+      area ("CRISPR ethics for biology class"), not identifying context
+      ("Mrs. Smith's class at Lincoln HS").
+    </div>
+  </div>
+
+  <section>
+    <div class="section-label">20-minute loop · 6 phases · click to focus</div>
+    <div class="phase-grid" id="phase-grid">
+
+      <article class="phase-card" data-phase="intent">
+        <div class="phase-head">
+          <span class="phase-id">1 · intent</span>
+          <span class="phase-min">3 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Write the research question in your own words and name what you already believe.</dd>
+          <dt>AI helps</dt><dd>Suggest clearer subquestions without choosing the thesis.</dd>
+          <dt>You keep</dt><dd>goal, curiosity, and initial judgment</dd>
+          <dt>Output</dt><dd>one-sentence question + prior-belief note</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="ai_first_pass">
+        <div class="phase-head">
+          <span class="phase-id">2 · ai_first_pass</span>
+          <span class="phase-min">4 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Ask for a learning plan, not an answer paragraph.</dd>
+          <dt>AI helps</dt><dd>Offer concepts, vocabulary, possible source types, and common traps.</dd>
+          <dt>You keep</dt><dd>which path to explore first</dd>
+          <dt>Output</dt><dd>three possible subquestions</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="human_boundary">
+        <div class="phase-head">
+          <span class="phase-id">3 · human_boundary</span>
+          <span class="phase-min">3 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Choose one boundary: privacy, facts, learning, decision, or values.</dd>
+          <dt>AI helps</dt><dd>Restate the boundary and adapt the plan around it.</dd>
+          <dt>You keep</dt><dd>values, privacy choices, and assignment constraints</dd>
+          <dt>Output</dt><dd>boundary card</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="source_check">
+        <div class="phase-head">
+          <span class="phase-id">4 · source_check</span>
+          <span class="phase-min">4 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Check at least two reviewable sources for author, date, evidence, and uncertainty.</dd>
+          <dt>AI helps</dt><dd>Provide a checklist and critique weak evidence.</dd>
+          <dt>You keep</dt><dd>verification and source acceptance</dd>
+          <dt>Output</dt><dd>source checklist</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="ai_second_pass">
+        <div class="phase-head">
+          <span class="phase-id">5 · ai_second_pass</span>
+          <span class="phase-min">3 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Ask AI to revise the research plan using the chosen boundary and source notes.</dd>
+          <dt>AI helps</dt><dd>Improve next steps, practice questions, and uncertainty notes.</dd>
+          <dt>You keep</dt><dd>the final claim and whether evidence is enough</dd>
+          <dt>Output</dt><dd>revised learning plan</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="reflection">
+        <div class="phase-head">
+          <span class="phase-id">6 · reflection</span>
+          <span class="phase-min">3 min</span>
+        </div>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Answer the reflection card below before writing any final assignment text.</dd>
+          <dt>AI helps</dt><dd>Help compare first-pass vs second-pass behavior.</dd>
+          <dt>You keep</dt><dd>responsibility for final work and next learning move</dd>
+          <dt>Output</dt><dd>reflection card</dd>
+        </dl>
+      </article>
+
+    </div>
+
+    <div class="total-bar">
+      <strong>Total:</strong> 20 minutes · AI support policy
+      <code style="font-family:'IBM Plex Mono',monospace; background: var(--teal-soft); color: var(--teal); padding: 2px 8px; border-radius: 999px;">hints_not_answers</code>
+      · no final answer is produced for you
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Source checklist · for each source, twice</div>
+    <ul class="checklist-list">
+      <li><label class="checklist-item"><input type="checkbox"><span>Original source found, not only a summary.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Author or institution is identifiable.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Date is current enough for the topic.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Evidence is separated from opinion.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Student writes what would change their mind.</span></label></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Reflection · finish before drafting</div>
+    <div class="reflection-grid">
+      <div class="reflection-block">
+        <label>What did AI help with?</label>
+        <textarea placeholder="One concrete thing — vocabulary, a subquestion, a trap to avoid…"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What did I verify?</label>
+        <textarea placeholder="Which source survived the checklist? What was the evidence?"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What remains my responsibility?</label>
+        <textarea placeholder="The claim. The values. The boundary. Anything else?"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What would I ask differently next time?</label>
+        <textarea placeholder="What kind of prompt would have saved you 5 minutes?"></textarea>
+      </div>
+    </div>
+
+    <details class="observer-panel">
+      <summary>Parent / teacher observation prompts (optional)</summary>
+      <ul>
+        <li>Could the student explain the question without AI?</li>
+        <li>Did the student identify a source-quality issue?</li>
+        <li>Did the student preserve their own judgment before drafting?</li>
+      </ul>
+      <div class="observer-note">
+        Record process observations only — not student identity or raw prompt
+        text. The trial guide's 8-field safe-observation format is the
+        recommended note shape.
+      </div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <div>NOUS OS · Student Sandbox v1 · local-only scaffold</div>
+    <div>artifact: <code>examples/runtime/research-records/student-sandbox-v1-latest.json</code></div>
+  </footer>
+
+</main>
+
+<script>
+  // Phase focus toggle — purely visual, no state persisted anywhere.
+  document.querySelectorAll('.phase-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const wasActive = card.classList.contains('active');
+      document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('active'));
+      if (!wasActive) card.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

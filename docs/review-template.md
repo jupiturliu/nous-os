@@ -33,6 +33,17 @@ Use this template after each demo viewing or user test. The goal is to keep NOUS
 - Human final responsibility clarity:
 - High-stakes trading boundary clarity:
 
+## Theory Track Evidence
+
+- What changed in the human?
+- What changed in the agent?
+- What changed in the relationship?
+- Was trust better calibrated, merely higher, or unchanged?
+- What should be remembered before the next cycle?
+- What should be challenged before the next cycle?
+- What should be decayed or forgotten before the next cycle?
+- Which evidence supports the claimed improvement?
+
 ## Evidence
 
 - Commands or URLs checked:

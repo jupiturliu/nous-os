@@ -7,6 +7,7 @@ Use this index before starting NOUS OS work.
 | Need | Read |
 |---|---|
 | North Star / current phase | `docs/north-star-v2-roadmap.md` |
+| Theory track | `docs/human-ai-symbiosis-self-evolution.md`, `docs/human-ai-coevolution-model-v0.md`, `docs/self-evolution-metrics-v0.md`, `docs/memory-philosophy-v0.md` |
 | Public one-pager | `docs/NOUS-OS-Cognitive-COO-One-Pager.md`, `docs/NOUS-OS-Cognitive-COO-One-Pager.en.md` |
 | Second vertical gate | `docs/second-vertical-entry-criteria.md` |
 
@@ -16,6 +17,7 @@ Use this index before starting NOUS OS work.
 |---|---|
 | Harness boundary | `docs/harness/README.md` |
 | Harness inventory | `docs/harness/HARNESS_INVENTORY.json`, `python3 scripts/check_harness_inventory.py --json` |
+| Student Sandbox v1 | `docs/plans/2026-05-16-student-sandbox-research-study-v1-plan.md`, `examples/student_sandbox_v1.py` |
 | Benchmark contract | `docs/benchmark-spec.md` |
 | Domain evaluator contract | `docs/domain-evaluator-interface.md` |
 | Trading evaluator | `examples/runtime/trading_evaluator.py`, `tests/test_trading_evaluator.py` |

@@ -101,6 +101,22 @@
       "verification": "python3 examples/student_sandbox_v0.py"
     },
     {
+      "id": "student_sandbox_v1",
+      "path": "examples/student_sandbox_v1.py",
+      "kind": "local_learning_loop",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 examples/student_sandbox_v1.py && python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_builds_20_minute_learning_loop_without_final_answer tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_research_study_protocol_is_privacy_first -v"
+    },
+    {
+      "id": "student_sandbox_v1_web",
+      "path": "demo/student-sandbox-v1.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_web_renders_phases_checklist_and_reflection -v"
+    },
+    {
       "id": "latest_research_record",
       "path": "examples/runtime/research-records/latest.json",
       "kind": "research_artifact",

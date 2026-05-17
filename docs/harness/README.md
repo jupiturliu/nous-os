@@ -38,6 +38,7 @@ Forbidden by default:
 | Trading evaluator | `examples/runtime/trading_evaluator.py` | Read-only first vertical adapter from trading-agent proof artifacts to CLS v2 components |
 | Cross-repo release gate | `docs/cross-repo-release-gate.md` | Read-only readiness check across NOUS OS repos |
 | Public release smoke docs | `docs/getting-started.md`, `docs/heartbeat-demo.md` | Demo/release verification path |
+| Student Sandbox v1 | `examples/student_sandbox_v1.py` | Local-only 20-minute high-school research learning loop + privacy-first study protocol |
 | Handoffs | `docs/harness/handoffs/` | Cross-agent pickup notes (Claude ↔ Codex) |
 
 ## Standard Verification

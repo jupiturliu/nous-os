@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import io
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -23,6 +24,7 @@ from cls_v2 import compute_cls_v2
 import nousos_heartbeat_demo as heartbeat_demo
 import run_nous_dashboard as dashboard_server
 import student_sandbox_v0 as student_sandbox
+import student_sandbox_v1
 import check_harness_inventory as harness_inventory
 
 
@@ -257,6 +259,115 @@ class BenchmarkTests(unittest.TestCase):
         self.assertGreaterEqual(len(record["sandbox"]["source_check"]), 2)
         self.assertIn("responsibility", record["reflection"]["prompt"])
 
+    def test_heartbeat_demo_import_does_not_emit_optional_redis_warning(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "-c", "import sys; sys.path.insert(0, 'examples'); import nousos_heartbeat_demo"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+
+        self.assertEqual(result.stdout, "")
+        self.assertNotIn("Redis not available", result.stderr)
+        self.assertNotIn("MemoryBackend only", result.stderr)
+
+    def test_student_sandbox_v1_builds_20_minute_learning_loop_without_final_answer(self) -> None:
+        packet = student_sandbox_v1.build_learning_loop_packet(
+            research_question="My email is student@example.com. How should I research CRISPR ethics for biology class?",
+            student_level="high_school",
+        )
+
+        self.assertEqual(packet["version"], "student_sandbox_v1")
+        self.assertEqual(packet["student_level"], "high_school")
+        self.assertTrue(packet["privacy"]["local_only"])
+        self.assertFalse(packet["privacy"]["external_model_calls"])
+        self.assertFalse(packet["privacy"]["contains_private_student_data"])
+        self.assertTrue(packet["privacy"]["private_detail_detected"])
+        self.assertEqual(packet["student_intent"], "[redacted-by-policy]")
+        self.assertNotIn("student@example.com", packet["student_intent"])
+        self.assertEqual(packet["twenty_minute_loop"]["total_minutes"], 20)
+        self.assertEqual(
+            [phase["id"] for phase in packet["twenty_minute_loop"]["phases"]],
+            ["intent", "ai_first_pass", "human_boundary", "source_check", "ai_second_pass", "reflection"],
+        )
+        self.assertEqual(packet["ai_support_policy"], "hints_not_answers")
+        self.assertNotIn("final_answer", json.dumps(packet).lower())
+        self.assertIn("What did AI help with?", packet["reflection_card"]["student_prompts"])
+        self.assertIn("What did I verify?", packet["reflection_card"]["student_prompts"])
+        self.assertIn("What remains my responsibility?", packet["reflection_card"]["student_prompts"])
+
+    def test_student_sandbox_v1_replaces_intent_when_private_detail_detected(self) -> None:
+        packet = student_sandbox_v1.build_learning_loop_packet(
+            research_question="I am John Smith at Lincoln High and my email is jsmith@example.com, help me research X",
+            student_level="high_school",
+        )
+        self.assertEqual(packet["student_intent"], "[redacted-by-policy]")
+        self.assertTrue(packet["privacy"]["private_detail_detected"])
+        self.assertFalse(packet["privacy"]["contains_private_student_data"])
+        blob = json.dumps(packet)
+        self.assertNotIn("John Smith", blob)
+        self.assertNotIn("Lincoln High", blob)
+        self.assertNotIn("jsmith@example.com", blob)
+
+    def test_student_sandbox_v1_research_study_protocol_is_privacy_first(self) -> None:
+        protocol = student_sandbox_v1.build_research_study_protocol()
+
+        self.assertEqual(protocol["version"], "research_study_v0")
+        self.assertEqual(protocol["session_length_minutes"], 20)
+        self.assertFalse(protocol["collects_student_identity"])
+        self.assertFalse(protocol["collects_school_name"])
+        self.assertIn("parent_or_teacher_review", protocol)
+        self.assertIn("student_can_explain_ai_help", protocol["success_criteria"])
+        self.assertIn("student_can_name_human_responsibility", protocol["success_criteria"])
+        self.assertIn("confusion_notes", protocol["observer_packet"])
+
+    def test_student_sandbox_v1_run_writes_stable_private_artifact_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "research-records"
+            packet = student_sandbox_v1.run_student_sandbox_v1(
+                research_question="My email is student@example.com. How should I research climate adaptation?",
+                output_dir=output_dir,
+            )
+            artifact = output_dir / "student-sandbox-v1-latest.json"
+            saved = json.loads(artifact.read_text())
+
+        self.assertEqual(packet["artifact_path"], str(artifact))
+        self.assertEqual(saved["artifact_path"], str(artifact))
+        self.assertEqual(saved["version"], "student_sandbox_v1")
+        self.assertIn("generated_at", saved)
+        self.assertEqual(saved["privacy"]["private_detail_detected"], True)
+        self.assertFalse(saved["privacy"]["contains_private_student_data"])
+        self.assertEqual(saved["twenty_minute_loop"]["total_minutes"], 20)
+        self.assertIn("source_checklist", saved)
+        self.assertIn("reflection_card", saved)
+        self.assertIn("research_study", saved)
+        self.assertNotIn("student@example.com", json.dumps(saved))
+
+    def test_student_sandbox_v1_web_renders_phases_checklist_and_reflection(self) -> None:
+        """The WYSIWYG page must mirror the deterministic builder's content."""
+
+        web_path = ROOT / "demo" / "student-sandbox-v1.html"
+        self.assertTrue(web_path.exists(), "demo/student-sandbox-v1.html must exist as the human-facing surface")
+        html = web_path.read_text()
+
+        builder_packet = student_sandbox_v1.build_learning_loop_packet(
+            research_question="How should I research CRISPR ethics for biology class?",
+        )
+        phase_ids = [phase["id"] for phase in builder_packet["twenty_minute_loop"]["phases"]]
+        for phase_id in phase_ids:
+            self.assertIn(phase_id, html, f"phase id {phase_id!r} missing from web page")
+
+        for checklist_item in builder_packet["source_checklist"]:
+            self.assertIn(checklist_item, html, f"checklist item {checklist_item!r} missing from web page")
+
+        for prompt in builder_packet["reflection_card"]["student_prompts"]:
+            self.assertIn(prompt, html, f"reflection prompt {prompt!r} missing from web page")
+
+        self.assertIn("local-only", html.lower(), "web page must surface local-only privacy framing")
+        self.assertIn("hints_not_answers", html, "web page must surface AI support policy explicitly")
+        self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -323,6 +434,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertEqual(inventory["project"], "nous-os")
         surface_ids = {surface["id"] for surface in inventory["surfaces"]}
         self.assertIn("student_sandbox_v0", surface_ids)
+        self.assertIn("student_sandbox_v1", surface_ids)
+        self.assertIn("student_sandbox_v1_web", surface_ids)
         self.assertIn("trading_evaluator", surface_ids)
         self.assertIn("domain_evaluator_interface", surface_ids)
         self.assertIn("domain_evaluator_runtime", surface_ids)
@@ -341,6 +454,13 @@ class SiteContractTests(unittest.TestCase):
         evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
         release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
         review_template = ROOT / "docs" / "review-template.md"
+        student_v1_review_template = ROOT / "docs" / "student-sandbox-v1-review-template.md"
+        theory_track_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-theory-track-plan.md"
+        theory_track_dev_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-theory-track-development-plan.md"
+        symbiosis_theory = ROOT / "docs" / "human-ai-symbiosis-self-evolution.md"
+        coevolution_model = ROOT / "docs" / "human-ai-coevolution-model-v0.md"
+        self_evolution_metrics = ROOT / "docs" / "self-evolution-metrics-v0.md"
+        memory_philosophy = ROOT / "docs" / "memory-philosophy-v0.md"
         demo_refresh_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-demo-refresh-plan.md"
         education_research = ROOT / "docs" / "education-research-narrative.md"
         harness_readme = ROOT / "docs" / "harness" / "README.md"
@@ -348,11 +468,19 @@ class SiteContractTests(unittest.TestCase):
         second_vertical = ROOT / "docs" / "second-vertical-entry-criteria.md"
         one_pager = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.md"
         one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
+        student_trial_guide = ROOT / "docs" / "student-sandbox-v1-trial-guide.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
         self.assertTrue(release_gate.exists())
         self.assertTrue(review_template.exists())
+        self.assertTrue(student_v1_review_template.exists())
+        self.assertTrue(theory_track_plan.exists())
+        self.assertTrue(theory_track_dev_plan.exists())
+        self.assertTrue(symbiosis_theory.exists())
+        self.assertTrue(coevolution_model.exists())
+        self.assertTrue(self_evolution_metrics.exists())
+        self.assertTrue(memory_philosophy.exists())
         self.assertTrue(demo_refresh_plan.exists())
         self.assertTrue(education_research.exists())
         self.assertTrue(harness_readme.exists())
@@ -360,9 +488,14 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(second_vertical.exists())
         self.assertTrue(one_pager.exists())
         self.assertTrue(one_pager_en.exists())
+        self.assertTrue(student_trial_guide.exists())
         self.assertIn("education and research project", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/education-research-narrative.md", readme)
+        self.assertIn("docs/human-ai-symbiosis-self-evolution.md", readme)
+        self.assertIn("docs/human-ai-coevolution-model-v0.md", readme)
+        self.assertIn("docs/self-evolution-metrics-v0.md", readme)
+        self.assertIn("docs/memory-philosophy-v0.md", readme)
         self.assertIn("docs/domain-evaluator-interface.md", readme)
         self.assertIn("docs/harness/README.md", readme)
         self.assertIn("docs/cross-repo-release-gate.md", readme)
@@ -382,6 +515,9 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
         self.assertIn("What confused the viewer?", review_template.read_text())
         self.assertIn("Boundary Clarity", review_template.read_text())
+        self.assertIn("Theory Track Evidence", review_template.read_text())
+        self.assertIn("What changed in the human?", review_template.read_text())
+        self.assertIn("What should be remembered before the next cycle?", review_template.read_text())
         self.assertIn("Next Run Change", review_template.read_text())
         self.assertIn("context index + boundary map + artifact contracts + evaluator specs + release gates + evidence write-back", harness_readme.read_text())
         self.assertIn("NOUS OS Harness Context Index", harness_context.read_text())
@@ -389,6 +525,38 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Cognitive COO Operating System", one_pager_en.read_text())
         self.assertIn("TrustMem: agents' trustworthy hippocampus", one_pager_en.read_text())
         self.assertIn("Obsidian knowledge sedimentation", one_pager_en.read_text())
+        student_trial_text = student_trial_guide.read_text()
+        self.assertIn("20-minute", student_trial_text)
+        self.assertIn("hints, not final answers", student_trial_text)
+        self.assertIn("Privacy", student_trial_text)
+        self.assertIn("What remains my responsibility?", student_trial_text)
+        student_review_text = student_v1_review_template.read_text()
+        self.assertIn("Student Sandbox v1 Trial Review", student_review_text)
+        self.assertIn("What did the student understand?", student_review_text)
+        self.assertIn("What confused the student?", student_review_text)
+        self.assertIn("Theory track evidence", student_review_text)
+        self.assertIn("Human capability delta", student_review_text)
+        self.assertIn("Trust calibration", student_review_text)
+        self.assertIn("What should be remembered, challenged, decayed, or forgotten?", student_review_text)
+        self.assertIn("Next-run change", student_review_text)
+        coevolution_model_text = coevolution_model.read_text()
+        self.assertIn("Status / How to use", coevolution_model_text)
+        self.assertIn("Human-AI Symbiosis and Self-Evolution Theory", coevolution_model_text)
+        self.assertIn("Self-Evolution Metrics v0", coevolution_model_text)
+        self.assertIn("Memory Philosophy v0", coevolution_model_text)
+        self.assertIn("Student Sandbox and trading-agent are proof beds, not the goal", coevolution_model_text)
+        metrics_text = self_evolution_metrics.read_text()
+        self.assertIn("Status / How to use", metrics_text)
+        self.assertIn("qualitative observation or a measurable proxy", metrics_text)
+        self.assertIn("Human-AI Co-Evolution Model v0", metrics_text)
+        memory_text = memory_philosophy.read_text()
+        self.assertIn("Status / How to use", memory_text)
+        self.assertIn("verified memory substrate, not a stale personalization engine", memory_text)
+        self.assertIn("challenge, decay, and forgetting", memory_text)
+        theory_plan_text = theory_track_dev_plan.read_text()
+        self.assertIn("Phase 0", theory_plan_text)
+        self.assertIn("Phase 5", theory_plan_text)
+        self.assertIn("Definition of Done", theory_plan_text)
 
     def test_landing_page_uses_plain_human_ai_framing_without_overclaiming(self) -> None:
         html = (ROOT / "index.html").read_text()
@@ -502,16 +670,19 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp -R docs/harness _site/docs/", workflow)
         self.assertIn("cp -R demo/assets _site/demo/", workflow)
         self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", workflow)
+        self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", workflow)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", workflow)
         self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", workflow)
 
     def test_site_pages_reference_favicon(self) -> None:
         homepage = (ROOT / "index.html").read_text()
         demo_page = (ROOT / "demo" / "heartbeat-dashboard.html").read_text()
+        student_sandbox_page = (ROOT / "demo" / "student-sandbox-v1.html").read_text()
         about_page = (ROOT / "about.html").read_text()
 
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', homepage)
         self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', demo_page)
+        self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', student_sandbox_page)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', about_page)
 
     def test_about_page_explains_nous_origin_and_human_ai_future(self) -> None:

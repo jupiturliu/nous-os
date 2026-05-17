@@ -4,6 +4,9 @@
 from __future__ import annotations
 
 import json
+import contextlib
+import io
+import os
 import re
 import sys
 import threading
@@ -27,13 +30,17 @@ for extra_path in EXTRA_PYTHON_PATHS:
     if Path(extra_path).exists() and extra_path not in sys.path:
         sys.path.insert(0, extra_path)
 
+_runtime_import_output = io.StringIO()
 try:
-    from singleton import reset_singletons
-    from worker import AgentWorker
-    import worker as synapse_worker_module
-    import core.worker as synapse_core_worker_module
-    import aria_orchestrator as aria_orch_module
-    from aria_orchestrator import AriaOrchestrator
+    with contextlib.redirect_stdout(_runtime_import_output), contextlib.redirect_stderr(_runtime_import_output):
+        from singleton import reset_singletons
+        from worker import AgentWorker
+        import worker as synapse_worker_module
+        import core.worker as synapse_core_worker_module
+        import aria_orchestrator as aria_orch_module
+        from aria_orchestrator import AriaOrchestrator
+    if os.environ.get("NOUS_OS_SHOW_RUNTIME_IMPORT_WARNINGS"):
+        sys.stderr.write(_runtime_import_output.getvalue())
     EXTERNAL_RUNTIME_AVAILABLE = True
 except ModuleNotFoundError:
     reset_singletons = None

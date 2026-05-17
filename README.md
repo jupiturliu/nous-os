@@ -81,6 +81,10 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 - [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
 - [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Human-AI learning roadmap and first-vertical proof scope
 - [docs/education-research-narrative.md](./docs/education-research-narrative.md) — Education/research narrative for high-school students, human-AI co-evolution, and safety boundaries
+- [docs/human-ai-symbiosis-self-evolution.md](./docs/human-ai-symbiosis-self-evolution.md) — Theory anchor for human-AI symbiosis and self-evolution
+- [docs/human-ai-coevolution-model-v0.md](./docs/human-ai-coevolution-model-v0.md) — v0 model for the human-agent co-evolution loop
+- [docs/self-evolution-metrics-v0.md](./docs/self-evolution-metrics-v0.md) — v0 metrics for human, agent, and relationship evolution
+- [docs/memory-philosophy-v0.md](./docs/memory-philosophy-v0.md) — Memory rules for remember, challenge, decay, and forget
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
