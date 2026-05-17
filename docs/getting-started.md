@@ -119,10 +119,15 @@ python3 examples/nousos_demo.py
 python3 -m unittest discover -s tests -v
 ```
 
-These commands require the full `/Users/liyao/nousos` workspace with sibling repos:
+This command is self-contained. When sibling Synapse/Aria runtime modules are absent, it uses the local deterministic fallback harness:
 
 ```bash
 python3 scripts/run_nous_heartbeat.py
+```
+
+This command requires the full `/Users/liyao/nousos` workspace with sibling repos:
+
+```bash
 python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
 ```
 

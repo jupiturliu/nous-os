@@ -139,7 +139,7 @@ python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos
 python3 -m unittest discover -s tests -v
 ```
 
-`examples/nousos_demo.py` and the unit tests run inside this repository. `run_nous_heartbeat.py` and `check_cross_repo_release_gate.py` expect the full workspace with sibling `synapse`, `trustmem`, `hermes-agent`, and `trading-agent` repos.
+`examples/nousos_demo.py`, `run_nous_heartbeat.py`, and the unit tests run inside this repository. When sibling Synapse/Aria modules are unavailable, `run_nous_heartbeat.py` uses the local deterministic fallback harness. `check_cross_repo_release_gate.py` expects the full workspace with sibling `synapse`, `trustmem`, `hermes-agent`, and `trading-agent` repos.
 
 ## 隔离运行态
 
