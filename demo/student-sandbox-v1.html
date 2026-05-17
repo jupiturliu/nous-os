@@ -682,6 +682,66 @@
     line-height: 1.45;
   }
 
+  .readiness-panel {
+    border: 1px solid rgba(15,118,110,0.18);
+    border-radius: 18px;
+    background: rgba(15,118,110,0.05);
+    padding: 14px;
+    margin: 0 0 16px;
+  }
+
+  .readiness-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .readiness-head strong { color: var(--navy); }
+
+  .readiness-head span {
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+  }
+
+  .readiness-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .readiness-item {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.72);
+    padding: 12px;
+    min-height: 94px;
+  }
+
+  .readiness-item b {
+    display: block;
+    color: var(--navy);
+    margin-bottom: 5px;
+  }
+
+  .readiness-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  .readiness-item[data-ready="yes"] {
+    border-color: rgba(15,118,110,0.34);
+    background: rgba(15,118,110,0.08);
+  }
+
+  .readiness-item[data-ready="yes"] b::before { content: "Ready · "; color: var(--teal); }
+  .readiness-item[data-ready="no"] b::before { content: "Missing · "; color: var(--gold); }
+
   .source-card-grid {
     display: grid;
     gap: 12px;
@@ -946,6 +1006,7 @@
     .hermes-input-row { grid-template-columns: 1fr; }
     .source-fields { grid-template-columns: 1fr; }
     .source-fields textarea { grid-column: span 1; }
+    .readiness-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -1036,6 +1097,27 @@
       session notes on this machine without exposing Gateway keys or using
       browser storage.
     </p>
+
+    <div class="readiness-panel" id="readiness-panel" aria-live="polite">
+      <div class="readiness-head">
+        <strong>Session readiness</strong>
+        <span>deterministic checks · student clicks when ready</span>
+      </div>
+      <div class="readiness-grid">
+        <div class="readiness-item" id="ready-first-pass" data-ready="no">
+          <b>First pass</b>
+          <span>Write a question and a prior-belief note before asking AI for a learning plan.</span>
+        </div>
+        <div class="readiness-item" id="ready-second-pass" data-ready="no">
+          <b>Second pass</b>
+          <span>Add a human boundary and at least one complete source card before asking AI to revise.</span>
+        </div>
+        <div class="readiness-item" id="ready-review" data-ready="no">
+          <b>Review</b>
+          <span>Complete two source cards, revised plan, and all reflection fields before exporting review.</span>
+        </div>
+      </div>
+    </div>
 
     <div class="execution-panel">
       <div class="worksheet-grid" aria-label="Student session worksheet">
@@ -1359,6 +1441,11 @@
     const hermesEndpoint = window.NOUSOS_HERMES_ENDPOINT || '/api/hermes-student-agent';
     const sessionEndpoint = window.NOUSOS_STUDENT_SESSION_ENDPOINT || '/api/student-sandbox-session';
     const saveStatus = document.getElementById('save-status');
+    const readinessEls = {
+      first: document.getElementById('ready-first-pass'),
+      second: document.getElementById('ready-second-pass'),
+      review: document.getElementById('ready-review')
+    };
     const sessionId = 'sandbox-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
     const chatTurns = [];
 
@@ -1546,6 +1633,38 @@
       };
     }
 
+    function sourceCardComplete(card) {
+      return Boolean(card.title && card.author && card.date && card.evidence && card.uncertainty && card.decision !== 'pending');
+    }
+
+    function updateReadiness() {
+      const worksheet = worksheetContext();
+      const reflection = reflectionContext();
+      const completeSources = structuredSourceCards().filter(sourceCardComplete).length;
+      const reflectionComplete = [
+        reflection.reflect_help,
+        reflection.reflect_verify,
+        reflection.reflect_responsibility,
+        reflection.reflect_next
+      ].filter(Boolean).length;
+      const firstReady = Boolean(worksheet.question && worksheet.prior_belief);
+      const secondReady = Boolean(firstReady && worksheet.boundary && completeSources >= 1);
+      const reviewReady = Boolean(secondReady && completeSources >= 2 && worksheet.revised_plan && reflectionComplete >= 4);
+
+      readinessEls.first.dataset.ready = firstReady ? 'yes' : 'no';
+      readinessEls.second.dataset.ready = secondReady ? 'yes' : 'no';
+      readinessEls.review.dataset.ready = reviewReady ? 'yes' : 'no';
+      readinessEls.first.querySelector('span').textContent = firstReady
+        ? 'Ready to click Ask or copy the learning-plan prompt.'
+        : 'Write a question and a prior-belief note before asking AI for a learning plan.';
+      readinessEls.second.querySelector('span').textContent = secondReady
+        ? 'Ready to ask for a revised plan using your boundary and source evidence.'
+        : 'Add a human boundary and at least one complete source card before asking AI to revise.';
+      readinessEls.review.querySelector('span').textContent = reviewReady
+        ? 'Ready for parent/teacher review and Markdown packet export.'
+        : 'Complete two source cards, revised plan, and all reflection fields before exporting review.';
+    }
+
     async function saveSession(reason) {
       const payload = {
         session_id: sessionId,
@@ -1577,6 +1696,7 @@
     }
 
     function scheduleSave(reason) {
+      updateReadiness();
       clearTimeout(saveHandle);
       saveStatus.textContent = 'Local backend save: pending...';
       saveHandle = setTimeout(() => {
@@ -1780,6 +1900,7 @@
     document.getElementById('build-summary').addEventListener('click', buildSummary);
     document.getElementById('clear-worksheet').addEventListener('click', clearWorksheet);
     refreshPrompts();
+    updateReadiness();
   })();
 </script>
 </body>

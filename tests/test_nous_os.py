@@ -411,6 +411,12 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("Copy prompt to AI", html)
         self.assertIn("Build local summary", html)
         self.assertIn("Open review", html)
+        self.assertIn("Session readiness", html)
+        self.assertIn("ready-first-pass", html)
+        self.assertIn("ready-second-pass", html)
+        self.assertIn("ready-review", html)
+        self.assertIn("updateReadiness", html)
+        self.assertIn("sourceCardComplete", html)
         self.assertIn("Parent / teacher observation checklist", html)
         self.assertIn("NOUS Guide", html)
         self.assertIn("NOUS Guide student learning chat", html)
@@ -447,6 +453,13 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("Session review for parents, teachers, and research notes", html)
         self.assertIn("/api/student-sandbox-session", html)
         self.assertIn("?list=1&limit=1", html)
+        self.assertIn("?list=1&limit=20", html)
+        self.assertIn("Recent sessions", html)
+        self.assertIn("Markdown review packet", html)
+        self.assertIn("Export packet", html)
+        self.assertIn("exportPacket", html)
+        self.assertIn("format=markdown", html)
+        self.assertIn("readinessLabel", html)
         self.assertIn("source_cards", html)
         self.assertIn("research_signals", html)
         self.assertIn("NOUS Guide turns", html)
@@ -814,6 +827,7 @@ class SiteContractTests(unittest.TestCase):
         one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
         student_trial_guide = ROOT / "docs" / "student-sandbox-v1-trial-guide.md"
         student_workflow = ROOT / "docs" / "student-sandbox-deterministic-workflow.md"
+        four_sprint_plan = ROOT / "docs" / "plans" / "2026-05-17-nous-os-student-sandbox-four-sprint-execution-plan.md"
 
         self.assertTrue(roadmap.exists())
         self.assertTrue(evaluator.exists())
@@ -835,6 +849,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(one_pager_en.exists())
         self.assertTrue(student_trial_guide.exists())
         self.assertTrue(student_workflow.exists())
+        self.assertTrue(four_sprint_plan.exists())
         self.assertIn("education and research project", readme)
         self.assertIn("docs/north-star-v2-roadmap.md", readme)
         self.assertIn("docs/education-research-narrative.md", readme)
@@ -913,6 +928,12 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Phase 0", theory_plan_text)
         self.assertIn("Phase 5", theory_plan_text)
         self.assertIn("Definition of Done", theory_plan_text)
+        four_sprint_text = four_sprint_plan.read_text()
+        self.assertIn("Trial readiness", four_sprint_text)
+        self.assertIn("First real or student-adjacent trial", four_sprint_text)
+        self.assertIn("Evidence-Based Improvement", four_sprint_text)
+        self.assertIn("Research Track Productization", four_sprint_text)
+        self.assertIn("N = 0 real student sessions", four_sprint_text)
 
     def test_landing_page_uses_plain_human_ai_framing_without_overclaiming(self) -> None:
         html = (ROOT / "index.html").read_text()

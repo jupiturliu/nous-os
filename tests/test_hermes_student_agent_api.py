@@ -76,6 +76,11 @@ class HermesStudentAgentApiTests(unittest.TestCase):
           if (record.source_cards.length !== 1 || record.source_cards[0].decision !== 'accepted') process.exit(5);
           if (record.research_signals.accepted_sources !== 1) process.exit(6);
           if (record.research_signals.observer_check_count !== 4) process.exit(7);
+          if (record.readiness.ready_for_review !== false) process.exit(8);
+          const packet = route.buildReviewPacket(record);
+          if (!packet.includes('Student Sandbox v1 Trial Review')) process.exit(9);
+          if (!packet.includes('Next-run Change')) process.exit(10);
+          if (packet.includes('student@example.com') || packet.includes('415-555-1212') || packet.includes('123-45-6789')) process.exit(11);
         """
         result = subprocess.run(
             ["node", "-e", script],

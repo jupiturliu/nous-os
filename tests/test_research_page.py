@@ -27,6 +27,12 @@ class ResearchPageTests(unittest.TestCase):
         self.assertIn("Launch Student Sandbox", research)
         self.assertIn("Read Student Guidelines", research)
         self.assertIn("/demo/student-sandbox-v1-guide.html", research)
+        self.assertIn("Trial readiness", research)
+        self.assertIn("Student Sandbox evidence loop", research)
+        self.assertIn("N = 0 real student sessions", research)
+        self.assertIn("/demo/student-session-review.html", research)
+        self.assertIn("/docs/student-sandbox-deterministic-workflow.md", research)
+        self.assertIn("Only one focused product change", research)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', research)
         # Cloudflare deploy reads from _site/ produced by stage_static_site.sh.
         # GitHub Pages CD has been removed; pages.yml no longer exists.

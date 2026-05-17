@@ -136,7 +136,7 @@
   p { color: var(--muted); max-width: 820px; margin: 0 0 18px; }
   .toc {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
     margin-top: 32px;
   }
@@ -218,6 +218,46 @@
   .metric { padding: 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); }
   .metric b { display: block; margin-bottom: 8px; }
   .metric span { color: var(--muted); font-size: 13px; }
+  .trial-board {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .trial-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 20px;
+  }
+  .trial-card strong { display: block; margin-bottom: 8px; }
+  .trial-card span { display: block; color: var(--muted); font-size: 13px; }
+  .trial-card code {
+    display: inline-block;
+    margin-top: 10px;
+    color: #8ff6dd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .status-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .status-row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .status-row b {
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .status-row span { color: var(--muted); }
   .quote {
     border-left: 3px solid var(--green);
     padding: 18px 22px;
@@ -257,8 +297,9 @@
     .nav-links { display: none; }
     .hero { padding: 92px 22px 44px; }
     section { padding: 50px 22px; }
-    .toc, .two-col, .model, .metric-grid { grid-template-columns: 1fr; }
+    .toc, .two-col, .model, .metric-grid, .trial-board { grid-template-columns: 1fr; }
     .item { grid-template-columns: 1fr; gap: 4px; }
+    .status-row { grid-template-columns: 1fr; gap: 4px; }
     footer { flex-direction: column; padding: 24px 22px; }
   }
 </style>
@@ -288,6 +329,7 @@
       <div class="hero-actions">
         <a class="btn btn-primary" href="/demo/student-sandbox-v1.html">Launch Student Sandbox</a>
         <a class="btn" href="/demo/student-sandbox-v1-guide.html">Read Student Guidelines</a>
+        <a class="btn" href="#trial">Trial readiness</a>
         <a class="btn" href="#model">See the model</a>
         <a class="btn" href="#sources">Source notes</a>
       </div>
@@ -308,8 +350,13 @@
           <div class="toc-title">Measuring better cooperation</div>
           <div class="toc-text">Signals for human growth, agent adaptation, and relationship quality.</div>
         </a>
+        <a href="#trial">
+          <div class="kicker">04 Trial</div>
+          <div class="toc-title">Student Sandbox evidence loop</div>
+          <div class="toc-text">How a 20-minute session becomes a de-identified review packet.</div>
+        </a>
         <a href="#memory">
-          <div class="kicker">04 Memory</div>
+          <div class="kicker">05 Memory</div>
           <div class="toc-title">What should be remembered?</div>
           <div class="toc-text">Rules for remember, challenge, decay, and forget.</div>
         </a>
@@ -357,6 +404,36 @@
       <div class="metric"><b>Memory quality</b><span>Is remembered context trusted, current, and useful rather than merely accumulated?</span></div>
       <div class="metric"><b>Reflection completeness</b><span>Can the learner name what AI helped with and what remains their responsibility?</span></div>
       <div class="metric"><b>Repeatability</b><span>Can another observer reproduce the loop and see the same improvement pattern?</span></div>
+    </div>
+  </section>
+
+  <section id="trial">
+    <div class="section-label">Student Sandbox Trial</div>
+    <h2>The next research milestone is one real or student-adjacent 20-minute session.</h2>
+    <p>The product is now shaped around an evidence loop: student worksheet, explicit boundary, structured source cards, NOUS Guide turns, reflection, observer notes, and a de-identified Markdown review packet.</p>
+    <div class="trial-board">
+      <div class="trial-card">
+        <strong>Current status: ready for first trial</strong>
+        <span>NOUS OS has the workflow, backend save path, review page, and export packet needed to run a controlled session. The human trial itself still needs a student or student-adjacent participant.</span>
+        <code>N = 0 real student sessions</code>
+      </div>
+      <div class="trial-card">
+        <strong>What the review packet captures</strong>
+        <span>Research question, human boundary, source evidence, uncertainty, reflection completeness, observer checks, and whether AI supported thinking without replacing final responsibility.</span>
+        <code>artifact: student-session-review.html</code>
+      </div>
+    </div>
+    <div class="status-list">
+      <div class="status-row"><b>Run</b><span>Open the Student Sandbox, start the 20-minute timer, and use NOUS Guide only when the student chooses to ask.</span></div>
+      <div class="status-row"><b>Save</b><span>The local backend stores a redacted session record under the sandbox runtime folder.</span></div>
+      <div class="status-row"><b>Review</b><span>The review page lists saved sessions, shows readiness signals, and exports a Markdown packet for Obsidian.</span></div>
+      <div class="status-row"><b>Improve</b><span>Only one focused product change should be selected from review evidence before the next session.</span></div>
+    </div>
+    <div class="source-links">
+      <a href="/demo/student-sandbox-v1.html">Run Student Sandbox</a>
+      <a href="/demo/student-session-review.html">Open Session Review</a>
+      <a href="/docs/student-sandbox-deterministic-workflow.md">Workflow contract</a>
+      <a href="/docs/student-sandbox-v1-review-template.md">Review template MD</a>
     </div>
   </section>
 

@@ -145,6 +145,25 @@ function buildResearchSignals({ worksheet, reflection, sourceCards, chatTurns, o
   };
 }
 
+function reviewReadiness(signals = {}) {
+  const sourceCardsComplete = Number(signals.source_cards_complete || 0);
+  const reflectionFieldsComplete = Number(signals.reflection_fields_complete || 0);
+  const observerCheckCount = Number(signals.observer_check_count || 0);
+  return {
+    ready_for_first_pass: Boolean(signals.has_human_boundary),
+    ready_for_second_pass: Boolean(signals.has_human_boundary && sourceCardsComplete >= 1),
+    ready_for_review: Boolean(
+      signals.has_human_boundary &&
+      signals.has_revised_plan &&
+      sourceCardsComplete >= 2 &&
+      reflectionFieldsComplete >= 4
+    ),
+    source_cards_complete: sourceCardsComplete,
+    reflection_fields_complete: reflectionFieldsComplete,
+    observer_check_count: observerCheckCount,
+  };
+}
+
 function buildRecord(body) {
   const worksheet = safeObject(body.worksheet || {});
   const reflection = safeObject(body.reflection || {}, {
@@ -166,6 +185,7 @@ function buildRecord(body) {
     chat_turns: body.chat_turns || [],
   });
   const researchSignals = buildResearchSignals({ worksheet, reflection, sourceCards, chatTurns, observer });
+  const readiness = reviewReadiness(researchSignals);
 
   return {
     version: 'student_sandbox_session_v1',
@@ -188,9 +208,105 @@ function buildRecord(body) {
     reflection,
     observer,
     research_signals: researchSignals,
+    readiness,
     summary,
     chat_turns: chatTurns,
   };
+}
+
+function md(value, fallback = '[not filled]') {
+  const text = String(value || '').trim();
+  return text || fallback;
+}
+
+function yesNo(value) {
+  return value ? 'yes' : 'no';
+}
+
+function buildReviewPacket(record) {
+  const worksheet = record.worksheet || {};
+  const reflection = record.reflection || {};
+  const observer = record.observer || {};
+  const signals = record.research_signals || {};
+  const readiness = record.readiness || reviewReadiness(signals);
+  const sources = Array.isArray(record.source_cards) ? record.source_cards : [];
+  const turns = Array.isArray(record.chat_turns) ? record.chat_turns : [];
+  const lines = [
+    '# Student Sandbox v1 Trial Review',
+    '',
+    `- Session id: ${md(record.session_id)}`,
+    `- Saved at: ${md(record.saved_at)}`,
+    '- Observer role: parent / teacher / researcher / self-review',
+    '- Trial type: real / student-adjacent / dry-run',
+    '- Privacy: de-identified; no student name, school, email, phone, address, or raw private prompt',
+    '',
+    '## Session Summary',
+    '',
+    `- Research question: ${md(worksheet.question)}`,
+    `- Prior belief: ${md(worksheet.prior_belief)}`,
+    `- Human boundary: ${md(worksheet.boundary)}`,
+    `- Revised plan: ${md(worksheet.revised_plan)}`,
+    '',
+    '## Readiness Snapshot',
+    '',
+    `- Ready for first pass: ${yesNo(readiness.ready_for_first_pass)}`,
+    `- Ready for second pass: ${yesNo(readiness.ready_for_second_pass)}`,
+    `- Ready for review: ${yesNo(readiness.ready_for_review)}`,
+    `- Complete source cards: ${md(readiness.source_cards_complete, '0')}`,
+    `- Complete reflection fields: ${md(readiness.reflection_fields_complete, '0')}`,
+    `- Observer checks: ${md(readiness.observer_check_count, '0')}`,
+    '',
+    '## Source Cards',
+    '',
+  ];
+  if (sources.length === 0) {
+    lines.push('- No structured source cards saved.');
+  } else {
+    sources.forEach(source => {
+      lines.push(`### ${md(source.id, 'source')}: ${md(source.title)}`);
+      lines.push('');
+      lines.push(`- Author / institution: ${md(source.author)}`);
+      lines.push(`- Date: ${md(source.date)}`);
+      lines.push(`- Decision: ${md(source.decision, 'pending')}`);
+      lines.push(`- Evidence: ${md(source.evidence)}`);
+      lines.push(`- Uncertainty: ${md(source.uncertainty)}`);
+      lines.push('');
+    });
+  }
+  lines.push(
+    '## Reflection',
+    '',
+    `- What did AI help with? ${md(reflection.reflect_help)}`,
+    `- What did the student verify? ${md(reflection.reflect_verify)}`,
+    `- What remains human responsibility? ${md(reflection.reflect_responsibility)}`,
+    `- What would change next time? ${md(reflection.reflect_next)}`,
+    '',
+    '## Observer Notes',
+    '',
+    `- Student explained the question: ${md(observer.student_explained_question, 'no')}`,
+    `- Student named one source issue: ${md(observer.named_source_issue, 'no')}`,
+    `- Student kept human responsibility: ${md(observer.kept_human_responsibility, 'no')}`,
+    `- AI was used for hints, not final-answer writing: ${md(observer.used_ai_for_hints, 'no')}`,
+    `- Note: ${md(observer.note)}`,
+    '',
+    '## NOUS Guide Evidence',
+    '',
+    `- Saved chat turns: ${turns.length}`,
+    '- Review note: inspect whether NOUS Guide gave hints, source-check questions, and boundary support rather than final-answer text.',
+    '',
+    '## Next-run Change',
+    '',
+    '- Single focused improvement to make before the next session:',
+    '',
+    '## Research Interpretation',
+    '',
+    '- Human capability delta:',
+    '- Trust calibration:',
+    '- Boundary integrity:',
+    '- Memory / protocol update:',
+    ''
+  );
+  return lines.join('\n');
 }
 
 function sessionPath(sessionId) {
@@ -224,6 +340,7 @@ function listRecords(limit = 20) {
           question: record.worksheet && record.worksheet.question,
           private_pattern_detected: Boolean(record.privacy && record.privacy.private_pattern_detected),
           research_signals: record.research_signals || {},
+          readiness: record.readiness || reviewReadiness(record.research_signals || {}),
         };
       } catch (error) {
         return null;
@@ -258,6 +375,13 @@ module.exports = async function handler(request, response) {
       json(response, 404, { error: 'Student sandbox session not found.' });
       return;
     }
+    if (url.searchParams.get('format') === 'markdown') {
+      response.statusCode = 200;
+      response.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      response.setHeader('Cache-Control', 'no-store');
+      response.end(buildReviewPacket(record));
+      return;
+    }
     json(response, 200, record);
     return;
   }
@@ -288,10 +412,12 @@ module.exports = async function handler(request, response) {
 
 module.exports._private = {
   buildRecord,
+  buildReviewPacket,
   buildResearchSignals,
   containsPrivatePattern,
   listRecords,
   redactPrivateText,
+  reviewReadiness,
   safeSessionId,
   safeSourceCards,
   safeText,
