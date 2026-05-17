@@ -1,6 +1,6 @@
 # NOUS OS
 
-> **Cognitive COO OS for Human-AI Co-evolution**
+> **Human-AI Learning System for Co-Evolution**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Website](https://img.shields.io/badge/website-nousos.ai-blue)](https://nousos.ai)
@@ -9,7 +9,7 @@
 
 ## What is NOUS OS
 
-NOUS OS is not an app and not a commercialization-first product. It is an **education and research project** for studying a Cognitive COO operating system: shared memory, event mesh, domain runtime, outcome proof, and human authority. The first vertical research proof is Trading Brain / `trading-agent`.
+NOUS OS is not an app and not a commercialization-first product. It is an **education and research project** for studying how humans and AI can learn together: shared memory, event mesh, domain runtime, outcome proof, and human authority. The first vertical research proof is Trading Brain / `trading-agent`.
 
 ```
 ┌─────────────────────────────────────┐
@@ -79,7 +79,7 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 
 - [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
 - [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
-- [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Cognitive COO V2 roadmap and first-vertical proof scope
+- [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Human-AI learning roadmap and first-vertical proof scope
 - [docs/education-research-narrative.md](./docs/education-research-narrative.md) — Education/research narrative for high-school students, human-AI co-evolution, and safety boundaries
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative

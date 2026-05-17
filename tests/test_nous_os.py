@@ -265,14 +265,17 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("TrustMem: agents' trustworthy hippocampus", one_pager_en.read_text())
         self.assertIn("Obsidian knowledge sedimentation", one_pager_en.read_text())
 
-    def test_landing_page_uses_cognitive_coo_without_overclaiming(self) -> None:
+    def test_landing_page_uses_plain_human_ai_framing_without_overclaiming(self) -> None:
         html = (ROOT / "index.html").read_text()
 
-        self.assertIn("Cognitive COO OS", html)
-        self.assertIn("Obsidian knowledge sedimentation", html)
+        self.assertIn("Human-AI Learning System", html)
+        self.assertIn("learning system", html)
+        self.assertIn("learning notes", html)
         self.assertIn("demo/assets/architecture/nous-os-cognitive-coo-architecture-fireworks.png", html)
         self.assertIn("Trading Brain as the first vertical proof", html)
         self.assertIn("Production hardening is still in progress", html)
+        self.assertNotIn("<em>Cognitive COO OS</em>", html)
+        self.assertNotIn("COO Operating System", html)
         self.assertNotIn("fully autonomous trading system", html.lower())
         self.assertNotIn("production-ready multi-tenant saas", html.lower())
 
@@ -352,6 +355,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("Greek word for intellect", about_page)
         self.assertIn("exploring the future of AI and human beings together with my daughter", about_page)
         self.assertIn("Humans and AI can cooperate better", about_page)
+        self.assertIn("Human-AI Learning System", about_page)
         self.assertIn("demo/assets/architecture/nous-os-cognitive-coo-architecture-fireworks.png", about_page)
 
 
