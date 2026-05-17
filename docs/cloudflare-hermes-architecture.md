@@ -91,6 +91,15 @@ NOUS_BACKEND_ORIGIN_URL
 
 The deploy workflow writes `NOUS_BACKEND_ORIGIN_URL` into the Cloudflare Worker as a secret before `wrangler deploy`.
 
+The Worker is routed to:
+
+```text
+nousos.ai/*
+www.nousos.ai/*
+```
+
+These routes only receive traffic when the matching DNS records are proxied through Cloudflare. During cutover, keep the existing GitHub Pages A/CNAME records if needed, but switch them from DNS-only to Proxied so Cloudflare can run the Worker before any origin fallback.
+
 Required Cloudflare Worker secret after deploy:
 
 ```text
@@ -181,7 +190,7 @@ GET /api/health
 3. Expose `backend.nousos.ai` through Cloudflare Tunnel, using a `cloudflared` login that has access to the `nousos.ai` zone.
 4. Configure `NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai` on the Cloudflare Worker.
 5. Set `HERMES_API_SERVER_URL` and, only if Hermes Gateway requires it, `HERMES_API_SERVER_KEY` on the backend server.
-6. Configure `nousos.ai` DNS to the Cloudflare Worker route.
+6. In Cloudflare DNS, switch the existing `nousos.ai` A records and `www.nousos.ai` CNAME from DNS-only to Proxied, or remove them and let Wrangler create Worker custom-domain records.
 7. Smoke check the site HTML, `/api/health`, and `/api/hermes-student-agent`.
 8. Disable the GitHub Pages workflow after Cloudflare is the production path.
 

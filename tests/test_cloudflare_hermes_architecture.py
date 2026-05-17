@@ -17,6 +17,11 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn('binding = "ASSETS"', wrangler)
         self.assertIn('run_worker_first = ["/api/*"]', wrangler)
         self.assertIn('NOUS_PUBLIC_ORIGIN = "https://nousos.ai"', wrangler)
+        self.assertIn("workers_dev = true", wrangler)
+        self.assertIn("preview_urls = false", wrangler)
+        self.assertIn('pattern = "nousos.ai/*"', wrangler)
+        self.assertIn('pattern = "www.nousos.ai/*"', wrangler)
+        self.assertIn('zone_name = "nousos.ai"', wrangler)
 
     def test_worker_proxies_api_to_web_backend_not_hermes_gateway_or_provider(self) -> None:
         worker = (ROOT / "worker" / "index.mjs").read_text()
@@ -83,6 +88,9 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("NOUS_BACKEND_ORIGIN_URL", doc)
         self.assertIn("Hermes Gateway", doc)
         self.assertIn("GitHub Pages-only limitation", doc)
+        self.assertIn("nousos.ai/*", doc)
+        self.assertIn("www.nousos.ai/*", doc)
+        self.assertIn("DNS-only to Proxied", doc)
         self.assertIn("Disable the GitHub Pages workflow", doc)
         self.assertIn("website -> Cloudflare frontend -> NOUS OS web backend -> Hermes Gateway", doc)
 
@@ -116,6 +124,10 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("service: http://127.0.0.1:8787", tunnel_template)
         self.assertIn("cloudflared tunnel login", runbook)
         self.assertIn("NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai", runbook)
+        self.assertIn("nousos.ai/*", runbook)
+        self.assertIn("www.nousos.ai/*", runbook)
+        self.assertIn("DNS-only", runbook)
+        self.assertIn("Proxied", runbook)
 
     def test_javascript_entrypoints_have_valid_syntax(self) -> None:
         for path in (

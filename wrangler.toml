@@ -1,6 +1,13 @@
 name = "nous-os"
 main = "worker/index.mjs"
 compatibility_date = "2026-05-17"
+workers_dev = true
+preview_urls = false
+
+routes = [
+  { pattern = "nousos.ai/*", zone_name = "nousos.ai" },
+  { pattern = "www.nousos.ai/*", zone_name = "nousos.ai" },
+]
 
 [assets]
 directory = "./_site"

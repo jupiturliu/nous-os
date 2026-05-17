@@ -54,4 +54,20 @@ The frontend Worker should use:
 NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai
 ```
 
+`wrangler.toml` routes the Worker to:
+
+```text
+nousos.ai/*
+www.nousos.ai/*
+```
+
+For the route-based cutover, the existing Cloudflare DNS records must be Proxied:
+
+```text
+nousos.ai A records -> Proxied
+www.nousos.ai CNAME -> Proxied
+```
+
+If they stay DNS-only, public traffic bypasses the Worker and continues to hit GitHub Pages.
+
 The Worker never needs Hermes or model-provider keys. Hermes stays local behind the NOUS OS backend.
