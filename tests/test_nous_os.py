@@ -725,6 +725,9 @@ class SiteContractTests(unittest.TestCase):
         production_runtime = (ROOT / "docs" / "production-runtime.md").read_text()
 
         self.assertIn('id="research"', homepage)
+        self.assertEqual(homepage.count('id="research"'), 1)
+        self.assertIn('<a href="#research">Research</a>', homepage)
+        self.assertIn('id="proof"', homepage)
         self.assertIn("Human-AI co-evolution", homepage)
         self.assertIn("/docs/human-ai-symbiosis-self-evolution.md", homepage)
         self.assertIn("/docs/human-ai-coevolution-model-v0.md", homepage)
