@@ -652,6 +652,66 @@ class BenchmarkTests(unittest.TestCase):
         ):
             self.assertIn(required, prereg, f"preregistration template missing section {required!r}")
 
+    def test_research_line_hermes_integration_spec_holds_load_bearing_clauses(self) -> None:
+        """The Wave 4 spec must keep its load-bearing contract clauses.
+
+        These are the lines Codex builds the Hermes side against. If any get
+        accidentally removed or weakened, Hermes' L2/L3 work would drift.
+        """
+
+        spec_path = ROOT / "docs" / "research-line" / "hermes-integration.md"
+        synth_template = ROOT / "docs" / "research-line" / "synthesis" / "_template.md"
+        self.assertTrue(spec_path.exists(), "hermes-integration spec must exist")
+        self.assertTrue(synth_template.exists(), "synthesis _template.md must exist")
+
+        spec = spec_path.read_text(encoding="utf-8")
+
+        # L2 contract: 0 to 3 notes per week, single PR, no auto-merge.
+        for clause in (
+            "0 to 3 new inbound notes",
+            "L2 triage · week of",
+            "Never auto-merge",
+            "Never edit existing inbound notes",
+            "Never make HTTP requests",
+            "cap is **3 per week**",
+        ):
+            self.assertIn(clause, spec, f"L2 spec missing clause {clause!r}")
+
+        # L3 contract: quarterly cadence, structural sections, no overclaim.
+        for clause in (
+            "L3 synthesis · YYYY-QN",
+            "First Sunday of Jan / Apr / Jul / Oct",
+            "Never make causal claims that exceed the evidence base",
+            "Never extrapolate Sandbox findings to trading-agent",
+            "negative results",
+        ):
+            self.assertIn(clause, spec, f"L3 spec missing clause {clause!r}")
+
+        # Wave-4 explicit non-doings (so Codex does not over-build).
+        for clause in (
+            "No Hermes-side code",
+            "No changes to L1",
+            "No retroactive triage",
+        ):
+            self.assertIn(clause, spec, f"Wave 4 non-doing clause missing: {clause!r}")
+
+        # Token-storage rule (NOT in Actions secrets, NOT in repo).
+        self.assertIn("Hermes' secret store", spec)
+        self.assertIn("not GitHub Actions secrets, not in the repo", spec)
+
+        # Synthesis template required sections (numbered).
+        synth = synth_template.read_text(encoding="utf-8")
+        for section in (
+            "## 1 · Quarter at a glance",
+            "## 2 · Most influential inbound notes",
+            "## 3 · Coverage observations",
+            "## 4 · Instrument signals",
+            "## 5 · What we were wrong about",
+            "## 6 · Next quarter's planned shifts",
+            "direction signal, not validation",
+        ):
+            self.assertIn(section, synth, f"synthesis template missing {section!r}")
+
 
 class DashboardApiTests(unittest.TestCase):
     def setUp(self) -> None:

@@ -205,6 +205,22 @@
       "verification": "python3 -m unittest discover -s tests -v"
     },
     {
+      "id": "research_line_hermes_integration_spec",
+      "path": "docs/research-line/hermes-integration.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_hermes_integration_spec_holds_load_bearing_clauses -v"
+    },
+    {
+      "id": "research_line_synthesis_template",
+      "path": "docs/research-line/synthesis/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_hermes_integration_spec_holds_load_bearing_clauses -v"
+    },
+    {
       "id": "latest_research_record",
       "path": "examples/runtime/research-records/latest.json",
       "kind": "research_artifact",
