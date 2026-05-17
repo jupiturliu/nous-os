@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS Research Track — Human-AI Co-Evolution</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --panel: rgba(255,255,255,0.04);
+    --panel-strong: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.35);
+    --accent: #7b61ff;
+    --green: #00d4aa;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.032) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.032) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84);
+    backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+  .nav-links a:hover { color: var(--text); }
+  main { position: relative; z-index: 1; }
+  .hero {
+    padding: 116px 40px 54px;
+    background:
+      radial-gradient(circle at 45% 16%, rgba(123,97,255,0.20), transparent 38%),
+      radial-gradient(circle at 78% 38%, rgba(0,212,170,0.12), transparent 30%);
+  }
+  .hero-inner, section { width: min(1060px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 13px;
+    border: 1px solid rgba(0,212,170,0.28);
+    border-radius: 999px;
+    background: rgba(0,212,170,0.08);
+    color: #8ff6dd;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  h1 {
+    max-width: 940px;
+    font-size: clamp(42px, 7vw, 84px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    margin-bottom: 26px;
+  }
+  .lead {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: clamp(16px, 2vw, 20px);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 34px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .btn-primary { background: var(--accent); border-color: rgba(123,97,255,0.55); }
+  .btn:hover { background: rgba(255,255,255,0.06); }
+  section { padding: 68px 40px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  h2 {
+    max-width: 820px;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 18px;
+  }
+  p { color: var(--muted); max-width: 820px; margin: 0 0 18px; }
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .toc a, .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    text-decoration: none;
+  }
+  .toc a {
+    min-height: 126px;
+    padding: 18px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .toc a:hover {
+    border-color: rgba(0,212,170,0.36);
+    background: rgba(0,212,170,0.06);
+    transform: translateY(-2px);
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .toc-title { font-weight: 600; margin-bottom: 8px; }
+  .toc-text { color: var(--muted); font-size: 13px; line-height: 1.55; }
+  .two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 22px;
+    align-items: start;
+  }
+  .card { padding: 22px; }
+  .card h3 { font-size: 18px; margin-bottom: 10px; letter-spacing: -0.01em; }
+  .list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .item {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  .item strong { color: var(--text); }
+  .item span { color: var(--muted); }
+  .model {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .step {
+    min-height: 130px;
+    padding: 16px;
+    border: 1px solid rgba(0,212,170,0.18);
+    border-radius: 8px;
+    background: rgba(0,212,170,0.045);
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+  .step b { display: block; margin-bottom: 8px; }
+  .step span { color: var(--muted); font-size: 13px; }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .metric { padding: 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); }
+  .metric b { display: block; margin-bottom: 8px; }
+  .metric span { color: var(--muted); font-size: 13px; }
+  .quote {
+    border-left: 3px solid var(--green);
+    padding: 18px 22px;
+    background: rgba(0,212,170,0.06);
+    color: rgba(240,240,245,0.78);
+    font-size: 18px;
+    margin-top: 24px;
+  }
+  .source-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+  .source-links a {
+    color: rgba(143,246,221,0.86);
+    border: 1px solid rgba(0,212,170,0.22);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-decoration: none;
+    font-size: 12px;
+  }
+  footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 40px;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-size: 13px;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  @media (max-width: 900px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 92px 22px 44px; }
+    section { padding: 50px 22px; }
+    .toc, .two-col, .model, .metric-grid { grid-template-columns: 1fr; }
+    .item { grid-template-columns: 1fr; gap: 4px; }
+    footer { flex-direction: column; padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">
+    <span class="logo-mark">N</span>
+    <span>NOUS OS</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#demo">Demo</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="badge"><span class="dot"></span> Research Track · Human-AI Co-Evolution</div>
+      <h1>How can humans and AI learn to think better together?</h1>
+      <p class="lead">This is the readable research surface for NOUS OS. It translates the working notes into a public narrative: human agency, AI support, trusted memory, measurable adaptation, and boundaries that keep cognition human-owned.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/demo/student-sandbox-v1.html">Launch Student Sandbox</a>
+        <a class="btn" href="#model">See the model</a>
+        <a class="btn" href="#sources">Source notes</a>
+      </div>
+
+      <div class="toc">
+        <a href="#anchor">
+          <div class="kicker">01 Theory</div>
+          <div class="toc-title">Symbiosis and self-evolution</div>
+          <div class="toc-text">Why NOUS OS studies cooperation instead of replacement.</div>
+        </a>
+        <a href="#model">
+          <div class="kicker">02 Model</div>
+          <div class="toc-title">The co-evolution loop</div>
+          <div class="toc-text">A compact loop from intent to memory to changed behavior.</div>
+        </a>
+        <a href="#metrics">
+          <div class="kicker">03 Metrics</div>
+          <div class="toc-title">Measuring better cooperation</div>
+          <div class="toc-text">Signals for human growth, agent adaptation, and relationship quality.</div>
+        </a>
+        <a href="#memory">
+          <div class="kicker">04 Memory</div>
+          <div class="toc-title">What should be remembered?</div>
+          <div class="toc-text">Rules for remember, challenge, decay, and forget.</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <section id="anchor">
+    <div class="section-label">Theory Anchor</div>
+    <h2>NOUS OS treats AI as a cognitive partner, not a final-answer machine.</h2>
+    <div class="two-col">
+      <div>
+        <p>The research question is not whether AI can produce fluent output. The question is whether repeated human-AI interaction can improve judgment while preserving human responsibility.</p>
+        <p>The first study surface is intentionally simple: a student learning companion that gives hints, asks for source checks, protects private details, and ends with reflection.</p>
+      </div>
+      <div class="card">
+        <h3>Core stance</h3>
+        <p>Human beings keep goals, values, verification, and final responsibility. AI can help with decomposition, simulation, critique, memory recall, and practice generation.</p>
+        <div class="quote">The system should make the human stronger, not make the human absent.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="model">
+    <div class="section-label">Model v0</div>
+    <h2>The loop is only successful if the second interaction is better for the right reason.</h2>
+    <p>NOUS OS studies improvement as a loop, not a single chat answer. Human correction must be captured, memory must be governed, and the next behavior must visibly change.</p>
+    <div class="model">
+      <div class="step"><div class="step-num">01</div><b>Intent</b><span>The human states a goal and sets the boundary.</span></div>
+      <div class="step"><div class="step-num">02</div><b>AI support</b><span>The system decomposes, critiques, and suggests next moves.</span></div>
+      <div class="step"><div class="step-num">03</div><b>Human correction</b><span>The human verifies, rejects, redirects, or adds constraints.</span></div>
+      <div class="step"><div class="step-num">04</div><b>Memory update</b><span>The correction becomes governed memory, not hidden drift.</span></div>
+      <div class="step"><div class="step-num">05</div><b>Changed next run</b><span>The next interaction shows better alignment and better boundaries.</span></div>
+    </div>
+  </section>
+
+  <section id="metrics">
+    <div class="section-label">Metrics</div>
+    <h2>We need to measure whether cooperation is actually improving.</h2>
+    <p>The v0 metric frame separates human growth, agent adaptation, and relationship quality. This avoids overclaiming that a nicer answer means better cognition.</p>
+    <div class="metric-grid">
+      <div class="metric"><b>Human agency</b><span>Does the human still own the goal, values, verification, and final responsibility?</span></div>
+      <div class="metric"><b>Correction absorption</b><span>Does the next run reflect the human correction in a visible, testable way?</span></div>
+      <div class="metric"><b>Boundary integrity</b><span>Does the system preserve privacy, safety, and no-action boundaries?</span></div>
+      <div class="metric"><b>Memory quality</b><span>Is remembered context trusted, current, and useful rather than merely accumulated?</span></div>
+      <div class="metric"><b>Reflection completeness</b><span>Can the learner name what AI helped with and what remains their responsibility?</span></div>
+      <div class="metric"><b>Repeatability</b><span>Can another observer reproduce the loop and see the same improvement pattern?</span></div>
+    </div>
+  </section>
+
+  <section id="memory">
+    <div class="section-label">Memory Philosophy</div>
+    <h2>Memory is not storage. It is governed trust.</h2>
+    <p>A human-AI learning system should not remember everything forever. It needs rules for what deserves to become future context.</p>
+    <div class="list">
+      <div class="item"><strong>Remember</strong><span>Human goals, explicit boundaries, verified facts, successful learning moves, and reusable reflections.</span></div>
+      <div class="item"><strong>Challenge</strong><span>Claims without evidence, outdated assumptions, shortcuts that reduce human agency, and confident but unverified answers.</span></div>
+      <div class="item"><strong>Decay</strong><span>Context that was useful once but is no longer current, representative, or aligned with the human's present goal.</span></div>
+      <div class="item"><strong>Forget</strong><span>Private details, accidental disclosures, sensitive student data, and anything the human did not consent to preserve.</span></div>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="section-label">Source Notes</div>
+    <h2>The full working notes are still available for reviewers and builders.</h2>
+    <p>These Markdown files remain the source-of-truth notes for implementation and review. The website page is the user-friendly reading layer.</p>
+    <div class="source-links">
+      <a href="/docs/human-ai-symbiosis-self-evolution.md">Theory anchor MD</a>
+      <a href="/docs/human-ai-coevolution-model-v0.md">Model v0 MD</a>
+      <a href="/docs/self-evolution-metrics-v0.md">Metrics MD</a>
+      <a href="/docs/memory-philosophy-v0.md">Memory philosophy MD</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>NOUS OS · Human-AI Learning System</div>
+  <div><a href="/">Home</a> · <a href="/about.html">About</a> · <a href="https://github.com/jupiturliu/nous-os">GitHub</a></div>
+</footer>
+</body>
+</html>

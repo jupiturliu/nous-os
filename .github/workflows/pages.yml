@@ -42,6 +42,7 @@ jobs:
           mkdir -p _site/docs _site/demo _site/examples/runtime/research-records
           cp index.html _site/
           cp about.html _site/
+          cp research.html _site/
           cp favicon.svg _site/
           cp CNAME _site/
           cp .nojekyll _site/
