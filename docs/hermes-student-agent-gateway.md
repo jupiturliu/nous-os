@@ -18,7 +18,7 @@ This keeps model selection, provider routing, tools, policy, and credentials beh
 
 ## Website Route
 
-Deploy `api/hermes-student-agent.js` on a serverless runtime that supports Node.js `fetch`, or use the Cloudflare Worker route in `worker/index.mjs`.
+Deploy `api/hermes-student-agent.js` inside the NOUS OS web backend server. The Cloudflare Worker should proxy `/api/*` to that backend instead of calling Hermes Gateway directly.
 
 For the full Cloudflare/local-webserver architecture, see [cloudflare-hermes-architecture.md](./cloudflare-hermes-architecture.md).
 

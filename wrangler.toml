@@ -10,5 +10,4 @@ html_handling = "auto-trailing-slash"
 not_found_handling = "404-page"
 
 [vars]
-HERMES_GATEWAY_MODEL = "hermes-agent"
-HERMES_ALLOWED_ORIGIN = "https://nousos.ai"
+NOUS_PUBLIC_ORIGIN = "https://nousos.ai"

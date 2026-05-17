@@ -4,7 +4,7 @@ NOUS OS should run as one product surface with two equivalent paths:
 
 ```text
 Production:
-Browser -> Cloudflare Worker Static Assets -> /api/hermes-student-agent -> Hermes Gateway
+Browser -> Cloudflare Worker Static Assets -> NOUS OS web backend -> Hermes Gateway
 
 Local development:
 Browser -> local NOUS OS webserver -> /api/hermes-student-agent -> local Hermes Gateway
@@ -15,12 +15,13 @@ This adapts the deployment pattern already proven in `trading-agent`:
 - Cloudflare is the public edge.
 - The app does not expose model-provider keys to the browser.
 - The web surface calls a first-party API boundary.
-- The API boundary calls Hermes Gateway through the OpenAI-compatible `/v1/chat/completions` endpoint.
+- The Cloudflare frontend only talks to the NOUS OS web backend server.
+- The web backend server calls Hermes Gateway through the OpenAI-compatible `/v1/chat/completions` endpoint.
 - Local development keeps the same request shape against `127.0.0.1`.
 
-`trading-agent` uses Cloudflare Tunnel into a local Python webserver because it owns private trading state, broker adapters, session files, and user ledgers. `nous-os` can use Cloudflare Worker Static Assets because the public site is static plus a narrow Hermes API route. The boundary is the same; the hosting substrate is lighter.
+`trading-agent` uses Cloudflare Tunnel into a local Python webserver because it owns private trading state, broker adapters, session files, and user ledgers. `nous-os` follows the same separation: Cloudflare owns frontend delivery, and a NOUS OS web backend server owns `/api/*` and Hermes Gateway access. The hosting substrate is lighter, but the boundary is the same.
 
-This replaces the GitHub Pages-only limitation. GitHub Pages can publish HTML, but it cannot execute `/api/*`. Cloudflare Worker Static Assets can serve the website and run the Hermes API boundary in the same deployment.
+This replaces the GitHub Pages-only limitation. GitHub Pages can publish HTML, but it cannot execute `/api/*` or proxy to a private backend. Cloudflare Worker Static Assets can serve the website and route `/api/*` to the NOUS OS backend.
 
 ## Trading-Agent Precedent
 
@@ -29,19 +30,20 @@ The source pattern already exists in `/Users/liyao/nousos/trading-agent`:
 | Concern | Trading-agent evidence | NOUS OS adaptation |
 |---|---|---|
 | Cloudflare public edge | `docs/notes/deployment/DNS_SETUP_GUIDE.md`, `docs/notes/product/release_runbook.md` | `wrangler.toml`, `.github/workflows/cloudflare.yml` |
-| Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `scripts/serve_nous_site.cjs` on `127.0.0.1:8787` |
-| Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | `HERMES_GATEWAY_URL=http://127.0.0.1:8642` |
+| Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `backend/server.cjs` on `127.0.0.1:8787` |
+| Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | backend uses `HERMES_GATEWAY_URL=http://127.0.0.1:8642` |
 | Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | CI-gated Worker deploy plus local smoke checks |
 | Browser safety boundary | web calls first-party API routes, not model providers | browser calls `/api/hermes-student-agent` only |
 
-The naming differs slightly because `trading-agent` stores the full chat completions URL in `HERMES_API_SERVER_URL`, while `nous-os` stores the Gateway root in `HERMES_GATEWAY_URL` and appends `/v1/chat/completions` in the adapter. That keeps the Worker and local webserver contract identical.
+The naming differs slightly because `trading-agent` stores the full chat completions URL in `HERMES_API_SERVER_URL`, while `nous-os` stores the Gateway root in `HERMES_GATEWAY_URL` and appends `/v1/chat/completions` in the backend adapter. That keeps Cloudflare, local development, and backend contracts stable.
 
 ## Runtime Boundary
 
 | Layer | Responsibility |
 |---|---|
-| Cloudflare Worker | static site, `/api/*` routing, CORS, Gateway credential boundary |
-| Local webserver | same static site and API contract for development |
+| Cloudflare Worker | static site and `/api/*` proxy to the NOUS OS backend |
+| NOUS OS web backend | API contract, CORS, Gateway credential boundary |
+| Local webserver | same backend and API contract for development |
 | Hermes Gateway | agent/model/provider/tool boundary |
 | Browser | UI only; no Gateway keys and no direct model-provider calls |
 
@@ -51,7 +53,13 @@ The browser calls:
 POST /api/hermes-student-agent
 ```
 
-The Worker or local webserver calls:
+The Cloudflare Worker calls:
+
+```text
+${NOUS_BACKEND_ORIGIN_URL}/api/hermes-student-agent
+```
+
+The NOUS OS web backend calls:
 
 ```text
 POST ${HERMES_GATEWAY_URL}/v1/chat/completions
@@ -60,10 +68,11 @@ POST ${HERMES_GATEWAY_URL}/v1/chat/completions
 ## Files
 
 - `wrangler.toml` — Cloudflare Worker Static Assets config
-- `worker/index.mjs` — production Worker API route
+- `worker/index.mjs` — production static frontend and `/api/*` backend proxy
 - `scripts/stage_static_site.sh` — deterministic `_site/` staging step
-- `scripts/serve_nous_site.cjs` — local webserver with the same API route
-- `api/hermes-student-agent.js` — Node/CommonJS local/serverless Hermes adapter
+- `backend/server.cjs` — NOUS OS web backend server
+- `scripts/serve_nous_site.cjs` — compatibility wrapper for the backend server
+- `api/hermes-student-agent.js` — Node/CommonJS Hermes Gateway adapter used by the backend
 - `.github/workflows/cloudflare.yml` — CI-gated Cloudflare deploy workflow
 
 ## Production Deploy
@@ -73,15 +82,24 @@ Required GitHub secrets:
 ```text
 CLOUDFLARE_ACCOUNT_ID
 CLOUDFLARE_API_TOKEN
+NOUS_BACKEND_ORIGIN_URL
 ```
 
-Required Cloudflare Worker secret:
+The deploy workflow writes `NOUS_BACKEND_ORIGIN_URL` into the Cloudflare Worker as a secret before `wrangler deploy`.
+
+Required Cloudflare Worker secret after deploy:
 
 ```text
-HERMES_GATEWAY_URL
+NOUS_BACKEND_ORIGIN_URL=https://<nous-backend-origin>
 ```
 
-Optional Cloudflare Worker secrets/vars:
+Required backend environment:
+
+```text
+HERMES_GATEWAY_URL=http://127.0.0.1:8642
+```
+
+Optional backend environment:
 
 ```text
 HERMES_GATEWAY_API_KEY
@@ -101,7 +119,7 @@ Run the Worker locally:
 
 ```bash
 npm install
-HERMES_GATEWAY_URL=http://127.0.0.1:8642 npm run worker:dev
+NOUS_BACKEND_ORIGIN_URL=http://127.0.0.1:8787 npm run worker:dev
 ```
 
 ## Local Webserver
@@ -118,20 +136,23 @@ Open:
 http://127.0.0.1:8787/demo/student-sandbox-v1.html
 ```
 
-The local server stages `_site/`, serves static assets, and handles:
+The local backend stages `_site/`, serves static assets for local convenience, and handles:
 
 ```text
 POST /api/hermes-student-agent
+GET /api/health
 ```
 
 ## Cutover
 
 1. Keep GitHub Pages running until the Cloudflare Worker is verified.
-2. Configure `nousos.ai` DNS to the Cloudflare Worker route.
-3. Set `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY` in Cloudflare.
-4. Smoke check the site HTML and `/api/hermes-student-agent`.
-5. Disable the GitHub Pages workflow after Cloudflare is the production path.
+2. Deploy the NOUS OS web backend server and expose it through a controlled origin, preferably Cloudflare Tunnel like `trading-agent`.
+3. Configure `NOUS_BACKEND_ORIGIN_URL` on the Cloudflare Worker.
+4. Set `HERMES_GATEWAY_URL` and `HERMES_GATEWAY_API_KEY` on the backend server.
+5. Configure `nousos.ai` DNS to the Cloudflare Worker route.
+6. Smoke check the site HTML, `/api/health`, and `/api/hermes-student-agent`.
+7. Disable the GitHub Pages workflow after Cloudflare is the production path.
 
 ## Safety
 
-Do not put model provider keys in the browser. Do not call OpenAI, Anthropic, or any provider directly from the NOUS OS website. The stable contract is website -> NOUS OS API route -> Hermes Gateway.
+Do not put model provider keys in the browser or Cloudflare frontend layer. Do not call OpenAI, Anthropic, or any provider directly from the NOUS OS website. The stable contract is website -> Cloudflare frontend -> NOUS OS web backend -> Hermes Gateway.

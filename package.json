@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "site:stage": "bash scripts/stage_static_site.sh",
-    "site:dev": "node scripts/serve_nous_site.cjs",
-    "worker:dev": "npm run site:stage && wrangler dev",
+    "site:dev": "node backend/server.cjs",
+    "backend:dev": "node backend/server.cjs",
+    "worker:dev": "npm run site:stage && NOUS_BACKEND_ORIGIN_URL=${NOUS_BACKEND_ORIGIN_URL:-http://127.0.0.1:8787} wrangler dev",
     "deploy:cloudflare": "npm run site:stage && wrangler deploy",
     "test": "python3 -m unittest discover -s tests"
   },
