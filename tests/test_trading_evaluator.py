@@ -341,6 +341,86 @@ class TradingEvaluatorOutcomeSignalsTests(unittest.TestCase):
         self.assertIn("pending:repeatability_gain", result["evidence_refs"])
 
 
+class ReviewedExperimentEvidenceTests(unittest.TestCase):
+    """Reviewed experiments under proof_loop/ must flow into evidence_refs."""
+
+    def setUp(self) -> None:
+        self._tmp = Path(__import__("tempfile").mkdtemp(prefix="trading_evaluator_reviewed_"))
+        self.addCleanup(lambda: __import__("shutil").rmtree(self._tmp, ignore_errors=True))
+
+    def _write_reviewed_experiment(self, workspace: Path, user: str, experiment_id: str) -> Path:
+        directory = workspace / "trading-agent" / "data" / "users" / user / "proof_loop" / "reviewed_experiments"
+        directory.mkdir(parents=True, exist_ok=True)
+        artifact = {
+            "experiment_id": experiment_id,
+            "username": user,
+            "source_type": "operator_review",
+            "source_ref": f"data/users/{user}/promotion_reviews/proof_packs/ec-0001.json",
+            "hypothesis": "Reviewing ec-0001: synthetic test hypothesis.",
+            "human_review_state": "needs_more_evidence",
+            "capital_boundary": "review_only",
+            "created_at": "2026-05-17T00:00:00+00:00",
+            "reviewed_at": "2026-05-17T00:00:00+00:00",
+        }
+        path = directory / f"{experiment_id}.json"
+        path.write_text(json.dumps(artifact))
+        return path
+
+    def test_reviewed_experiments_appear_in_evidence_refs(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[_proof_pack("ec-0001")],
+            market_proof={},
+        )
+        self._write_reviewed_experiment(workspace, "alice", "alice-operator_review-20260517-aaaaaaaa")
+        self._write_reviewed_experiment(workspace, "alice", "alice-operator_review-20260517-bbbbbbbb")
+
+        result = TradingEvaluator(workspace=workspace, username="alice").evaluate(run_context={"run_id": "r1"})
+
+        reviewed_refs = [
+            ref for ref in result["evidence_refs"]
+            if "proof_loop/reviewed_experiments" in ref
+        ]
+        self.assertEqual(len(reviewed_refs), 2)
+        self.assertTrue(any("aaaaaaaa" in ref for ref in reviewed_refs))
+        self.assertTrue(any("bbbbbbbb" in ref for ref in reviewed_refs))
+
+    def test_evaluator_handles_missing_reviewed_experiments_dir_gracefully(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[_proof_pack("ec-0001")],
+            market_proof={},
+        )
+        result = TradingEvaluator(workspace=workspace, username="alice").evaluate(run_context={"run_id": "r1"})
+
+        self.assertNotIn(
+            "missing:reviewed_experiments",
+            result["evidence_refs"],
+            "missing reviewed_experiments dir should not produce a pending marker — it's optional context",
+        )
+
+    def test_malformed_reviewed_experiment_does_not_crash_evaluator(self) -> None:
+        workspace = _make_workspace(
+            self._tmp,
+            "alice",
+            proof_packs=[_proof_pack("ec-0001")],
+            market_proof={},
+        )
+        directory = workspace / "trading-agent" / "data" / "users" / "alice" / "proof_loop" / "reviewed_experiments"
+        directory.mkdir(parents=True)
+        (directory / "broken.json").write_text("{ not json")
+        (directory / "no-experiment-id.json").write_text(json.dumps({"hypothesis": "x"}))
+        self._write_reviewed_experiment(workspace, "alice", "alice-operator_review-20260517-good")
+
+        result = TradingEvaluator(workspace=workspace, username="alice").evaluate(run_context={"run_id": "r1"})
+
+        reviewed_refs = [ref for ref in result["evidence_refs"] if "reviewed_experiments" in ref]
+        self.assertEqual(len(reviewed_refs), 1)
+        self.assertTrue(any("alice-operator_review-20260517-good" in ref for ref in reviewed_refs))
+
+
 class DomainEvaluatorProtocolConformanceTests(unittest.TestCase):
     """TradingEvaluator must satisfy the generic DomainEvaluator contract."""
 

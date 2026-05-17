@@ -84,6 +84,7 @@ class TradingEvaluator:
 
         comparisons = self._load_baseline_comparisons()
         summary = self._load_forecast_summary()
+        reviewed_experiments = self._load_reviewed_experiments()
 
         outcome_quality_delta, outcome_resolved = self._outcome_quality_delta(comparisons)
         repeatability_gain, repeatability_available = self._repeatability_gain(summary)
@@ -92,6 +93,7 @@ class TradingEvaluator:
 
         evidence_refs = self._evidence_refs(proof_packs)
         evidence_refs.extend(self._market_evidence_refs(outcome_resolved, repeatability_available))
+        evidence_refs.extend(self._reviewed_experiment_refs(reviewed_experiments))
         if not outcome_resolved:
             evidence_refs.append("pending:outcome_quality_delta")
         if not repeatability_available:
@@ -235,6 +237,41 @@ class TradingEvaluator:
         if not ratios:
             return 0.0, False
         return round(sum(ratios) / len(ratios), 4), True
+
+    def _reviewed_experiments_dir(self) -> Path:
+        return self._user_root / "proof_loop" / "reviewed_experiments"
+
+    def _load_reviewed_experiments(self) -> list[tuple[Path, dict]]:
+        directory = self._reviewed_experiments_dir()
+        if not directory.exists():
+            return []
+        artifacts: list[tuple[Path, dict]] = []
+        for path in sorted(directory.glob("*.json")):
+            try:
+                with open(path, "r", encoding="utf-8") as fh:
+                    artifact = json.load(fh)
+            except (OSError, json.JSONDecodeError):
+                continue
+            if not isinstance(artifact, dict):
+                continue
+            if "experiment_id" not in artifact:
+                continue
+            artifacts.append((path, artifact))
+        return artifacts
+
+    def _reviewed_experiment_refs(self, reviewed: list[tuple[Path, dict]]) -> list[str]:
+        try:
+            base = self.workspace.resolve()
+        except OSError:
+            base = self.workspace
+        refs: list[str] = []
+        for path, _ in reviewed:
+            try:
+                rel = path.resolve().relative_to(base)
+                refs.append(str(rel))
+            except (OSError, ValueError):
+                refs.append(path.name)
+        return refs
 
     def _evidence_refs(self, proof_packs: list[tuple[Path, dict]]) -> list[str]:
         refs = []
