@@ -1107,8 +1107,33 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", stage_script)
         self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", stage_script)
         self.assertIn("cp demo/student-session-review.html _site/demo/", stage_script)
+        self.assertIn("cp demo/research-pipeline.html _site/demo/", stage_script)
         self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", stage_script)
         self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", stage_script)
+
+    def test_research_pipeline_cockpit_runs_northstar_workflow(self) -> None:
+        pipeline_path = ROOT / "demo" / "research-pipeline.html"
+        research_line = (ROOT / "research-line.html").read_text()
+        self.assertTrue(pipeline_path.exists(), "demo/research-pipeline.html must exist")
+
+        html = pipeline_path.read_text()
+        for required in (
+            "Research Pipeline",
+            "preregister, run a bounded session, produce a review packet",
+            "Create pre-registration",
+            "Research sub-line",
+            "L1 · Student Sandbox",
+            "L2 · Trading decision loop",
+            "L3 · Personal knowledge loop",
+            "docs/research-line/session-review-index.md",
+            "docs/research-line/research-to-product-gate.md",
+            "Generate packet",
+            "Copy Markdown",
+            "one focused next-run change",
+        ):
+            self.assertIn(required, html, f"research pipeline missing {required!r}")
+
+        self.assertIn("/demo/research-pipeline.html", research_line)
 
     def test_site_pages_reference_favicon(self) -> None:
         homepage = (ROOT / "index.html").read_text()
