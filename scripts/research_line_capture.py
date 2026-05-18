@@ -73,9 +73,9 @@ SOURCES: list[dict] = [
         "bucket": "6 · Individual essays & podcasts",
     },
     {
-        "id": "anthropic-blog",
-        "title": "Anthropic · News",
-        "url": "https://www.anthropic.com/rss.xml",
+        "id": "openai-news",
+        "title": "OpenAI · News",
+        "url": "https://openai.com/news/rss.xml",
         "bucket": "4 · Industry research",
     },
 ]

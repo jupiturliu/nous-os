@@ -36,7 +36,7 @@ The configured source list lives in `scripts/research_line_capture.py::SOURCES`.
 | `arxiv-cs-cy` | arXiv cs.CY | http://export.arxiv.org/rss/cs.CY | 3 · AI literacy / HCI |
 | `mollick-one-useful-thing` | Mollick · One Useful Thing | https://www.oneusefulthing.org/feed | 6 · Individual essays |
 | `matuschak-blog` | Andy Matuschak | https://andymatuschak.org/feed.xml | 6 · Individual essays |
-| `anthropic-blog` | Anthropic · News | https://www.anthropic.com/rss.xml | 4 · Industry research |
+| `openai-news` | OpenAI · News | https://openai.com/news/rss.xml | 4 · Industry research |
 
 When a feed URL changes or goes dead, update the `SOURCES` list in the script and **add the change to the next quarterly synthesis** so we know what coverage shifted.
 
