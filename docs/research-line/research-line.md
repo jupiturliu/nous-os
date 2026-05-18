@@ -6,6 +6,17 @@ The research line is **internal** in the sense that we do not currently target a
 
 ---
 
+## 0 · Relationship to `research.html`
+
+Research overview is the public map. Research Line is the operating evidence system.
+
+- `research.html` is the plain-language overview for parents, students, teachers, and first-time readers. It explains the theory, model, metrics, Student Sandbox readiness, and source notes.
+- This Research Line is the protocol layer for operators and reviewers. It defines preregistration, de-identified review packets, the session index, evidence ledger, method commitments, and the research-to-product gate.
+
+If someone asks "what is NOUS OS studying?", send them to the Research overview. If someone asks "how do we run the study and decide what evidence changes the product?", send them to the Research Line.
+
+---
+
 ## 1 · North Star
 
 > **Under what conditions does a human-AI pair accumulate compounding wisdom — not merely accelerated output, not merely personalized convenience — over months and years?**

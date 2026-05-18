@@ -556,6 +556,15 @@ class BenchmarkTests(unittest.TestCase):
         spec = spec_path.read_text(encoding="utf-8")
         html = web_path.read_text(encoding="utf-8")
 
+        # 0. The public overview and evidence system must be named separately
+        # so readers do not confuse the two research surfaces.
+        for relationship_anchor in (
+            "Research overview is the public map",
+            "Research Line is the operating evidence system",
+        ):
+            self.assertIn(relationship_anchor, spec, f"spec must explain {relationship_anchor!r}")
+            self.assertIn(relationship_anchor, html, f"web must explain {relationship_anchor!r}")
+
         # 1. Same north-star phrasing in both surfaces (load-bearing string).
         for north_star_anchor in (
             "compounding wisdom",

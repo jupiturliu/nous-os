@@ -22,6 +22,10 @@ class ResearchPageTests(unittest.TestCase):
         self.assertNotIn('href="/docs/self-evolution-metrics-v0.md"', homepage)
 
         self.assertIn("How can humans and AI learn to think better together?", research)
+        self.assertIn("Research overview vs Research Line", research)
+        self.assertIn("Research is the plain-language overview", research)
+        self.assertIn("Research Line is the operating evidence system", research)
+        self.assertIn("/research-line.html", research)
         self.assertIn("The website page is the user-friendly reading layer.", research)
         self.assertIn("Theory anchor MD", research)
         self.assertIn("Launch Student Sandbox", research)
