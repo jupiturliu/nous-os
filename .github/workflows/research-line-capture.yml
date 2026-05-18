@@ -101,6 +101,14 @@ jobs:
             printf 'This PR was opened by `.github/workflows/research-line-capture.yml` on a daily cron. The bot does not auto-merge.\n'
           } > "$BODY_FILE"
 
+          # Ensure the label exists before we try to attach it to the PR.
+          # gh pr create --label fails outright if the label is absent, so
+          # this step is required on first run and is a no-op after that.
+          gh label create "research-line:inbox" \
+            --color "7b61ff" \
+            --description "L1 daily capture PR opened by the research-line-capture workflow" \
+            2>/dev/null || true
+
           # Idempotent: if a PR already exists for this branch, reuse it.
           if gh pr list --head "$BRANCH" --state open --json number --jq 'length' | grep -q "^0$"; then
             gh pr create \
