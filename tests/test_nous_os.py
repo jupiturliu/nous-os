@@ -650,8 +650,12 @@ class BenchmarkTests(unittest.TestCase):
 
         inbound_template = ROOT / "docs" / "research-line" / "inbound" / "_template.md"
         prereg_template = ROOT / "docs" / "research-line" / "preregistration" / "_template.md"
+        review_index = ROOT / "docs" / "research-line" / "session-review-index.md"
+        product_gate = ROOT / "docs" / "research-line" / "research-to-product-gate.md"
         self.assertTrue(inbound_template.exists(), "inbound _template.md must exist")
         self.assertTrue(prereg_template.exists(), "preregistration _template.md must exist")
+        self.assertTrue(review_index.exists(), "session-review-index.md must exist")
+        self.assertTrue(product_gate.exists(), "research-to-product-gate.md must exist")
 
         inbound = inbound_template.read_text(encoding="utf-8")
         for required in (
@@ -671,9 +675,37 @@ class BenchmarkTests(unittest.TestCase):
             "## 3 · What I am NOT predicting",
             "## 4 · Conditions",
             "## 5 · Honest priors",
+            "## 6 · Review packet link",
+            "docs/research-line/session-review-index.md",
+            "docs/research-line/research-to-product-gate.md",
             "confirmed / partial / disconfirmed / inconclusive",
         ):
             self.assertIn(required, prereg, f"preregistration template missing section {required!r}")
+
+        index = review_index.read_text(encoding="utf-8")
+        for required in (
+            "Research Line Session Review Index",
+            "Current Counts",
+            "Real Student Sandbox sessions",
+            "AI-simulated dry-runs",
+            "Session Ledger",
+            "Latest real review: none yet",
+            "Update Procedure",
+        ):
+            self.assertIn(required, index, f"review index missing {required!r}")
+
+        gate = product_gate.read_text(encoding="utf-8")
+        for required in (
+            "Research-to-Product Gate",
+            "Evidence",
+            "Claim",
+            "Product implication",
+            "Human-agency risk",
+            "Test / contract",
+            "Scope limit",
+            "No gate may authorize production student data collection",
+        ):
+            self.assertIn(required, gate, f"product gate missing {required!r}")
 
     def test_research_line_hermes_integration_spec_holds_load_bearing_clauses(self) -> None:
         """The Wave 4 spec must keep its load-bearing contract clauses.

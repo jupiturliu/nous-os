@@ -96,6 +96,7 @@ The cron implementation lives at `docs/research-line/cron-design.md` (to be writ
 | Frequency | Output | Public? |
 |---|---|---|
 | per session | review packet (Student Sandbox) or outcome review (trading-agent) | yes, de-identified |
+| per session | `docs/research-line/session-review-index.md` row update | yes, de-identified |
 | per inbound | 1-page note in `docs/research-line/inbound/*.md` + HTML mirror | yes |
 | per week | L2 triage commit (1-3 new inbound notes) | yes |
 | per quarter | synthesis writeup tying inbound + session data to "what we changed" | yes |
@@ -119,7 +120,9 @@ If we find ourselves making more boundary types or more metrics rather than more
 - L2 sub-line: active in trading-agent, **no co-evolution lens applied to existing data yet**
 - L3 sub-line: methodology not pinned
 - L1 capture cron: not yet set up
-- Pre-registration template: pending
+- Pre-registration template: implemented
+- Session review index: implemented, currently N=0 real sessions
+- Research-to-product gate: implemented, first use expected after N=1
 - Public research-line page: this wave
 
 The single highest-leverage action remains: run one real Student Sandbox session and produce N=1.
@@ -132,4 +135,6 @@ The single highest-leverage action remains: run one real Student Sandbox session
 - `docs/memory-philosophy-v0.md` — memory governance
 - `docs/research-line/anchor-atlas.md` — external work positioning (next wave)
 - `docs/research-line/cron-design.md` — daily-input automation (later wave)
+- `docs/research-line/session-review-index.md` — de-identified session ledger
+- `docs/research-line/research-to-product-gate.md` — evidence gate for product changes
 - `docs/student-sandbox-v1-recruitment.md` — Phase B recruitment templates

@@ -403,6 +403,31 @@
   .state .mark.partial { color: var(--gold); }
   .state .mark.todo { color: var(--red); }
 
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin: 0 0 20px;
+  }
+  .status-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 18px;
+  }
+  .status-card b {
+    display: block;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .status-card span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
   /* Not-this block */
   .not-this {
     background: rgba(255,107,107,0.04);
@@ -641,6 +666,13 @@
   <span class="section-label">07 · Current state · 2026-05-17</span>
   <h2>Where this line actually stands today.</h2>
 
+  <div class="status-grid">
+    <div class="status-card"><b>N = 0</b><span>real Student Sandbox sessions</span></div>
+    <div class="status-card"><b>1</b><span>AI-simulated dry-run audit, not counted as real evidence</span></div>
+    <div class="status-card"><b>none</b><span>latest real review packet</span></div>
+    <div class="status-card"><b>N=1</b><span>next planned trial: first student-adjacent session</span></div>
+  </div>
+
   <div class="state">
     <ul>
       <li><span class="mark done">✓</span><span><strong>Theory documents.</strong> human-ai-symbiosis-self-evolution, self-evolution-metrics-v0, human-ai-coevolution-model-v0, memory-philosophy-v0.</span></li>
@@ -649,8 +681,10 @@
       <li><span class="mark partial">~</span><span><strong>L1 sub-line (Student Sandbox).</strong> Scaffold + public web + recruitment templates complete. <strong>N = 0 real trials.</strong></span></li>
       <li><span class="mark partial">~</span><span><strong>L2 sub-line (trading-agent).</strong> Active in production; no co-evolution lens applied to existing data yet.</span></li>
       <li><span class="mark todo">○</span><span><strong>L3 sub-line (personal knowledge).</strong> Methodology not pinned.</span></li>
-      <li><span class="mark todo">○</span><span><strong>L1 capture cron.</strong> Architecture sketched; not yet implemented.</span></li>
-      <li><span class="mark todo">○</span><span><strong>Pre-registration template.</strong> Pending.</span></li>
+      <li><span class="mark done">✓</span><span><strong>L1 capture cron.</strong> Script, workflow, and offline tests implemented; first scheduled PR pending.</span></li>
+      <li><span class="mark done">✓</span><span><strong>Pre-registration template.</strong> Implemented at <code>docs/research-line/preregistration/_template.md</code>.</span></li>
+      <li><span class="mark done">✓</span><span><strong>Review Packet Index.</strong> Implemented at <code>docs/research-line/session-review-index.md</code>; latest real review is none.</span></li>
+      <li><span class="mark done">✓</span><span><strong>Research-to-Product Gate.</strong> Implemented at <code>docs/research-line/research-to-product-gate.md</code>; first use expected after N=1.</span></li>
       <li><span class="mark todo">○</span><span><strong>First quarterly synthesis.</strong> Pending real session evidence.</span></li>
     </ul>
   </div>
