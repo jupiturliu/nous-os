@@ -142,6 +142,36 @@
   }
   .card, .output { padding: 20px; }
   label { display: grid; gap: 7px; margin-bottom: 14px; color: var(--text); font-size: 13px; }
+  fieldset {
+    border: 0;
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  legend {
+    color: var(--text);
+    font-size: 13px;
+    margin-bottom: 7px;
+  }
+  .scenario-option {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.035);
+    cursor: pointer;
+  }
+  .scenario-option:has(input:checked) {
+    border-color: rgba(0,212,170,0.42);
+    background: rgba(0,212,170,0.07);
+  }
+  .scenario-option input { width: 16px; min-height: 16px; margin-top: 3px; accent-color: var(--green); }
+  .scenario-title { display: block; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .scenario-text { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+  .scenario-meta { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
   input, select, textarea {
     width: 100%;
     min-height: 40px;
@@ -245,17 +275,52 @@
 
     <div class="workspace">
       <form class="card" id="pipeline-form">
-        <label>
-          Research sub-line
-          <select id="subline">
-            <option value="L1 · Learning loop · Student Sandbox">L1 · Student Sandbox</option>
-            <option value="L2 · Decision loop · trading-agent">L2 · Trading decision loop</option>
-            <option value="L3 · Knowledge loop · Obsidian memory">L3 · Personal knowledge loop</option>
-          </select>
-        </label>
+        <fieldset>
+          <legend>What kind of moment are you studying?</legend>
+          <label class="scenario-option">
+            <input type="radio" name="scenario" value="L1 · Learning loop · Student Sandbox" checked
+              data-title="Student learning moment N=1"
+              data-sample="N=1 · student-adjacent · de-identified"
+              data-prediction="After a scaffolded AI-assisted loop, the learner can explain the answer boundary and complete a similar no-AI transfer step with less prompting."
+              data-revision="If the learner cannot state what AI helped with, cannot name what remains their responsibility, or performs worse on the no-AI transfer task, treat this as disconfirming evidence."
+              data-not-testing="This session is not testing general tutoring efficacy, long-term retention, or whether AI should replace human judgment.">
+            <span>
+              <span class="scenario-title">Help a student think better</span>
+              <span class="scenario-text">Use this for a 20-minute Student Sandbox session with a learner, parent, teacher, or student-adjacent participant.</span>
+              <span class="scenario-meta">L1 · Learning loop</span>
+            </span>
+          </label>
+          <label class="scenario-option">
+            <input type="radio" name="scenario" value="L2 · Decision loop · trading-agent"
+              data-title="Decision review moment N=1"
+              data-sample="N=1 · decision review · de-identified"
+              data-prediction="After an AI-assisted decision review, the human can defend the decision boundary, name what evidence changed their confidence, and separate AI suggestion from final responsibility."
+              data-revision="If the review increases confidence without better evidence, hides the human decision boundary, or makes the human less able to explain the final call, treat this as disconfirming evidence."
+              data-not-testing="This session is not testing trading performance, financial advice, or whether AI should make live decisions.">
+            <span>
+              <span class="scenario-title">Review a real decision</span>
+              <span class="scenario-text">Use this for trading-agent or another consequential decision where calibration and responsibility matter.</span>
+              <span class="scenario-meta">L2 · Decision loop</span>
+            </span>
+          </label>
+          <label class="scenario-option">
+            <input type="radio" name="scenario" value="L3 · Knowledge loop · Obsidian memory"
+              data-title="Memory and reflection moment N=1"
+              data-sample="N=1 · personal knowledge review · de-identified"
+              data-prediction="After reviewing a small memory or note cluster with AI, the human can produce a clearer reflection, identify stale assumptions, and decide what should be remembered, challenged, or forgotten."
+              data-revision="If the AI summary makes the human less specific, preserves stale assumptions, or encourages unreviewed personalization, treat this as disconfirming evidence."
+              data-not-testing="This session is not testing generic note-taking productivity, private identity inference, or fully automated memory management.">
+            <span>
+              <span class="scenario-title">Improve memory and reflection</span>
+              <span class="scenario-text">Use this for Obsidian, long-horizon notes, or memory-governance work.</span>
+              <span class="scenario-meta">L3 · Knowledge loop</span>
+            </span>
+          </label>
+        </fieldset>
+        <div class="hint">The friendly choice above is stored as the research sub-line metadata in the packet.</div>
         <label>
           Session title
-          <input id="title" value="Student Sandbox N=1 trial" autocomplete="off">
+          <input id="title" value="Student learning moment N=1" autocomplete="off">
         </label>
         <label>
           Single prediction
@@ -300,7 +365,6 @@
 
 <script>
   const fields = {
-    subline: document.getElementById('subline'),
     title: document.getElementById('title'),
     prediction: document.getElementById('prediction'),
     revision: document.getElementById('revision'),
@@ -318,13 +382,29 @@
     return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'research-session';
   }
 
+  function selectedScenario() {
+    return document.querySelector('input[name="scenario"]:checked');
+  }
+
+  function applyScenarioDefaults(event) {
+    const scenario = event.currentTarget;
+    fields.title.value = scenario.dataset.title;
+    fields.prediction.value = scenario.dataset.prediction;
+    fields.revision.value = scenario.dataset.revision;
+    fields.notTesting.value = scenario.dataset.notTesting;
+    fields.sample.value = scenario.dataset.sample;
+    output.textContent = 'Packet preview will appear here after you click Generate packet.';
+    status.textContent = 'Scenario updated. Generate a fresh Markdown packet when ready.';
+  }
+
   function buildPacket() {
     const title = fields.title.value.trim() || 'NOUS OS research session';
     const slug = `${todayIso()}-${slugify(title)}`;
+    const scenario = selectedScenario();
     return `---
 title: "${title}"
 session_id: ${slug}
-sub_line: "${fields.subline.value}"
+sub_line: "${scenario.value}"
 sample: "${fields.sample.value.trim()}"
 status: draft
 review_index_row: docs/research-line/session-review-index.md#session-ledger
@@ -376,6 +456,9 @@ Run the bounded session, export a de-identified review packet, update the ledger
     status.textContent = `Generated "${title}" locally at ${time}.`;
   }
 
+  document.querySelectorAll('input[name="scenario"]').forEach((input) => {
+    input.addEventListener('change', applyScenarioDefaults);
+  });
   document.getElementById('generate').addEventListener('click', renderPacket);
   document.getElementById('copy').addEventListener('click', async () => {
     if (!output.textContent.trim() || output.textContent.includes('Packet preview will appear here')) renderPacket();
