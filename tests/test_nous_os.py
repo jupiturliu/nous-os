@@ -741,10 +741,11 @@ class BenchmarkTests(unittest.TestCase):
         ):
             self.assertIn(clause, spec, f"L2 spec missing clause {clause!r}")
 
-        # L3 contract: quarterly cadence, structural sections, no overclaim.
+        # L3 contract: bi-weekly cadence, structural sections, no overclaim.
         for clause in (
-            "L3 synthesis · YYYY-QN",
-            "First Sunday of Jan / Apr / Jul / Oct",
+            "L3 synthesis · YYYY-MM-DD",
+            "Every Sunday at 14:00 UTC",
+            "13-day self-gate",
             "Never make causal claims that exceed the evidence base",
             "Never extrapolate Sandbox findings to trading-agent",
             "negative results",
@@ -766,12 +767,12 @@ class BenchmarkTests(unittest.TestCase):
         # Synthesis template required sections (numbered).
         synth = synth_template.read_text(encoding="utf-8")
         for section in (
-            "## 1 · Quarter at a glance",
+            "## 1 · Period at a glance",
             "## 2 · Most influential inbound notes",
             "## 3 · Coverage observations",
             "## 4 · Instrument signals",
             "## 5 · What we were wrong about",
-            "## 6 · Next quarter's planned shifts",
+            "## 6 · Next period's planned shifts",
             "direction signal, not validation",
         ):
             self.assertIn(section, synth, f"synthesis template missing {section!r}")

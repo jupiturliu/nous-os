@@ -1,6 +1,6 @@
 # NOUS OS Research Line — Hermes Integration Spec (Wave 4)
 
-This document specifies how Hermes runs the L2 (weekly triage) and L3 (quarterly synthesis) tiers of the Research Line external-input loop. It is the contract Codex implements on the Hermes side; it is the expectation the operator can hold Hermes to.
+This document specifies how Hermes runs the L2 (weekly triage) and L3 (bi-weekly synthesis) tiers of the Research Line external-input loop. It is the contract Codex implements on the Hermes side; it is the expectation the operator can hold Hermes to.
 
 > **Status:** spec only. No Hermes-side code is written by this wave. Implementation is Wave 5, Codex-led.
 
@@ -11,7 +11,7 @@ L1 capture is mechanical: fetch RSS, match keywords, write markdown. Reproducibl
 L2 and L3 are judgment work:
 
 - L2: *"which 1–3 of this week's raw entries deserve a full 1-page note?"*
-- L3: *"what did we read this quarter and what actually changed in our practice because of it?"*
+- L3: *"what did we read these last two weeks and what actually changed in our practice because of it?"*
 
 Both require reading across many documents, both produce prose, both must leave a reviewable artifact (a PR) for the operator. This is exactly Hermes' job: cognitive control plane work where the answer is structured prose, not a key lookup.
 
@@ -73,37 +73,37 @@ If a Sunday's PR is missed (Hermes downtime, network), Hermes retries the next a
 - Reject = close PR. Acceptable failure mode; record reason in close comment so Hermes can learn (manually fed into the next prompt update).
 - Merge → CI green → Cloudflare deploys → notes appear under `nousos.ai/docs/research-line/inbound/` and atlas status pills flip on `nousos.ai/research-line-atlas`.
 
-## L3 · Quarterly Synthesis
+## L3 · Bi-weekly Synthesis
 
 ### Input
 
-- All inbound notes promoted during the quarter (top-level `docs/research-line/inbound/*.md`, excluding `_inbox/`).
-- All session review packets in the quarter (Sandbox: `04 Reviews/Student Sandbox v1 Trial Review *.md`; trading-agent: outcome review packets, location TBD per Codex's evidence pipeline).
-- The previous quarter's synthesis (`docs/research-line/synthesis/<prev>.md`), for continuity.
+- All inbound notes promoted during the 14-day period ending on the synthesis Sunday (top-level `docs/research-line/inbound/*.md`, excluding `_inbox/`).
+- All session review packets in the period (Sandbox: `04 Reviews/Student Sandbox v1 Trial Review *.md`; trading-agent: outcome review packets, location TBD per Codex's evidence pipeline).
+- The previous synthesis (`docs/research-line/synthesis/<prev>.md`), for continuity.
 - `docs/research-line/research-line.md` § 2 (the two near-term instruments).
 - `docs/research-line/synthesis/_template.md` (the format).
 
 ### What Hermes produces
 
-A PR titled `L3 synthesis · YYYY-QN`, adding `docs/research-line/synthesis/YYYY-QN.md` (and only that file). Structure follows `_template.md`:
+A PR titled `L3 synthesis · YYYY-MM-DD` (where the date is the synthesis Sunday), adding `docs/research-line/synthesis/YYYY-MM-DD.md` (and only that file). Structure follows `_template.md`:
 
-1. **Quarter at a glance** — N L1 days, N L2 promotions, N session reviews, N sub-line moves.
-2. **3–5 most influential inbound notes** of the quarter, with one paragraph each on what they actually changed in our internal practice (specific doc / test / sub-line decision).
-3. **Coverage observations** — new sources added or removed; keyword list adjustments; bucket health.
-4. **Instrument signals** — did (a) capability-without-AI delta show any direction? did (b) calibrated trust show any direction? Be explicit at low N: "1 session, 1 direction, not validated".
-5. **What we were wrong about** — predictions from prior quarters that didn't hold up. First-class negative results.
-6. **Next quarter's planned shifts** — concrete (this list goes into the next pre-registration round).
+1. **Period at a glance** — N L1 days, N L2 promotions, N session reviews, N sub-line moves.
+2. **1–3 most influential inbound notes** of the period, with one paragraph each on what they actually changed in our internal practice (specific doc / test / sub-line decision).
+3. **Coverage observations** — new sources added or removed; keyword list adjustments; bucket health. Do not over-react to a single quiet bi-week.
+4. **Instrument signals** — did (a) capability-without-AI delta show any direction? did (b) calibrated trust show any direction? Be explicit at low N: "1 session, 1 direction, not validated". At bi-weekly cadence, expect N to be tiny.
+5. **What we were wrong about** — predictions from pre-registrations completed in the period that didn't hold up. First-class negative results.
+6. **Next period's planned shifts** — concrete (this list goes into the next 2 weeks' pre-registrations and L2 triage focus).
 
 ### Hermes boundaries (L3-specific, in addition to L2's)
 
-- Never make causal claims that exceed the evidence base. At N ≤ 5 sessions, the strongest allowable claim is "direction signal, not validation."
+- Never make causal claims that exceed the evidence base. At N ≤ 5 sessions, the strongest allowable claim is "direction signal, not validation." At bi-weekly cadence, N will almost always be small — be especially disciplined.
 - Never extrapolate Sandbox findings to trading-agent or vice versa. They are different sub-lines with different unit definitions; cross-pollination requires explicit reasoning.
 - Never recommend dropping a method commitment (pre-register, two raters, de-identified packets, negative results first-class, explicit N, no instrument inflation). Method commitments are durable.
 - The synthesis is allowed to *propose* changes to the source list, keyword list, or atlas bucket structure; never *implement* those changes in the same PR. Structural changes are separate operator-reviewed PRs.
 
 ### Cadence
 
-First Sunday of Jan / Apr / Jul / Oct, 12:00 UTC. First scheduled run: **2026-07-05** (start of Q3 2026), which gives roughly 7 weeks of L2 activity to synthesize from.
+Every Sunday at 14:00 UTC (after the 12:00 UTC L2 triage). The skill self-gates: it checks whether a synthesis file dated within the last 13 days exists and exits cleanly if so. Effective cadence: one synthesis every two weeks. First scheduled run: the first Sunday after the operator runs `register-cron.sh`; the operator may also invoke manually at any time.
 
 ## Hermes skill structure
 
@@ -112,7 +112,7 @@ Two skills to be registered Hermes-side:
 | Skill name | Trigger | Input contract | Output contract |
 |---|---|---|---|
 | `research-line-l2-triage` | weekly cron (Hermes-side) | inbox files of past 7 days + atlas + 3 seed notes | PR with 0–3 inbound notes + atlas updates |
-| `research-line-l3-synthesis` | quarterly cron (Hermes-side) | inbound notes of quarter + session reviews + prior synthesis | PR with `synthesis/YYYY-QN.md` |
+| `research-line-l3-synthesis` | weekly cron (Hermes-side) with 13-day self-gate → bi-weekly cadence | inbound notes of past 14 days + session reviews + prior synthesis | PR with `synthesis/YYYY-MM-DD.md` |
 
 Skill prompt structure is Codex's call but should:
 1. Embed `inbound/_template.md` (L2) and `synthesis/_template.md` (L3) verbatim in the system prompt.
@@ -138,7 +138,7 @@ Hermes opens PRs against `jupiturliu/nous-os` using a **fine-grained personal ac
 
 - Repository access: `jupiturliu/nous-os` only.
 - Permissions: `Contents: Read and write`, `Pull requests: Read and write`. Nothing else.
-- Expiration: 365 days. Re-issue annually; previous-quarter L3 must note the renewal date.
+- Expiration: 365 days. Re-issue annually; the L3 synthesis covering that period must note the renewal date.
 - Storage: Hermes' secret store (not GitHub Actions secrets, not in the repo, not in any docs).
 
 This is a different token than the Cloudflare deploy chain uses. Two scopes, one purpose each.
@@ -148,7 +148,7 @@ This is a different token than the Cloudflare deploy chain uses. Two scopes, one
 | Tier | Branch | PR title | PR label |
 |---|---|---|---|
 | L2 | `research-line/l2-triage-YYYY-MM-DD` | `L2 triage · week of YYYY-MM-DD` | `research-line:l2-triage` |
-| L3 | `research-line/l3-synthesis-YYYY-QN` | `L3 synthesis · YYYY-QN` | `research-line:l3-synthesis` |
+| L3 | `research-line/l3-synthesis-YYYY-MM-DD` | `L3 synthesis · YYYY-MM-DD` | `research-line:l3-synthesis` |
 
 Labels need not exist before Hermes runs; if Hermes hits a missing-label error, it retries label creation then re-runs PR creation.
 
@@ -164,7 +164,7 @@ When the first L2 PR opens, add a contract test to `tests/test_research_line_cap
 
 L3 contract test, when the first synthesis lands:
 
-- File path is `docs/research-line/synthesis/YYYY-QN.md`.
+- File path is `docs/research-line/synthesis/YYYY-MM-DD.md`.
 - Has the 6 required sections from `synthesis/_template.md`.
 - No claim contains the words "validated" / "confirmed" / "proven" applied to (a)/(b)/(c) instruments at N < 10 (the threshold is operator-tunable).
 
@@ -176,8 +176,8 @@ These tests do not exist yet; they are written reactively when the first Hermes 
 |---|---|
 | Sunday 13:00 UTC | An `L2 triage · …` PR exists for the prior week. If missing, page Hermes operator. |
 | Monthly | Count of merged L2 PRs ≥ 3 in the month. If 0, something is broken or the keyword list is too narrow. |
-| Quarterly | An `L3 synthesis · YYYY-QN` PR exists in the first Sunday of the quarter. |
-| Quarterly | Merge rate of Hermes-produced PRs ≥ 50% over the trailing quarter. Below 50% = prompt re-tuning needed; Hermes is misjudging the bar. |
+| Bi-weekly | An `L3 synthesis · YYYY-MM-DD` PR exists Sunday afternoon when the 13-day self-gate threshold is past. |
+| Quarterly | Merge rate of Hermes-produced PRs ≥ 50% over the trailing 90 days. Below 50% = prompt re-tuning needed; Hermes is misjudging the bar. |
 
 ## What this wave explicitly does NOT do
 
