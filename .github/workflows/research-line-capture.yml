@@ -87,26 +87,30 @@ jobs:
 
           git push --force-with-lease origin "$BRANCH"
 
+          # Build the PR body in a temp file so the YAML run-block does not
+          # have to embed a bash heredoc (which conflicts with YAML's `|`
+          # indentation rules and prevents the workflow from registering).
+          BODY_FILE="$(mktemp)"
+          {
+            printf 'Daily Research Line L1 capture.\n\n'
+            printf '**File:** `%s`\n\n' "${INBOX_FILE}"
+            printf '**Triage options:**\n'
+            printf -- '- **Merge** → entry list is preserved in the inbox corpus (visible in repo, not deployed to the site by default).\n'
+            printf -- '- **Close** → entire day discarded; no record kept.\n'
+            printf -- '- **Transform first** → promote 1–3 entries to full inbound notes under `docs/research-line/inbound/` using the inbound `_template.md`. Update `docs/research-line/anchor-atlas.md` and `research-line-atlas.html` to flip the corresponding entry from `queued`/`scanned` to `note-written`. Then merge.\n\n'
+            printf 'This PR was opened by `.github/workflows/research-line-capture.yml` on a daily cron. The bot does not auto-merge.\n'
+          } > "$BODY_FILE"
+
           # Idempotent: if a PR already exists for this branch, reuse it.
           if gh pr list --head "$BRANCH" --state open --json number --jq 'length' | grep -q "^0$"; then
             gh pr create \
               --base master \
               --head "$BRANCH" \
               --title "L1 capture · ${DATE_LABEL}" \
-              --body "$(cat <<EOF
-Daily Research Line L1 capture.
-
-**File:** \`${INBOX_FILE}\`
-
-**Triage options:**
-- **Merge** → entry list is preserved in the inbox corpus (visible in repo, not deployed to the site by default).
-- **Close** → entire day discarded; no record kept.
-- **Transform first** → promote 1–3 entries to full inbound notes under \`docs/research-line/inbound/\` using the inbound \`_template.md\`. Update \`docs/research-line/anchor-atlas.md\` and \`research-line-atlas.html\` to flip the corresponding entry from \`queued\`/\`scanned\` to \`note-written\`. Then merge.
-
-This PR was opened by \`.github/workflows/research-line-capture.yml\` on a daily cron. The bot does not auto-merge.
-EOF
-)" \
+              --body-file "$BODY_FILE" \
               --label "research-line:inbox"
           else
             echo "::notice::A PR already exists for branch ${BRANCH}; new commit pushed."
           fi
+
+          rm -f "$BODY_FILE"
