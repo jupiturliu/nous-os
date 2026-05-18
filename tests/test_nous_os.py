@@ -1129,6 +1129,8 @@ class SiteContractTests(unittest.TestCase):
             "docs/research-line/research-to-product-gate.md",
             "Generate packet",
             "Copy Markdown",
+            "Packet preview will appear here after you click Generate packet.",
+            "Generated \"${title}\" locally at ${time}.",
             "one focused next-run change",
         ):
             self.assertIn(required, html, f"research pipeline missing {required!r}")

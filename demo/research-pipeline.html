@@ -281,7 +281,7 @@
       </form>
 
       <div class="output">
-        <pre id="markdown-output" aria-live="polite"></pre>
+        <pre id="markdown-output" aria-live="polite">Packet preview will appear here after you click Generate packet.</pre>
       </div>
     </div>
   </section>
@@ -371,12 +371,14 @@ Run the bounded session, export a de-identified review packet, update the ledger
 
   function renderPacket() {
     output.textContent = buildPacket();
-    status.textContent = 'Markdown packet generated locally.';
+    const title = fields.title.value.trim() || 'NOUS OS research session';
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    status.textContent = `Generated "${title}" locally at ${time}.`;
   }
 
   document.getElementById('generate').addEventListener('click', renderPacket);
   document.getElementById('copy').addEventListener('click', async () => {
-    if (!output.textContent.trim()) renderPacket();
+    if (!output.textContent.trim() || output.textContent.includes('Packet preview will appear here')) renderPacket();
     try {
       await navigator.clipboard.writeText(output.textContent);
       status.textContent = 'Markdown copied to clipboard.';
@@ -384,8 +386,6 @@ Run the bounded session, export a de-identified review packet, update the ledger
       status.textContent = 'Copy failed. Select the Markdown output manually.';
     }
   });
-
-  renderPacket();
 </script>
 </body>
 </html>
