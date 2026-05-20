@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher view — NOUS OS</title>
+<meta name="description" content="What a teacher sees when their students learn with AI. Class-level patterns, not individual logs. The privacy boundary is sharper here than for parents.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --bg-2: #0d0d1a;
+    --panel: rgba(255,255,255,0.035);
+    --panel-strong: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.34);
+    --accent: #7b61ff;
+    --accent-2: #00d4aa;
+    --signal: #00d4aa;
+    --warn: #f0c674;
+    --refuse: #ff6b6b;     /* red = what the teacher can NOT see */
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65; -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.030) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.030) 1px, transparent 1px);
+    background-size: 60px 60px; pointer-events: none; z-index: 0;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84); backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .logo-mark {
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  main { position: relative; z-index: 1; }
+
+  .hero {
+    padding: 80px 40px 50px;
+    background:
+      radial-gradient(circle at 28% 30%, rgba(123,97,255,0.13), transparent 40%),
+      radial-gradient(circle at 78% 50%, rgba(0,212,170,0.10), transparent 40%);
+  }
+  .hero-inner { width: min(1100px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex; gap: 8px; align-items: center;
+    padding: 5px 13px;
+    border: 1px solid rgba(123,97,255,0.32);
+    border-radius: 999px; background: rgba(123,97,255,0.08);
+    color: #c5b5ff; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; margin-bottom: 24px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1 {
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.05; letter-spacing: -0.03em; font-weight: 600;
+    max-width: 880px; margin-bottom: 22px;
+  }
+  .lead {
+    font-size: clamp(17px, 1.5vw, 20px);
+    color: var(--muted); max-width: 720px; line-height: 1.55;
+  }
+  .promise-row {
+    display: flex; gap: 32px; flex-wrap: wrap; margin-top: 36px;
+    color: var(--muted); font-size: 14px;
+  }
+  .promise-row b { color: var(--text); font-weight: 500; }
+
+  .identity {
+    padding: 24px 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+  .identity-inner { width: min(1100px, 100%); margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #7b61ff, #00d4aa);
+    display: grid; place-items: center; font-weight: 600; font-size: 16px;
+  }
+  .identity .who { color: var(--text); font-weight: 500; }
+  .identity .meta { color: var(--faint); font-size: 13px; }
+  .identity .toggle {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+  }
+  .identity .toggle b { color: var(--text); }
+
+  /* Stats strip */
+  .stats {
+    padding: 36px 40px 16px;
+  }
+  .stats-inner {
+    width: min(1100px, 100%); margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .stat {
+    border: 1px solid var(--border); background: var(--panel);
+    border-radius: 10px; padding: 16px 18px;
+  }
+  .stat .num {
+    font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.1; margin-bottom: 4px;
+  }
+  .stat .lbl {
+    color: var(--muted); font-size: 12.5px;
+  }
+  .stat.signal .num { color: var(--signal); }
+  .stat.warn .num { color: var(--warn); }
+
+  /* Widget grid */
+  .widgets {
+    width: min(1100px, 100%); margin: 0 auto;
+    padding: 24px 40px 30px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 860px) { .widgets { grid-template-columns: 1fr; } }
+  .widget {
+    border: 1px solid var(--border); background: var(--panel);
+    border-radius: 12px; padding: 24px;
+  }
+  .widget h3 {
+    font-size: 16px; font-weight: 600; margin-bottom: 4px;
+  }
+  .widget .sub {
+    color: var(--muted); font-size: 13px; margin-bottom: 18px;
+  }
+  .row {
+    display: flex; justify-content: space-between; align-items: start;
+    gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .row:first-child { padding-top: 0; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-title { font-size: 14.5px; font-weight: 500; margin-bottom: 4px; }
+  .row-sub { color: var(--muted); font-size: 12.5px; }
+  .row-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid var(--border-strong); color: var(--muted);
+  }
+  .row-tag.signal { color: var(--signal); border-color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.07); }
+  .row-tag.warn { color: var(--warn); border-color: rgba(240,198,116,0.4); background: rgba(240,198,116,0.07); }
+  .row-tag.cluster { color: var(--accent); border-color: rgba(123,97,255,0.4); background: rgba(123,97,255,0.07); }
+
+  /* Confusion bar viz */
+  .bar-track {
+    height: 4px; background: rgba(255,255,255,0.04); border-radius: 2px;
+    margin-top: 8px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--warn), var(--refuse));
+    border-radius: 2px;
+  }
+
+  /* Refused metrics */
+  .refused {
+    width: min(1100px, 100%); margin: 0 auto;
+    padding: 16px 40px 50px;
+  }
+  .refused-card {
+    border: 1px solid rgba(255,107,107,0.20);
+    background: rgba(255,107,107,0.03);
+    border-radius: 12px; padding: 24px;
+  }
+  .refused-card h3 {
+    font-size: 16px; font-weight: 600; margin-bottom: 4px;
+    color: var(--refuse);
+  }
+  .refused-card .sub {
+    color: var(--muted); font-size: 13px; margin-bottom: 16px;
+  }
+  .refused-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .refused-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .refused-row:first-child { padding-top: 0; }
+  @media (max-width: 720px) { .refused-row { grid-template-columns: 1fr; } }
+  .refused-row .what {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    color: var(--refuse); text-decoration: line-through;
+    text-decoration-color: rgba(255,107,107,0.5);
+  }
+  .refused-row .why {
+    color: var(--muted); font-size: 13.5px;
+  }
+
+  /* Principles section */
+  .principles {
+    padding: 70px 40px; background: var(--bg-2);
+    border-top: 1px solid var(--border);
+  }
+  .principles-inner { width: min(1100px, 100%); margin: 0 auto; }
+  .principles h2 {
+    font-size: clamp(24px, 3vw, 34px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 8px; max-width: 720px;
+  }
+  .principles-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; max-width: 720px; }
+  .principle-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .principle {
+    padding: 22px 22px 20px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--panel);
+  }
+  .principle-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent); font-size: 12px;
+    letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .principle h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .principle p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+  .principle .neg {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255,107,107,0.06);
+    border-left: 2px solid var(--refuse);
+    border-radius: 4px;
+    color: var(--text); font-size: 13px;
+  }
+  .principle .neg b {
+    color: var(--refuse); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .cta-row { padding: 56px 40px; text-align: center; }
+  .cta-row a {
+    display: inline-block; padding: 12px 22px;
+    border: 1px solid var(--border-strong);
+    color: var(--text); text-decoration: none;
+    border-radius: 8px; margin: 0 8px; font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .cta-row a.primary { border-color: var(--accent); background: rgba(123,97,255,0.10); }
+  .cta-row a:hover { border-color: var(--accent); background: rgba(123,97,255,0.15); }
+
+  footer {
+    padding: 40px; text-align: center;
+    color: var(--faint); font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 720px) {
+    nav { padding: 14px 16px; }
+    .nav-links { gap: 14px; }
+    .hero { padding: 56px 20px 36px; }
+    .identity { padding: 18px 20px; }
+    .stats { padding: 28px 20px 12px; }
+    .widgets { padding: 12px 20px 20px; }
+    .widget { padding: 18px; }
+    .refused { padding: 12px 20px 36px; }
+    .refused-card { padding: 18px; }
+    .principles { padding: 50px 20px; }
+    .cta-row { padding: 40px 20px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">
+    <div class="logo-mark">N</div>
+    <span>NOUS OS</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/learn.html">Learn</a></li>
+    <li><a href="/parent.html">Parent</a></li>
+    <li><a href="/teacher.html" class="active">Teacher</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge"><span class="dot"></span> Teacher view · class patterns, not individuals</div>
+      <h1>What 28 students learned together. Not what any one of them typed.</h1>
+      <p class="lead">
+        You see the shape of the class — where they got stuck, where curiosity clustered, where they
+        asked to talk to a human. Individual transcripts stay between the student and the system.
+        Your job stays teaching, not surveillance.
+      </p>
+      <div class="promise-row">
+        <span><b>No per-student logs.</b> You cannot open one student's thread.</span>
+        <span><b>No comparisons.</b> No leaderboards, no ranks, no individual scores.</span>
+        <span><b>You see asks.</b> When students tag "needs a teacher", you find out.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="identity">
+    <div class="identity-inner">
+      <div class="avatar">L</div>
+      <div>
+        <div class="who">Viewing as Teacher · Ms. Liang · AP US History — period 3</div>
+        <div class="meta">28 enrolled · 19 students used the system this week · last sync 12 min ago</div>
+      </div>
+      <div class="toggle">Visibility scope: <b>class aggregate only</b></div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat">
+        <div class="num">19</div>
+        <div class="lbl">students active this week</div>
+      </div>
+      <div class="stat warn">
+        <div class="num">4</div>
+        <div class="lbl">students tagged "ask teacher"</div>
+      </div>
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="lbl">confusion clusters detected</div>
+      </div>
+      <div class="stat signal">
+        <div class="num">11</div>
+        <div class="lbl">primary sources opened</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="widgets">
+    <!-- Left: confusion clusters -->
+    <article class="widget">
+      <h3>Where the class is stuck</h3>
+      <p class="sub">Topics where 3 or more students arrived at the same confusion within 7 days. Aggregated, never linked to individuals.</p>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">"Reconstruction was a failure, but Reconstruction Amendments worked — which is true?"</div>
+          <div class="row-sub">7 students · this week · several reached low-confidence resolutions on different sides</div>
+          <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+        </div>
+        <span class="row-tag cluster">cluster · 7</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">Causes of WWI — students unable to distinguish "trigger" vs "underlying cause"</div>
+          <div class="row-sub">5 students · same week we covered the topic in class</div>
+          <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+        </div>
+        <span class="row-tag cluster">cluster · 5</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">"Why does the textbook say the Industrial Revolution started in 1760?"</div>
+          <div class="row-sub">3 students · all resolved high-confidence after reading primary sources</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%"></div></div>
+        </div>
+        <span class="row-tag signal">resolved · 3</span>
+      </div>
+    </article>
+
+    <!-- Right: ask teacher -->
+    <article class="widget">
+      <h3>Students who asked to talk to you</h3>
+      <p class="sub">Threads they explicitly paused with a "needs a teacher" tag. You see the topic and the date. You don't see the thread.</p>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">Reconstruction Amendments topic</div>
+          <div class="row-sub">2 students · tagged within last 2 days</div>
+        </div>
+        <span class="row-tag warn">awaiting you</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">Essay structure for the Civil War question</div>
+          <div class="row-sub">1 student · tagged 4 days ago</div>
+        </div>
+        <span class="row-tag warn">awaiting you</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">"How do I push back on a primary source author?"</div>
+          <div class="row-sub">1 student · this morning</div>
+        </div>
+        <span class="row-tag warn">awaiting you</span>
+      </div>
+    </article>
+
+    <!-- Wide: curriculum signal -->
+    <article class="widget" style="grid-column: 1 / -1">
+      <h3>What this tells you about your teaching</h3>
+      <p class="sub">Signals from the week. The system surfaces these for reflection — not for evaluation.</p>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">7 students independently chose to dig into Reconstruction beyond what the textbook covered</div>
+          <div class="row-sub">Suggests engagement with the topic. Their conclusions diverged — worth a class discussion next session.</div>
+        </div>
+        <span class="row-tag signal">engagement signal</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">The "trigger vs underlying cause" distinction landed only for ~40% of students who attempted it</div>
+          <div class="row-sub">This was a key concept in last week's lecture. Worth re-anchoring with a concrete WWI exercise.</div>
+        </div>
+        <span class="row-tag warn">re-teach signal</span>
+      </div>
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">11 students opened primary sources without being told to</div>
+          <div class="row-sub">The curiosity habit is forming. Whatever you did to seed this — keep doing it.</div>
+        </div>
+        <span class="row-tag signal">strength signal</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="refused">
+    <div class="refused-card">
+      <h3>Metrics this dashboard refuses to show you</h3>
+      <p class="sub">These are not "coming soon". They are intentionally not in the product. Each one would change what the class becomes.</p>
+      <div class="refused-row">
+        <div><div class="what">Per-student usage time</div></div>
+        <div class="why">Encodes "time spent" as the proxy for learning. The student who thinks 10 minutes and writes a great answer is not behind the student who fidgets for an hour.</div>
+      </div>
+      <div class="refused-row">
+        <div><div class="what">Individual student transcripts</div></div>
+        <div class="why">If students know any AI conversation might be read by you, they stop using AI to think and start using it to perform for you. The middle of learning has to be private.</div>
+      </div>
+      <div class="refused-row">
+        <div><div class="what">Leaderboards / rankings</div></div>
+        <div class="why">The product is not a comparison engine. AI gives every student a private tutor; ranking them on top of that re-creates the dynamic the tutor was supposed to fix.</div>
+      </div>
+      <div class="refused-row">
+        <div><div class="what">"Suspected cheating" alerts</div></div>
+        <div class="why">There is no version of this that doesn't punish honest exploration. If the model can't tell, neither can we — and the cost of false positives is too high.</div>
+      </div>
+      <div class="refused-row">
+        <div><div class="what">Cross-class comparisons of your teaching</div></div>
+        <div class="why">Your colleagues' classes are not shown next to yours. Teaching is not a tournament. Surfacing this would push toward gaming the system rather than teaching.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="principles">
+    <div class="principles-inner">
+      <h2>What stays sharp when AI is in the classroom</h2>
+      <p class="principles-sub">
+        AI in education has a default failure mode: it replaces the relationship between teacher and student
+        with a metric pipeline between teacher and dashboard. These six principles push back.
+      </p>
+      <div class="principle-grid">
+        <div class="principle">
+          <div class="principle-num">01</div>
+          <h3>You see clusters, never individuals</h3>
+          <p>If 5 students hit the same confusion, you see "5 students". You do not see who. You decide what to do — re-teach, set up office hours, write a worksheet.</p>
+          <div class="neg"><b>What this prevents</b> — AI as a surveillance layer for individual student behaviour. The teacher-student trust stays intact.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">02</div>
+          <h3>"Ask teacher" tags are the only individual signal</h3>
+          <p>When a student explicitly tags a thread "I want to talk to my teacher about this", the system tells you. The topic; not the conversation. That tag is the student inviting you in — not the system reporting on them.</p>
+          <div class="neg"><b>What this prevents</b> — AI deciding when a student "needs intervention". The student decides.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">03</div>
+          <h3>Engagement signals point to your teaching, not their effort</h3>
+          <p>"11 students opened primary sources" is information about whether your curriculum and your framing seeded that behaviour. Read it as data about your work, not theirs.</p>
+          <div class="neg"><b>What this prevents</b> — student effort scoring. There is no "engagement score" attached to individual names.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">04</div>
+          <h3>You cannot prompt the AI to evaluate students</h3>
+          <p>There is no "summarise how my class is performing" button that wraps individual data in aggregate language. The aggregation happens at the data layer, not the prompt layer.</p>
+          <div class="neg"><b>What this prevents</b> — clever prompt-engineering to recover individual data the UI hides. The privacy boundary is structural.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">05</div>
+          <h3>Re-teach signals are gentle, not graded</h3>
+          <p>"40% landing rate on trigger-vs-underlying cause" is offered as a reflection cue, not a performance review. Your evaluation as a teacher is not happening on this dashboard.</p>
+          <div class="neg"><b>What this prevents</b> — administrators turning these metrics into teacher KPIs. The dashboard surfaces signals to you, not to your principal.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">06</div>
+          <h3>You can ask the class. You cannot ask the system about the class.</h3>
+          <p>If you want to know what students are thinking, the answer is to ask them. The dashboard hints at where to ask, what to ask about, and which students opted in. The conversation still happens human-to-human.</p>
+          <div class="neg"><b>What this prevents</b> — AI mediating the teacher-student relationship. The human moments stay human.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-row">
+    <a href="/learn.html" class="primary">See how students learn →</a>
+    <a href="/parent.html">See the parent view</a>
+    <a href="/about.html">Why we built it this way</a>
+  </section>
+
+  <footer>
+    <a href="/">Home</a>
+    <a href="/learn.html">Learn</a>
+    <a href="/parent.html">Parent</a>
+    <a href="/teacher.html">Teacher</a>
+    <a href="/about.html">About</a>
+    <a href="https://github.com/jupiturliu/nous-os">GitHub</a>
+    <div style="margin-top:18px;opacity:0.5">
+      NOUS OS — A learning system for humans and AI to think better together.
+    </div>
+  </footer>
+</main>
+</body>
+</html>

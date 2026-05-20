@@ -11,6 +11,7 @@ cp index.html _site/
 cp about.html _site/
 cp learn.html _site/
 cp parent.html _site/
+cp teacher.html _site/
 cp research.html _site/
 cp research-line.html _site/
 cp research-line-atlas.html _site/
