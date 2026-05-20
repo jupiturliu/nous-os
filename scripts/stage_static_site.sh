@@ -10,6 +10,7 @@ mkdir -p _site/docs _site/demo _site/examples/runtime/research-records
 cp index.html _site/
 cp about.html _site/
 cp learn.html _site/
+cp parent.html _site/
 cp research.html _site/
 cp research-line.html _site/
 cp research-line-atlas.html _site/

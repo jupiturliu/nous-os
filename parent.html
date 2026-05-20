@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parent view — NOUS OS</title>
+<meta name="description" content="What a parent sees when their child learns with AI. Designed so you can support without crowding — the student decides what's shared.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --bg-2: #0d0d1a;
+    --panel: rgba(255,255,255,0.035);
+    --panel-strong: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.34);
+    --accent: #7b61ff;
+    --accent-2: #00d4aa;
+    --student: #7b61ff;
+    --ai: #00d4aa;
+    --private: #ff6b6b;     /* red = what the parent can NOT see */
+    --visible: #00d4aa;     /* teal = what's shared with the parent */
+    --pending: #f0c674;     /* amber = decision still open */
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.030) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.030) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84); backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .logo-mark {
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  main { position: relative; z-index: 1; }
+
+  .hero {
+    padding: 80px 40px 50px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(123,97,255,0.14), transparent 40%),
+      radial-gradient(circle at 80% 50%, rgba(0,212,170,0.10), transparent 40%);
+  }
+  .hero-inner { width: min(1100px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex; gap: 8px; align-items: center;
+    padding: 5px 13px;
+    border: 1px solid rgba(123,97,255,0.32);
+    border-radius: 999px; background: rgba(123,97,255,0.08);
+    color: #c5b5ff; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; margin-bottom: 24px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1 {
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.05; letter-spacing: -0.03em; font-weight: 600;
+    max-width: 880px; margin-bottom: 22px;
+  }
+  .lead {
+    font-size: clamp(17px, 1.5vw, 20px);
+    color: var(--muted); max-width: 720px; line-height: 1.55;
+  }
+  .promise-row {
+    display: flex; gap: 32px; flex-wrap: wrap; margin-top: 36px;
+    color: var(--muted); font-size: 14px;
+  }
+  .promise-row b { color: var(--text); font-weight: 500; }
+  .promise-row span { display: inline-flex; align-items: center; gap: 8px; }
+
+  /* Identity strip */
+  .identity {
+    padding: 24px 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+  .identity-inner { width: min(1100px, 100%); margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #7b61ff, #00d4aa);
+    display: grid; place-items: center; font-weight: 600; font-size: 16px;
+  }
+  .identity .who { color: var(--text); font-weight: 500; }
+  .identity .meta { color: var(--faint); font-size: 13px; }
+  .identity .toggle {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--muted);
+  }
+  .identity .toggle b { color: var(--text); }
+
+  /* Thread cards */
+  .threads {
+    width: min(1100px, 100%); margin: 0 auto;
+    padding: 50px 40px 30px;
+  }
+  .threads h2 {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .threads-sub {
+    color: var(--muted); font-size: 14px; margin-bottom: 28px;
+  }
+  .thread-grid { display: grid; gap: 18px; }
+  .thread {
+    border: 1px solid var(--border); background: var(--panel);
+    border-radius: 12px; padding: 24px 24px 18px;
+  }
+  .thread-head {
+    display: flex; justify-content: space-between; align-items: start;
+    gap: 16px; margin-bottom: 16px;
+  }
+  .thread-q {
+    font-size: 17px; font-weight: 500; line-height: 1.4;
+    flex: 1; min-width: 0;
+  }
+  .thread-status {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .status-progressing { color: var(--pending); border: 1px solid rgba(240,198,116,0.4); background: rgba(240,198,116,0.08); }
+  .status-resolved { color: var(--visible); border: 1px solid rgba(0,212,170,0.4); background: rgba(0,212,170,0.08); }
+  .status-paused { color: var(--faint); border: 1px solid var(--border-strong); }
+
+  .thread-meta { color: var(--faint); font-size: 12.5px; margin-bottom: 16px; }
+  .thread-meta b { color: var(--muted); font-weight: 500; }
+
+  .reveal-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin-top: 16px;
+  }
+  @media (max-width: 720px) { .reveal-grid { grid-template-columns: 1fr; } }
+  .reveal {
+    padding: 14px 16px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.20);
+  }
+  .reveal.visible { border-left: 2px solid var(--visible); }
+  .reveal.private { border-left: 2px solid var(--private); background: rgba(255,107,107,0.04); }
+  .reveal-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .reveal.visible .reveal-label { color: var(--visible); }
+  .reveal.private .reveal-label { color: var(--private); }
+  .reveal-swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .reveal-swatch.s-visible { background: var(--visible); }
+  .reveal-swatch.s-private { background: var(--private); }
+  .reveal p { font-size: 13.5px; color: var(--text); }
+  .reveal p + p { margin-top: 6px; }
+  .reveal .blank {
+    color: var(--faint); font-style: italic; font-size: 13px;
+  }
+
+  .thread-foot {
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 16px; flex-wrap: wrap;
+    color: var(--faint); font-size: 12.5px;
+  }
+  .thread-foot a {
+    color: var(--muted); text-decoration: none;
+    padding: 4px 10px; border: 1px solid var(--border-strong);
+    border-radius: 6px;
+  }
+  .thread-foot a:hover { color: var(--text); border-color: var(--accent); }
+
+  /* Trust principles */
+  .principles {
+    padding: 70px 40px;
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+  }
+  .principles-inner { width: min(1100px, 100%); margin: 0 auto; }
+  .principles h2 {
+    font-size: clamp(24px, 3vw, 34px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 8px; max-width: 720px;
+  }
+  .principles-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; max-width: 720px; }
+  .principle-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .principle {
+    padding: 22px 22px 20px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--panel);
+  }
+  .principle-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent); font-size: 12px;
+    letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .principle h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .principle p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+  .principle .neg {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255,107,107,0.06);
+    border-left: 2px solid var(--private);
+    border-radius: 4px;
+    color: var(--text); font-size: 13px;
+  }
+  .principle .neg b { color: var(--private); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* CTA at bottom */
+  .cta-row {
+    padding: 56px 40px;
+    text-align: center;
+  }
+  .cta-row a {
+    display: inline-block;
+    padding: 12px 22px;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 8px;
+    margin: 0 8px;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .cta-row a.primary {
+    border-color: var(--accent); background: rgba(123,97,255,0.10);
+  }
+  .cta-row a:hover { border-color: var(--accent); background: rgba(123,97,255,0.15); }
+
+  footer {
+    padding: 40px; text-align: center;
+    color: var(--faint); font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 720px) {
+    nav { padding: 14px 16px; }
+    .nav-links { gap: 14px; }
+    .hero { padding: 56px 20px 36px; }
+    .identity { padding: 18px 20px; }
+    .threads { padding: 36px 20px 20px; }
+    .thread { padding: 18px; }
+    .thread-head { flex-direction: column; gap: 8px; }
+    .principles { padding: 50px 20px; }
+    .cta-row { padding: 40px 20px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">
+    <div class="logo-mark">N</div>
+    <span>NOUS OS</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/learn.html">Learn</a></li>
+    <li><a href="/parent.html" class="active">Parent</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge"><span class="dot"></span> Parent view · trust-by-design</div>
+      <h1>You see enough to support them. Not enough to crowd them.</h1>
+      <p class="lead">
+        Your child is learning with AI. This page shows what you get to see — and what they keep
+        private — by their choice, not yours. Trust is the product, not surveillance.
+      </p>
+      <div class="promise-row">
+        <span><b>No keystroke logs.</b> The system never stores raw AI conversations for you.</span>
+        <span><b>No final answers.</b> You see what they're working on — not how they think.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="identity">
+    <div class="identity-inner">
+      <div class="avatar">M</div>
+      <div>
+        <div class="who">Viewing as Parent · Mei's account</div>
+        <div class="meta">Child: Yuna · Grade 11 · 14 active threads · last share update 2 days ago</div>
+      </div>
+      <div class="toggle">Visibility level: <b>parent-shared only</b></div>
+    </div>
+  </section>
+
+  <section class="threads">
+    <h2>What Yuna shared with you</h2>
+    <p class="threads-sub">3 of her 14 threads. The other 11 are private — she'll show you when she wants to.</p>
+
+    <div class="thread-grid">
+      <!-- Thread 1: in progress -->
+      <article class="thread">
+        <div class="thread-head">
+          <div class="thread-q">"我每次想认真复习数学就刷手机停不下来 — 到底是我自制力差，还是手机本身就是设计来让人停不下来的？"</div>
+          <span class="thread-status status-progressing">in progress</span>
+        </div>
+        <div class="thread-meta">
+          Started <b>3 days ago</b> · <b>4 sessions</b> · last activity <b>yesterday evening</b>
+        </div>
+        <div class="reveal-grid">
+          <div class="reveal visible">
+            <div class="reveal-label"><div class="reveal-swatch s-visible"></div> Visible to you</div>
+            <p><b>Question</b> — what you see above.</p>
+            <p><b>What she's tried:</b> read 2 articles, ran a 24h tracking experiment.</p>
+            <p><b>Current state:</b> partially resolved. High confidence that app design has intent. Low confidence about what that means for her.</p>
+            <p><b>Next step she's chosen:</b> 1-week deletion experiment.</p>
+          </div>
+          <div class="reveal private">
+            <div class="reveal-label"><div class="reveal-swatch s-private"></div> She kept private</div>
+            <p>Specific unlock count from her experiment.</p>
+            <p>One personal reflection note she marked sensitive.</p>
+            <p>Her chat with AI about how the experiment made her feel.</p>
+            <p class="blank">(You can ask her about it. She doesn't have to share.)</p>
+          </div>
+        </div>
+        <div class="thread-foot">
+          <a href="#">Ask her about it</a>
+          <span>· She'll see you opened the thread — no extra detail.</span>
+        </div>
+      </article>
+
+      <!-- Thread 2: resolved -->
+      <article class="thread">
+        <div class="thread-head">
+          <div class="thread-q">"Why does my school's history textbook say the Industrial Revolution started in 1760, but the Wikipedia article says it 'gradually emerged from 1760-1840'?"</div>
+          <span class="thread-status status-resolved">resolved</span>
+        </div>
+        <div class="thread-meta">
+          Started <b>last week</b> · <b>2 sessions</b> · she marked resolved <b>5 days ago</b>
+        </div>
+        <div class="reveal-grid">
+          <div class="reveal visible">
+            <div class="reveal-label"><div class="reveal-swatch s-visible"></div> Visible to you</div>
+            <p><b>What she learned:</b> Textbook dates are pedagogical anchors; historical events have fuzzy edges. Primary sources show industrialisation came in waves by sector, not on a fixed start date.</p>
+            <p><b>Confidence:</b> high.</p>
+            <p><b>What changed her mind:</b> reading two primary sources from the 1750s and 1820s.</p>
+          </div>
+          <div class="reveal private">
+            <div class="reveal-label"><div class="reveal-swatch s-private"></div> She kept private</div>
+            <p>Her side argument with AI about whether "1760" was politically motivated.</p>
+            <p class="blank">(Optional context. The conclusion is what matters.)</p>
+          </div>
+        </div>
+        <div class="thread-foot">
+          <a href="#">Ask her about it</a>
+          <span>· Maybe useful at dinner if she brings up history class.</span>
+        </div>
+      </article>
+
+      <!-- Thread 3: paused -->
+      <article class="thread">
+        <div class="thread-head">
+          <div class="thread-q">"Should I take AP Computer Science next year, or AP Statistics? They conflict in my schedule."</div>
+          <span class="thread-status status-paused">paused</span>
+        </div>
+        <div class="thread-meta">
+          Started <b>10 days ago</b> · <b>1 session</b> · paused <b>9 days ago</b> · note: "waiting to talk to dad"
+        </div>
+        <div class="reveal-grid">
+          <div class="reveal visible">
+            <div class="reveal-label"><div class="reveal-swatch s-visible"></div> Visible to you</div>
+            <p><b>What she's chewing on:</b> a real scheduling decision. She paused on purpose to talk it through with a human.</p>
+            <p><b>What AI offered:</b> three angles (career path, current strengths, what the conflict trades off).</p>
+            <p><b>What she wants from you:</b> she explicitly noted "waiting to talk to dad". This is your cue.</p>
+          </div>
+          <div class="reveal private">
+            <div class="reveal-label"><div class="reveal-swatch s-private"></div> She kept private</div>
+            <p>Her honest assessment of how good she is at each subject.</p>
+            <p>Why she's leaning one direction.</p>
+            <p class="blank">(She wants your input fresh — without anchoring it to what she already thinks.)</p>
+          </div>
+        </div>
+        <div class="thread-foot">
+          <a href="#">Open thread with her</a>
+          <span>· The point of pause is to bring it to a human conversation.</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="principles">
+    <div class="principles-inner">
+      <h2>Why you don't see more</h2>
+      <p class="principles-sub">
+        The temptation is to show you everything — keystrokes, full conversations, time logs, attention scores.
+        We don't. Each restriction is a design decision, not a missing feature.
+      </p>
+      <div class="principle-grid">
+        <div class="principle">
+          <div class="principle-num">01</div>
+          <h3>You see questions and conclusions, not the conversation</h3>
+          <p>The middle is where she experiments with bad ideas, says them out loud, gets corrected, and changes her mind. That's the learning. If you read it like a transcript, she stops being able to think out loud.</p>
+          <div class="neg"><b>What this prevents</b> — AI as adversarial homework log. AI becomes a private mind, not a reportable one.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">02</div>
+          <h3>She chooses visibility per thread, not per child</h3>
+          <p>You don't get a global "show me everything" toggle. Each thread carries its own permission, set by her when she starts it. She can change it later. She can mark old threads private.</p>
+          <div class="neg"><b>What this prevents</b> — coercion by family setting. "You have to share everything or I'm uninstalling it" doesn't work because the system doesn't know how to comply.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">03</div>
+          <h3>You see <i>paused for human</i> tags loud and clear</h3>
+          <p>When she explicitly tags a thread "waiting to talk to dad" or "ask mum about this", that's signal — that's where she wants you. The product surfaces these. AI does not try to be the human she needs.</p>
+          <div class="neg"><b>What this prevents</b> — AI dissolving the parent-child relationship. The cases where she actively wants you are not buried.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">04</div>
+          <h3>No keystroke logs. No usage time scoring.</h3>
+          <p>The system does not tell you "she spent 47 minutes on this thread" or "she opened the app 12 times today". That's surveillance metric framing. Learning isn't a leaderboard.</p>
+          <div class="neg"><b>What this prevents</b> — turning learning into a productivity dashboard the parent monitors. The metric becomes the goal; the thinking becomes the cost.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">05</div>
+          <h3>You can ask. Not search.</h3>
+          <p>You can open a thread, send "ask her about it" — she gets notified. You cannot search across her threads, scrape her writing, or export logs.</p>
+          <div class="neg"><b>What this prevents</b> — full-text search on a 16-year-old's inner life. The interface itself refuses certain shapes of curiosity.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-num">06</div>
+          <h3>The boundary moves as she grows</h3>
+          <p>At 11, default visibility is higher. By 16, defaults move toward private-by-default. She can override either way. The age slope is encoded so trust expands without you having to fight for it.</p>
+          <div class="neg"><b>What this prevents</b> — surveillance habits hardening at the age when independence should be growing.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-row">
+    <a href="/learn.html" class="primary">See how she learns →</a>
+    <a href="/about.html">Why we built it this way</a>
+  </section>
+
+  <footer>
+    <a href="/">Home</a>
+    <a href="/learn.html">Learn</a>
+    <a href="/about.html">About</a>
+    <a href="https://github.com/jupiturliu/nous-os">GitHub</a>
+    <div style="margin-top:18px;opacity:0.5">
+      NOUS OS — A learning system for humans and AI to think better together.
+    </div>
+  </footer>
+</main>
+</body>
+</html>
