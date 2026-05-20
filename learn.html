@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn with AI — NOUS OS</title>
+<meta name="description" content="A 7-step walkthrough showing how a high-school student can learn with AI while keeping judgment, privacy, and responsibility human-led.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --bg-2: #0d0d1a;
+    --panel: rgba(255,255,255,0.035);
+    --panel-strong: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.58);
+    --faint: rgba(240,240,245,0.34);
+    --accent: #7b61ff;
+    --accent-2: #00d4aa;
+    --student: #7b61ff;     /* purple = human/student */
+    --ai: #00d4aa;          /* teal = AI */
+    --boundary: #ff6b6b;    /* red = boundary / what AI must NOT do */
+    --record: #f0c674;      /* amber = system memory */
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,97,255,0.030) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,97,255,0.030) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  a { color: inherit; }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,16,0.84);
+    backdrop-filter: blur(18px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); }
+  main { position: relative; z-index: 1; }
+
+  /* Hero */
+  .hero {
+    padding: 90px 40px 50px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(123,97,255,0.14), transparent 40%),
+      radial-gradient(circle at 80% 50%, rgba(0,212,170,0.10), transparent 40%);
+  }
+  .hero-inner { width: min(1040px, 100%); margin: 0 auto; }
+  .badge {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 13px;
+    border: 1px solid rgba(123,97,255,0.32);
+    border-radius: 999px;
+    background: rgba(123,97,255,0.08);
+    color: #c5b5ff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1 {
+    font-size: clamp(36px, 5.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    max-width: 880px;
+    margin-bottom: 24px;
+  }
+  .lead {
+    font-size: clamp(17px, 1.5vw, 20px);
+    color: var(--muted);
+    max-width: 720px;
+    line-height: 1.55;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 20px 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .legend-inner { width: min(1040px, 100%); margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+  .sw-student { background: var(--student); }
+  .sw-ai { background: var(--ai); }
+  .sw-boundary { background: var(--boundary); }
+  .sw-record { background: var(--record); }
+
+  /* Walkthrough */
+  .walkthrough {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 60px 40px 80px;
+  }
+  .stepper {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    flex: 1 1 calc(14% - 6px);
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--faint);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s ease;
+    line-height: 1.4;
+  }
+  .step-pill:hover { border-color: var(--border-strong); color: var(--muted); }
+  .step-pill.active {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(123,97,255,0.10);
+  }
+  .step-pill .step-num { display: block; opacity: 0.4; margin-bottom: 2px; }
+
+  .step-panel {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 36px 36px 30px;
+  }
+  .step-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .step-subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 28px;
+    max-width: 720px;
+  }
+  .step-actors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 720px) {
+    .step-actors { grid-template-columns: 1fr; }
+    .walkthrough { padding: 40px 20px 60px; }
+    .step-panel { padding: 24px 20px; }
+    nav { padding: 14px 16px; }
+    .nav-links { gap: 14px; }
+    .hero { padding: 60px 20px 40px; }
+    .legend { padding: 16px 20px; }
+    .stepper { gap: 4px; }
+    .step-pill { flex: 1 1 calc(33% - 4px); min-width: 0; }
+    .takeaways { padding: 50px 20px; }
+  }
+  .actor {
+    padding: 18px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.20);
+  }
+  .actor-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .actor-student .actor-label { color: var(--student); }
+  .actor-ai .actor-label { color: var(--ai); }
+  .actor-student { border-left: 2px solid var(--student); }
+  .actor-ai { border-left: 2px solid var(--ai); }
+  .actor-record {
+    border-left: 2px solid var(--record);
+    grid-column: 1 / -1;
+    background: rgba(240,198,116,0.04);
+  }
+  .actor-record .actor-label { color: var(--record); }
+  .actor p { font-size: 14.5px; color: var(--text); }
+  .actor p + p { margin-top: 8px; }
+  .example {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .example::before {
+    content: 'EXAMPLE';
+    display: block;
+    color: var(--faint);
+    font-size: 10px;
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .boundary-box {
+    margin-top: 24px;
+    padding: 16px 20px;
+    border-left: 2px solid var(--boundary);
+    background: rgba(255,107,107,0.05);
+    border-radius: 8px;
+  }
+  .boundary-box .boundary-label {
+    color: var(--boundary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .boundary-box p { font-size: 14px; color: var(--text); }
+
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .step-nav button {
+    padding: 10px 18px;
+    border: 1px solid var(--border-strong);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .step-nav button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(123,97,255,0.10);
+  }
+  .step-nav button:disabled { opacity: 0.3; cursor: default; }
+  .step-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--faint);
+  }
+
+  /* Why this matters section */
+  .takeaways {
+    padding: 80px 40px;
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+  }
+  .takeaways-inner { width: min(1040px, 100%); margin: 0 auto; }
+  .takeaways h2 {
+    font-size: clamp(28px, 3.5vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 36px;
+    max-width: 720px;
+  }
+  .takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .takeaway {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+  }
+  .takeaway-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .takeaway h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .takeaway p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  footer {
+    padding: 40px;
+    text-align: center;
+    color: var(--faint);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">
+    <div class="logo-mark">N</div>
+    <span>NOUS OS</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/learn.html" class="active">Learn</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/research.html">Research</a></li>
+    <li><a href="https://github.com/jupiturliu/nous-os">GitHub</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge"><span class="dot"></span> Walkthrough · for students, parents, teachers</div>
+      <h1>How a student learns <i>with</i> AI without losing the ability to think.</h1>
+      <p class="lead">
+        A seven-step loop. The student leads. AI assists. The system remembers what helped and what didn't.
+        Each step shows what AI is doing, what the student is doing, and the line AI must not cross.
+      </p>
+    </div>
+  </section>
+
+  <section class="legend">
+    <div class="legend-inner">
+      <div class="legend-item"><div class="legend-swatch sw-student"></div> Student (human-led)</div>
+      <div class="legend-item"><div class="legend-swatch sw-ai"></div> AI (assists)</div>
+      <div class="legend-item"><div class="legend-swatch sw-record"></div> System memory</div>
+      <div class="legend-item"><div class="legend-swatch sw-boundary"></div> Boundary AI must not cross</div>
+    </div>
+  </section>
+
+  <section class="walkthrough">
+    <div class="stepper" id="stepper"></div>
+    <div class="step-panel" id="stepPanel"></div>
+  </section>
+
+  <section class="takeaways">
+    <div class="takeaways-inner">
+      <h2>What stays human</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway">
+          <div class="takeaway-num">01</div>
+          <h3>The question</h3>
+          <p>The student picks what they're curious about. AI does not decide what's worth learning.</p>
+        </div>
+        <div class="takeaway">
+          <div class="takeaway-num">02</div>
+          <h3>The judgment</h3>
+          <p>When AI says "this is true" the student checks. Important claims need sources, not just confidence.</p>
+        </div>
+        <div class="takeaway">
+          <div class="takeaway-num">03</div>
+          <h3>The choice</h3>
+          <p>Health, money, school, relationships — decisions with real consequences stay with the human.</p>
+        </div>
+        <div class="takeaway">
+          <div class="takeaway-num">04</div>
+          <h3>The values</h3>
+          <p>AI can advise. It cannot decide what life is worth pursuing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="/">Home</a>
+    <a href="/about.html">About</a>
+    <a href="/research.html">Research</a>
+    <a href="https://github.com/jupiturliu/nous-os">GitHub</a>
+    <div style="margin-top:18px;opacity:0.5">
+      NOUS OS — A learning system for humans and AI to think better together.
+    </div>
+  </footer>
+</main>
+
+<script>
+const STEPS = [
+  {
+    title: "1. Student asks a question",
+    subtitle: "The loop starts with the student. Not AI, not the system. Whatever is bothering them, confusing them, or genuinely curious.",
+    student: {
+      text: "The student names what they don't understand, in their own words. No need to phrase it as a clean prompt.",
+      example: "\"我每次想认真复习数学就刷手机停不下来，到底是我自制力差，还是手机本身就是设计来让人停不下来的？\""
+    },
+    ai: {
+      text: "AI waits. It does not jump in with an answer. Its first job is to make sure it heard the question right.",
+      example: "AI: \"我听到的是两个问题——'我为什么停不下来' 和 '是不是设计原因'。你想先聊哪个？还是它们其实是一个问题？\""
+    },
+    boundary: "AI must not reframe the question into something easier. If the student asked about willpower, don't quietly switch to time management."
+  },
+  {
+    title: "2. AI helps decompose, doesn't decide",
+    subtitle: "AI breaks the question into smaller parts the student can actually grapple with. The student picks which part to chase.",
+    student: {
+      text: "Looks at the decomposition. Decides which thread feels most alive — or rejects the decomposition and rewrites it.",
+      example: "Student: \"我想先搞清楚 '设计原因' — 我想知道是不是 app 真的有人在那边想让我停不下来。\""
+    },
+    ai: {
+      text: "Proposes 3-5 angles. Each one is a question, not an answer. Each links to a kind of evidence the student could examine.",
+      example: "AI lists:\n  • 是否有公开的设计文档承认这种意图？\n  • neuroscience 怎么解释滑动+不可预测奖励？\n  • 设计师/前员工的访谈有没有说过？\n  • 你自己的使用模式数据可以告诉你什么？"
+    },
+    boundary: "AI must not collapse the angles into 'the answer'. If it says 'this is the right one', the student loses the choice."
+  },
+  {
+    title: "3. AI generates exercises, examples, counter-arguments",
+    subtitle: "Once the student has chosen a thread, AI builds the scaffolding — but each piece is something the student does, not something AI hands them.",
+    student: {
+      text: "Reads the exercises. Picks one to actually try. Notices which ones feel like real work and which feel like avoidance.",
+      example: "Student picks: \"读 Tristan Harris 的 2017 TED Talk transcript，找 3 个他举的具体设计技巧，然后在自己手机上找找有没有同样的设计。\""
+    },
+    ai: {
+      text: "Generates 3-4 exercise types: a primary source to read, a counter-argument to wrestle with, a small experiment to run, a question to bring to a human.",
+      example: "AI:\n  • 读: Tristan Harris 2017 TED Talk transcript\n  • 反驳: Wired 2019 \"The tech-addiction panic is overblown\"\n  • 实验: 24 小时记录每次解锁手机的原因\n  • 找人聊: 跟父母/老师讨论你发现了什么"
+    },
+    boundary: "AI must offer a counter-argument. A learning system that only confirms the student's first hypothesis trains them to seek confirmation."
+  },
+  {
+    title: "4. Student does the work",
+    subtitle: "This is the longest step. AI is mostly quiet. The student is reading, trying, writing, getting confused. The system records.",
+    student: {
+      text: "Reads. Argues with the text. Tries the experiment. Talks to a parent. Writes down what surprised them.",
+      example: "Student notes:\n  • Harris 提到 'slot machine' 比喻 — 滑动的不确定性。我手机里 TikTok / Instagram 都有。\n  • Wired 的反驳说 'people have always had distractions, this is moral panic'. 这点我有点信服。\n  • 实验: 24 小时解锁了 47 次。其中 41 次没有具体目的。"
+    },
+    ai: {
+      text: "Available if asked. Does not interrupt. If the student asks a quick fact question (\"slot machine designer 叫什么\"), AI answers; doesn't volunteer.",
+      example: "(quiet)"
+    },
+    boundary: "AI must not summarize the readings for the student to skip them. Doing the reading IS the learning. A summary trains laziness."
+  },
+  {
+    title: "5. Student makes a judgment",
+    subtitle: "What did they actually find? What do they now believe, with what level of confidence, based on what evidence?",
+    student: {
+      text: "Writes their conclusion in their own words. States how confident they are. Names what would change their mind.",
+      example: "Student writes:\n  \"我现在认为：app 设计确实有意图让我停不下来 (高 confidence)。但 '所以这不是我的问题' 这个结论我没有 (低 confidence) — 因为反驳文章的论点我没法完全反驳。会改变我想法的证据：如果有研究表明删了 TikTok 一周自制力没改善，那 '我自己的问题' 这个解释就更可能对。\""
+    },
+    ai: {
+      text: "Echoes the judgment back without modifying it. Tags claims by confidence. Asks 'is this what you meant?' Does not grade.",
+      example: "AI: \"你说的是：\n  · 设计有意图 [你说 高]\n  · 这不是你的问题 [你说 低]\n  · 改变你想法的实验 [你说: 1 周删除测试]\n这个对吗？\""
+    },
+    boundary: "AI must not say 'good answer' or 'great judgment'. Praise trains performance for the AI instead of honest thinking."
+  },
+  {
+    title: "6. System records, the student owns the record",
+    subtitle: "The loop only compounds if the system remembers. But the student decides what's kept, what's shared, what's deleted.",
+    student: {
+      text: "Reviews what AI is about to save. Edits, deletes, or marks parts as private. Decides whether parents/teachers can see this thread.",
+      example: "Student keeps:\n  · The question (visible to parents)\n  · The exercises tried\n  · The judgment + confidence\nDeletes:\n  · A note that felt too personal\nKeeps private:\n  · The 47-unlock count"
+    },
+    record: {
+      text: "TrustMem stores: question, what was tried, what was found, what is still unclear, with provenance. Future AI cycles read this. Nothing is shared without the student's explicit toggle.",
+      example: "Record:\n  thread_id: phones_and_willpower_2026_05_20\n  question: '为什么我刷手机停不下来——是我的问题还是设计的问题？'\n  status: partially_resolved\n  high_confidence: ['design has intent']\n  low_confidence: ['this means it is not my problem']\n  next_evidence_needed: ['1-week deletion experiment']\n  visibility: { parent: yes, teacher: no, public: no }"
+    },
+    boundary: "The record is the student's. AI must surface deletion / privacy controls every time something is saved. No silent retention."
+  },
+  {
+    title: "7. The next cycle adapts; direction stays human",
+    subtitle: "Next time the student asks a related question, AI uses what was learned — but doesn't lock the student into the old conclusion.",
+    student: {
+      text: "Comes back days/weeks later with a new question. Maybe the same theme; maybe a tangent. They lead.",
+      example: "Student a week later:\n  \"我试了 1 周删除 TikTok。我注意到我开始更频繁打开 Instagram。所以问题不是 'TikTok'，是 '需要一个东西刷'。这个怎么办？\""
+    },
+    ai: {
+      text: "References what was found before (the design intent, the unfinished experiment), proposes new exercises that build on it. Doesn't re-litigate settled parts unless the student wants to.",
+      example: "AI: \"上次你 高 confidence 觉得设计有意图，那部分你想继续质疑吗？还是先聚焦 '需要一个东西刷' 这个新发现？你之前提到的 1 周实验现在你怎么看？\""
+    },
+    boundary: "AI must not freeze the old conclusion. If new evidence reverses it, the record updates with both versions. The student can always reopen anything."
+  }
+];
+
+const stepperEl = document.getElementById('stepper');
+const panelEl = document.getElementById('stepPanel');
+let currentStep = 0;
+
+function renderStepper() {
+  stepperEl.innerHTML = STEPS.map((s, i) => `
+    <div class="step-pill ${i === currentStep ? 'active' : ''}" data-step="${i}">
+      <span class="step-num">Step ${i + 1}</span>
+      ${s.title.replace(/^\d+\.\s*/, '').replace(/[,;].*$/, '')}
+    </div>
+  `).join('');
+  stepperEl.querySelectorAll('.step-pill').forEach(p => {
+    p.addEventListener('click', () => {
+      currentStep = Number(p.dataset.step);
+      render();
+    });
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderPanel() {
+  const s = STEPS[currentStep];
+  const actorBlocks = [];
+  if (s.student) {
+    actorBlocks.push(`
+      <div class="actor actor-student">
+        <div class="actor-label"><div class="legend-swatch sw-student"></div> Student</div>
+        <p>${escapeHtml(s.student.text)}</p>
+        ${s.student.example ? `<div class="example">${escapeHtml(s.student.example)}</div>` : ''}
+      </div>
+    `);
+  }
+  if (s.ai) {
+    actorBlocks.push(`
+      <div class="actor actor-ai">
+        <div class="actor-label"><div class="legend-swatch sw-ai"></div> AI</div>
+        <p>${escapeHtml(s.ai.text)}</p>
+        ${s.ai.example ? `<div class="example">${escapeHtml(s.ai.example)}</div>` : ''}
+      </div>
+    `);
+  }
+  if (s.record) {
+    actorBlocks.push(`
+      <div class="actor actor-record">
+        <div class="actor-label"><div class="legend-swatch sw-record"></div> System memory (TrustMem)</div>
+        <p>${escapeHtml(s.record.text)}</p>
+        ${s.record.example ? `<div class="example">${escapeHtml(s.record.example)}</div>` : ''}
+      </div>
+    `);
+  }
+  panelEl.innerHTML = `
+    <div class="step-title">${escapeHtml(s.title)}</div>
+    <div class="step-subtitle">${escapeHtml(s.subtitle)}</div>
+    <div class="step-actors">${actorBlocks.join('')}</div>
+    ${s.boundary ? `
+      <div class="boundary-box">
+        <div class="boundary-label">Boundary AI must not cross</div>
+        <p>${escapeHtml(s.boundary)}</p>
+      </div>
+    ` : ''}
+    <div class="step-nav">
+      <button ${currentStep === 0 ? 'disabled' : ''} id="prevBtn">← Previous step</button>
+      <div class="step-counter">${currentStep + 1} of ${STEPS.length}</div>
+      <button ${currentStep === STEPS.length - 1 ? 'disabled' : ''} id="nextBtn">Next step →</button>
+    </div>
+  `;
+  document.getElementById('prevBtn')?.addEventListener('click', () => {
+    if (currentStep > 0) { currentStep -= 1; render(); }
+  });
+  document.getElementById('nextBtn')?.addEventListener('click', () => {
+    if (currentStep < STEPS.length - 1) { currentStep += 1; render(); }
+  });
+}
+
+function render() {
+  renderStepper();
+  renderPanel();
+  // Keep the stepper visible but don't yank the page if user just clicked a pill
+  window.scrollTo({ top: stepperEl.offsetTop - 120, behavior: 'smooth' });
+}
+
+// Keyboard: arrow keys move steps
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' && currentStep < STEPS.length - 1) {
+    currentStep += 1; render();
+  } else if (e.key === 'ArrowLeft' && currentStep > 0) {
+    currentStep -= 1; render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
