@@ -176,8 +176,28 @@ Completed initial scaffold:
 - `docs/student-sandbox-v1-trial-guide.md`
 - `docs/student-sandbox-v1-review-template.md`
 
-Remaining follow-up:
+First trial completed 2026-05-30 (self-review / AI-conducted, operator-adjacent — NOT a recruited student):
 
-- Run the first real/student-adjacent 20-minute trial
-- Fill a dated review packet from `docs/student-sandbox-v1-review-template.md` into Obsidian `04 Reviews/`
-- Use the review to decide whether v1 needs prompt simplification, source-check simplification, or timing changes
+- Ran the first student-adjacent 20-minute trial across all six phases, with a real two-source
+  check (topic: school smartphone bans). Built artifact `examples/runtime/research-records/student-sandbox-v1-latest.json`.
+- Filled a dated review packet from `docs/student-sandbox-v1-review-template.md`:
+  - repo copy: `docs/research/student-sandbox-v1-trial-review-2026-05-30.md`
+  - Obsidian mirror: `04 Reviews/2026-05-30 Student Sandbox v1 Trial Review (Self-Review).md`
+- **Verdict: `useful_but_confusing`.** The loop's core design works — the prior-belief step + the
+  source-quality checklist de-escalated an overstated advocacy claim against a modest peer-reviewed
+  effect (d=0.162), with judgment kept by the learner. Dominant friction is **timing**:
+  `source_check` (4 min) is the highest-value but most under-budgeted phase.
+
+Decided v1 changes (do NOT cut scaffold before a real recruited-student trial):
+
+- Rebalance the 20-min budget toward `source_check` (5–6 min; trim `ai_second_pass` to ~2 min or
+  extend the loop to ~22–24 min as "20-min core + buffer").
+- Add a worked "plan-not-answer" example prompt in `ai_first_pass`.
+- Add 1–2 concrete examples for each of the five boundary types in `human_boundary` (they read as
+  abstract to a high-schooler).
+- Add a "two sources is a floor, not a finish" note so the time box isn't mistaken for sufficiency.
+
+Still open:
+
+- Recruit one real student/parent/teacher trial to validate the above before applying the changes
+  (see `docs/student-sandbox-v1-recruitment.md`).

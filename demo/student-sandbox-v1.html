@@ -521,6 +521,13 @@
     border-left: 3px solid var(--gold);
   }
   .boundary-tip strong { color: var(--gold); }
+  .boundary-examples {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+  }
+  .boundary-examples li { margin: 0; }
 
   /* Plain-English policy phrasing + secondary monospace token */
   .hints-policy-chip {
@@ -1339,6 +1346,7 @@
           <dt>You keep</dt><dd>which path to explore first</dd>
           <dt>Output</dt><dd>three possible subquestions</dd>
         </dl>
+        <div class="boundary-tip"><strong>Example prompt.</strong> <em>"Don't answer the question yet. Give me a short plan to research it myself: the key concepts I'll need, two types of sources to check, and two common mistakes to avoid."</em></div>
       </article>
 
       <article class="phase-card" data-phase="human_boundary">
@@ -1356,7 +1364,15 @@
           <dt>You keep</dt><dd>values, privacy choices, and assignment constraints</dd>
           <dt>Output</dt><dd>boundary card</dd>
         </dl>
-        <div class="boundary-tip"><strong>What's a boundary?</strong> Something you decide AI is <em>not</em> allowed to do for you in this session — like <em>"don't choose my opinion,"</em> <em>"don't write the conclusion,"</em> or <em>"don't use any source older than 2020."</em></div>
+        <div class="boundary-tip"><strong>What's a boundary?</strong> Something you decide AI is <em>not</em> allowed to do for you in this session. Pick one:
+          <ul class="boundary-examples">
+            <li><strong>privacy</strong> — I won't share my name, school, or family details with the AI.</li>
+            <li><strong>facts</strong> — I care most about accuracy and source quality, not persuasion.</li>
+            <li><strong>learning</strong> — I want to understand the topic myself, not just get a finished answer.</li>
+            <li><strong>decision</strong> — the conclusion (what to claim or recommend) stays mine to make.</li>
+            <li><strong>values</strong> — my own judgment about what's right or fair leads; the AI doesn't decide it.</li>
+          </ul>
+        </div>
       </article>
 
       <article class="phase-card" data-phase="source_check">
@@ -1365,7 +1381,7 @@
             <span class="phase-num">4</span>
             <span class="phase-label">Check your sources</span>
           </div>
-          <span class="phase-min">4 min</span>
+          <span class="phase-min">5 min</span>
         </div>
         <span class="phase-id-sub">phase id: source_check</span>
         <dl class="phase-row">
@@ -1374,6 +1390,7 @@
           <dt>You keep</dt><dd>verification and source acceptance</dd>
           <dt>Output</dt><dd>source checklist</dd>
         </dl>
+        <div class="boundary-tip"><strong>Floor, not finish.</strong> Two reviewable sources is a floor, not a finish. Before moving on, say what a third source would need to show to change your conclusion.</div>
       </article>
 
       <article class="phase-card" data-phase="ai_second_pass">
@@ -1382,7 +1399,7 @@
             <span class="phase-num">5</span>
             <span class="phase-label">Revise with AI</span>
           </div>
-          <span class="phase-min">3 min</span>
+          <span class="phase-min">2 min</span>
         </div>
         <span class="phase-id-sub">phase id: ai_second_pass</span>
         <dl class="phase-row">

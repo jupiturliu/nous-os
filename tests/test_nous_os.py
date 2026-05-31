@@ -331,6 +331,37 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("What did I verify?", packet["reflection_card"]["student_prompts"])
         self.assertIn("What remains my responsibility?", packet["reflection_card"]["student_prompts"])
 
+    def test_student_sandbox_v1_first_trial_review_improvements(self) -> None:
+        """Lock the 2026-05-30 first-trial review changes: time rebalanced toward
+        source_check (the highest-value, previously under-budgeted phase) while the
+        total stays 20, plus concrete scaffolding for the abstract steps. See
+        docs/research/student-sandbox-v1-trial-review-2026-05-30.md."""
+        loop = student_sandbox_v1.build_twenty_minute_loop()
+        self.assertEqual(loop["total_minutes"], 20)
+        phases = {phase["id"]: phase for phase in loop["phases"]}
+
+        # source_check is no longer the most under-budgeted phase.
+        self.assertGreaterEqual(phases["source_check"]["minutes"], 5)
+        self.assertGreaterEqual(
+            phases["source_check"]["minutes"], phases["ai_second_pass"]["minutes"]
+        )
+
+        # ai_first_pass carries a worked "plan not answer" example prompt.
+        example_prompt = phases["ai_first_pass"].get("example_prompt", "")
+        self.assertIn("plan", example_prompt.lower())
+        self.assertIn("yet", example_prompt.lower())  # "Don't answer ... yet"
+
+        # human_boundary gives a concrete example for each of the five boundary types.
+        boundary_examples = phases["human_boundary"].get("boundary_examples", {})
+        self.assertEqual(
+            set(boundary_examples),
+            {"privacy", "facts", "learning", "decision", "values"},
+        )
+        self.assertTrue(all(boundary_examples.values()))
+
+        # source_check states two sources is a floor, not a finish.
+        self.assertIn("floor", phases["source_check"].get("note", "").lower())
+
     def test_student_sandbox_v1_replaces_intent_when_private_detail_detected(self) -> None:
         packet = student_sandbox_v1.build_learning_loop_packet(
             research_question="I am John Smith at Lincoln High and my email is jsmith@example.com, help me research X",

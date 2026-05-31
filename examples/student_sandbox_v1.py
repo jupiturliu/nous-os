@@ -39,8 +39,9 @@ def _phase(
     ai_help: str,
     human_keeps: str,
     artifact: str,
+    extras: Dict | None = None,
 ) -> Dict:
-    return {
+    phase = {
         "id": phase_id,
         "minutes": minutes,
         "student_action": student_action,
@@ -48,6 +49,9 @@ def _phase(
         "human_keeps": human_keeps,
         "artifact": artifact,
     }
+    if extras:
+        phase.update(extras)
+    return phase
 
 
 def build_twenty_minute_loop() -> Dict:
@@ -55,6 +59,12 @@ def build_twenty_minute_loop() -> Dict:
 
     The loop is intentionally short enough for a real student trial and explicit
     enough for parent/teacher/researcher observation.
+
+    Timing note (2026-05-30 first-trial review): source_check is the highest-value
+    phase and was the most under-budgeted, so the 20-minute budget is rebalanced
+    toward it (source_check 4->5, ai_second_pass 3->2) while keeping the total at
+    20. The phase ids and order are part of the public contract and unchanged.
+    See docs/research/student-sandbox-v1-trial-review-2026-05-30.md.
     """
 
     phases: List[Dict] = [
@@ -73,6 +83,15 @@ def build_twenty_minute_loop() -> Dict:
             "Offer concepts, vocabulary, possible source types, and common traps.",
             "which path to explore first",
             "three possible subquestions",
+            extras={
+                # First-trial review: the "plan not answer" instruction needs a
+                # worked example, or an AI-habituated student still asks for the answer.
+                "example_prompt": (
+                    "Don't answer the question yet. Give me a short plan to research it "
+                    "myself: the key concepts I'll need, two types of sources to check, "
+                    "and two common mistakes to avoid."
+                ),
+            },
         ),
         _phase(
             "human_boundary",
@@ -81,18 +100,36 @@ def build_twenty_minute_loop() -> Dict:
             "Restate the boundary and adapt the plan around it.",
             "values, privacy choices, and assignment constraints",
             "boundary card",
+            extras={
+                # First-trial review: the five boundary types read as abstract to a
+                # high-schooler; concrete examples make the choice usable.
+                "boundary_examples": {
+                    "privacy": "I won't share my name, school, or family details with the AI.",
+                    "facts": "I care most about accuracy and source quality, not persuasion.",
+                    "learning": "I want to understand the topic myself, not just get a finished answer.",
+                    "decision": "The conclusion (what to claim or recommend) stays mine to make.",
+                    "values": "My own judgment about what's right or fair leads; the AI doesn't decide it.",
+                },
+            },
         ),
         _phase(
             "source_check",
-            4,
+            5,
             "Check at least two reviewable sources for author, date, evidence, and uncertainty.",
             "Provide a checklist and critique weak evidence.",
             "verification and source acceptance",
             "source checklist",
+            extras={
+                # First-trial review: students can mistake the time box for sufficiency.
+                "note": (
+                    "Two reviewable sources is a floor, not a finish. Before moving on, "
+                    "say what a third source would need to show to change your conclusion."
+                ),
+            },
         ),
         _phase(
             "ai_second_pass",
-            3,
+            2,
             "Ask AI to revise the research plan using the chosen boundary and source notes.",
             "Improve next steps, practice questions, and uncertainty notes.",
             "the final claim and whether evidence is enough",
