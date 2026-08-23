@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "change_id": "0001-spec-driven-development",
+  "channel": "local",
+  "approver": "liyao",
+  "approved_at": "2026-08-23T22:23:50Z",
+  "reason": "Approved through the explicit Spec-Driven Development planning decisions and implementation request in the 2026-08-23 project conversation.",
+  "reference": "conversation:2026-08-23-spec-driven-development-v1",
+  "spec_commit": "2512fbfe75616e57f68242a477a07da5c9250309",
+  "hashes": {
+    "spec_sha256": "f464566c510b80500bcc9a75445a5103835ddb5f3f078ace9ddbac122ce36f43",
+    "implementation_sha256": "6b355ab9c496f8eceb66d6f023ed793337c515b5292a4129a5789831fe3d07f6"
+  }
+}
