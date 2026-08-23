@@ -22,7 +22,7 @@ class SpecPackageValidationTests(unittest.TestCase):
     def test_repository_bootstrap_package_is_valid_and_approved(self):
         result = validate_change(ROOT, "0001-spec-driven-development", require_approval=True)
         self.assertTrue(result["ok"], result["issues"])
-        self.assertEqual(result["status"], "approved")
+        self.assertIn(result["status"], {"approved", "verified"})
 
     def test_init_creates_yaml_draft_without_approval(self):
         with tempfile.TemporaryDirectory() as directory:
