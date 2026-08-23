@@ -11,7 +11,15 @@ from unittest import mock
 
 import yaml
 
-from nous_os.specs import approve_change, gate_range, gate_staged, initialize_change, validate_change, verify_change
+from nous_os.specs import (
+    approve_change,
+    gate_range,
+    gate_staged,
+    initialize_change,
+    status_change,
+    validate_change,
+    verify_change,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -182,6 +190,8 @@ class SpecGitGateTests(unittest.TestCase):
         _git(self.root, "commit", "-qm", f"spec: verify\n\nSpec-Ref: {CHANGE_ID}")
         result = gate_range(self.root, f"{base}..HEAD")
         self.assertTrue(result["ok"], result["issues"])
+        status = status_change(self.root, CHANGE_ID)
+        self.assertEqual(status["implementation_commits"], [implementation])
 
     def test_remote_approval_requires_merged_pr_and_matching_review(self):
         from nous_os.specs import change as module

@@ -606,8 +606,15 @@ def _implementation_commits(root: Path, change_id: str, package: ChangePackage) 
         return []
     approval_commit = added[-1]
     commits = _lines(_git(root, "rev-list", "--reverse", f"{approval_commit}..HEAD"))
-    return [commit for commit in commits if change_id in TRAILER.findall(
-        _git(root, "show", "-s", "--format=%B", commit))]
+    policy = _load_policy(root)
+    implementation_commits = []
+    for commit in commits:
+        if change_id not in TRAILER.findall(_git(root, "show", "-s", "--format=%B", commit)):
+            continue
+        paths = _lines(_git(root, "diff-tree", "--no-commit-id", "--name-only", "-r", commit))
+        if any(_is_protected(path, policy) for path in paths):
+            implementation_commits.append(commit)
+    return implementation_commits
 
 
 def _implementation_paths(root: Path, commits: Iterable[str]) -> list[str]:
