@@ -49,7 +49,7 @@ The key delta: **Piccolo's harness makes agents production-safe; NOUS OS uses ha
 - Use the 15-responsibility list as a checklist against NOUS OS harness docs, especially around FSM, token accounting, sandboxing, session partitioning, and observability.
 - Strengthen our vocabulary: "Harness 不做安替，而是系统必须为 Agent 完成的 Job 集合；每项 Job 都应该可插拔、可测试、可审计。"
 - Do **not** copy the worker list blindly into NOUS OS. First map each responsibility to one of: already covered / missing deterministic workflow / missing evaluator / out of scope for student sandbox.
-- Candidate next artifact: `docs/harness/agent-harness-responsibility-map.md` comparing Piccolo's 15 responsibilities to NOUS OS harness surfaces.
+- Outcome: the useful responsibility vocabulary was absorbed into `docs/harness/README.md`; no separate benchmark map is maintained.
 
 ## Limitations of this work (from our perspective)
 

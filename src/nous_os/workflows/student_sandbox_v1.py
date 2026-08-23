@@ -20,7 +20,7 @@ from .heartbeat import (
     redact_demo_text,
     write_json,
 )
-from .student_sandbox_v0 import detect_private_detail
+from .student_sandbox import contains_private_pattern
 
 
 DEFAULT_RESEARCH_QUESTION = DEFAULT_GOAL
@@ -215,7 +215,7 @@ def build_learning_loop_packet(
     research_question: str = DEFAULT_RESEARCH_QUESTION,
     student_level: str = "high_school",
 ) -> Dict:
-    detected = detect_private_detail(research_question or "")
+    detected = contains_private_pattern(research_question or "")
     sanitized_question = redact_demo_text(research_question or DEFAULT_RESEARCH_QUESTION)
     if detected:
         sanitized_question = "[redacted-by-policy]"

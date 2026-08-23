@@ -17,7 +17,7 @@ Use this index before starting NOUS OS work.
 |---|---|
 | Harness boundary | `docs/harness/README.md` |
 | Harness inventory | `contracts/harness/inventory.json`, `nous-os validate harness` |
-| Student Sandbox v1 | `docs/student-sandbox-deterministic-workflow.md`, `docs/plans/2026-05-16-student-sandbox-research-study-v1-plan.md`, `examples/student_sandbox_v1.py` |
+| Student Sandbox v1 | `docs/student-sandbox-deterministic-workflow.md`, `src/nous_os/workflows/student_sandbox_v1.py` |
 | Skill-first / harness-second principle | `docs/harness/README.md`, `docs/student-sandbox-deterministic-workflow.md` |
 | Benchmark contract | `docs/benchmark-spec.md` |
 | Domain evaluator contract | `docs/domain-evaluator-interface.md` |

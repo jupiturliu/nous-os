@@ -4,8 +4,8 @@ Short, copy-paste-ready messages for inviting one parent or one teacher to a 20-
 
 ## Before you send
 
-- The `<URL>` slot should point at the **Why &amp; How** page (`demo/student-sandbox-v1-guide.html`), not the sandbox page directly. Adults need the context first.
-- The page is currently a static file. If you haven't deployed it to GitHub Pages or another host yet, you can `python3 -m http.server` from `nous-os/` and share `http://<your-ip>:8000/demo/student-sandbox-v1-guide.html` on the same network, or share the file directly. **Don't promise a public URL you don't have.**
+- The `<URL>` slot should point at the **Why &amp; How** route (`/demo/student-sandbox-v1-guide.html`), not the sandbox route directly. Adults need the context first.
+- If you have not deployed it, run `nous-os serve web --profile student` and share `http://<your-ip>:8787/demo/student-sandbox-v1-guide.html` on the same network. **Don't promise a public URL you don't have.**
 - The sandbox page and the guide page are both in English. If your recruit is more comfortable in Chinese, send the Chinese message but flag that the page is currently English-only — don't ambush them.
 - Never include the student's name, school name, or any identifying detail in the recruitment message itself.
 

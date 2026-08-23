@@ -14,7 +14,7 @@ from typing import Any
 
 REPOS = {
     "nous-os": {
-        "docs": ["README.md", "NOUS-OS-PHASE3.md", "docs"],
+        "docs": ["README.md", "ARCHITECTURE.md", "docs"],
         "tests": ["python3", "-m", "unittest", "discover", "-s", "tests", "-v"],
         "dirty_allowlist": [],
     },

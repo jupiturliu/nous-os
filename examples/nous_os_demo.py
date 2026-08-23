@@ -1,1 +1,0 @@
-../../synapse/demo/nous_os_demo.py

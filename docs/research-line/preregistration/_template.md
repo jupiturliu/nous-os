@@ -59,7 +59,7 @@ If the answer is `yes`, open a separate gate using `docs/research-line/research-
 
 **After the session:**
 
-1. Save the review packet (Sandbox: export from `demo/student-session-review.html`; trading-agent: from `docs/review-template.md`).
+1. Save the review packet (Sandbox: export from `/demo/student-session-review.html` in the running Web composition; trading-agent: from `docs/review-template.md`).
 2. In the review packet, link back to this preregistration file.
 3. Update `docs/research-line/session-review-index.md`.
 4. Mark the prediction in section 1 as **confirmed / partial / disconfirmed / inconclusive**.

@@ -48,13 +48,7 @@ student/human intent
   -> human keeps goal, values, verification, and final responsibility
 ```
 
-Implementation plan:
-
-```text
-docs/plans/2026-05-16-human-ai-coevolution-demo-refresh-plan.md
-```
-
-Required additions:
+Demonstrated surfaces:
 
 - Demo Mode selector: Student Learning Companion / Trading Agent Research Proof / Research Lab.
 - Safety Boundaries panel: privacy, facts, learning, decision, values.

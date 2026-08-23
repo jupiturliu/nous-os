@@ -15,7 +15,6 @@ WEB_PUBLIC = ROOT / "apps" / "web" / "public"
 
 from nous_os.evaluation.cls_v2 import compute_cls_v2
 from nous_os.workflows import heartbeat as heartbeat_demo
-from nous_os.workflows import student_sandbox_v0 as student_sandbox
 from nous_os.workflows import student_sandbox_v1
 from nous_os.contracts import harness_inventory
 
@@ -230,26 +229,6 @@ class BenchmarkTests(unittest.TestCase):
     def test_compute_cls_v2_requires_all_components(self) -> None:
         with self.assertRaises(KeyError):
             compute_cls_v2({"outcome_quality_delta": 0.5})
-
-    def test_student_sandbox_emits_local_private_research_record(self) -> None:
-        record = student_sandbox.build_sandbox_research_record(
-            intent="My email is student@example.com and I need help planning a science project.",
-            boundary_kind="learning",
-        )
-
-        self.assertEqual(record["demo_mode"], "student")
-        self.assertEqual(record["human_boundary"]["kind"], "learning")
-        self.assertIn("[redacted-email]", record["human_intent"])
-        self.assertFalse(record["privacy"]["contains_private_student_data"])
-        self.assertTrue(record["sandbox"]["local_only"])
-        self.assertFalse(record["sandbox"]["external_model_calls"])
-        self.assertTrue(record["sandbox"]["refuses_private_storage_without_anonymization"])
-        self.assertTrue(record["sandbox"]["private_detail_detected"])
-        self.assertGreaterEqual(len(record["sandbox"]["clarifying_questions"]), 3)
-        self.assertGreaterEqual(len(record["sandbox"]["hints"]), 3)
-        self.assertGreaterEqual(len(record["sandbox"]["practice"]), 1)
-        self.assertGreaterEqual(len(record["sandbox"]["source_check"]), 2)
-        self.assertIn("responsibility", record["reflection"]["prompt"])
 
     def test_heartbeat_demo_import_does_not_emit_optional_redis_warning(self) -> None:
         env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
@@ -813,150 +792,47 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(result["ok"], result["issues"])
         self.assertEqual(inventory["project"], "nous-os")
         surface_ids = {surface["id"] for surface in inventory["surfaces"]}
-        self.assertIn("student_sandbox_v0", surface_ids)
         self.assertIn("student_sandbox_v1", surface_ids)
         self.assertIn("student_sandbox_v1_web", surface_ids)
         self.assertIn("trading_evaluator", surface_ids)
         self.assertIn("domain_evaluator_interface", surface_ids)
         self.assertIn("domain_evaluator_runtime", surface_ids)
-        self.assertIn("first_vertical_wiring_plan", surface_ids)
-        self.assertIn("harness_handoffs", surface_ids)
         self.assertIn("latest_research_record", surface_ids)
         self.assertIn("cross_repo_release_gate", surface_ids)
         self.assertIn("documentation_reproducibility_test", surface_ids)
         self.assertIn("cloudflare_worker_deployment", surface_ids)
         self.assertIn("live trading state", inventory["default_boundary"])
 
-    def test_v2_roadmap_and_evaluator_docs_are_linked(self) -> None:
+    def test_product_and_harness_docs_are_linked(self) -> None:
         readme = (ROOT / "README.md").read_text()
-        phase3 = (ROOT / "NOUS-OS-PHASE3.md").read_text()
-        roadmap = ROOT / "docs" / "north-star-v2-roadmap.md"
-        evaluator = ROOT / "docs" / "domain-evaluator-interface.md"
-        release_gate = ROOT / "docs" / "cross-repo-release-gate.md"
-        review_template = ROOT / "docs" / "review-template.md"
-        student_v1_review_template = ROOT / "docs" / "student-sandbox-v1-review-template.md"
-        theory_track_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-theory-track-plan.md"
-        theory_track_dev_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-theory-track-development-plan.md"
-        symbiosis_theory = ROOT / "docs" / "human-ai-symbiosis-self-evolution.md"
-        coevolution_model = ROOT / "docs" / "human-ai-coevolution-model-v0.md"
-        self_evolution_metrics = ROOT / "docs" / "self-evolution-metrics-v0.md"
-        memory_philosophy = ROOT / "docs" / "memory-philosophy-v0.md"
-        demo_refresh_plan = ROOT / "docs" / "plans" / "2026-05-16-human-ai-coevolution-demo-refresh-plan.md"
-        education_research = ROOT / "docs" / "education-research-narrative.md"
-        harness_readme = ROOT / "docs" / "harness" / "README.md"
-        harness_context = ROOT / "docs" / "harness" / "context-index.md"
-        second_vertical = ROOT / "docs" / "second-vertical-entry-criteria.md"
-        one_pager = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.md"
-        one_pager_en = ROOT / "docs" / "NOUS-OS-Cognitive-COO-One-Pager.en.md"
-        student_trial_guide = ROOT / "docs" / "student-sandbox-v1-trial-guide.md"
-        student_workflow = ROOT / "docs" / "student-sandbox-deterministic-workflow.md"
-        four_sprint_plan = ROOT / "docs" / "plans" / "2026-05-17-nous-os-student-sandbox-four-sprint-execution-plan.md"
+        docs = {
+            "architecture": ROOT / "ARCHITECTURE.md",
+            "repository_layout": ROOT / "docs" / "architecture" / "repository-layout.md",
+            "roadmap": ROOT / "docs" / "north-star-v2-roadmap.md",
+            "evaluator": ROOT / "docs" / "domain-evaluator-interface.md",
+            "harness": ROOT / "docs" / "harness" / "README.md",
+            "student_workflow": ROOT / "docs" / "student-sandbox-deterministic-workflow.md",
+        }
 
-        self.assertTrue(roadmap.exists())
-        self.assertTrue(evaluator.exists())
-        self.assertTrue(release_gate.exists())
-        self.assertTrue(review_template.exists())
-        self.assertTrue(student_v1_review_template.exists())
-        self.assertTrue(theory_track_plan.exists())
-        self.assertTrue(theory_track_dev_plan.exists())
-        self.assertTrue(symbiosis_theory.exists())
-        self.assertTrue(coevolution_model.exists())
-        self.assertTrue(self_evolution_metrics.exists())
-        self.assertTrue(memory_philosophy.exists())
-        self.assertTrue(demo_refresh_plan.exists())
-        self.assertTrue(education_research.exists())
-        self.assertTrue(harness_readme.exists())
-        self.assertTrue(harness_context.exists())
-        self.assertTrue(second_vertical.exists())
-        self.assertTrue(one_pager.exists())
-        self.assertTrue(one_pager_en.exists())
-        self.assertTrue(student_trial_guide.exists())
-        self.assertTrue(student_workflow.exists())
-        self.assertTrue(four_sprint_plan.exists())
-        self.assertIn("education and research project", readme)
-        self.assertIn("docs/north-star-v2-roadmap.md", readme)
-        self.assertIn("docs/education-research-narrative.md", readme)
-        self.assertIn("docs/human-ai-symbiosis-self-evolution.md", readme)
-        self.assertIn("docs/human-ai-coevolution-model-v0.md", readme)
-        self.assertIn("docs/self-evolution-metrics-v0.md", readme)
-        self.assertIn("docs/memory-philosophy-v0.md", readme)
-        self.assertIn("docs/domain-evaluator-interface.md", readme)
-        self.assertIn("docs/harness/README.md", readme)
-        self.assertIn("docs/cross-repo-release-gate.md", readme)
-        self.assertIn("docs/student-sandbox-deterministic-workflow.md", readme)
-        self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.md", readme)
-        self.assertIn("docs/NOUS-OS-Cognitive-COO-One-Pager.en.md", readme)
-        self.assertIn("docs/north-star-v2-roadmap.md", phase3)
-        self.assertIn("second-vertical-entry-criteria.md", roadmap.read_text())
-        self.assertIn("education and research project", roadmap.read_text())
-        self.assertIn("first vertical application", roadmap.read_text())
-        self.assertIn("education/research traction case", roadmap.read_text())
-        self.assertIn("Humans and AI learn together — with boundaries", demo_refresh_plan.read_text())
-        self.assertIn("Student Learning Companion", demo_refresh_plan.read_text())
-        self.assertIn("Trading Agent Research Proof", demo_refresh_plan.read_text())
-        self.assertIn("How should today's high-school students face AI", education_research.read_text())
-        self.assertIn("Privacy boundary", education_research.read_text())
-        self.assertIn("Trading Brain / `trading-agent` remains the first vertical application", education_research.read_text())
-        self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", evaluator.read_text())
-        self.assertIn("What confused the viewer?", review_template.read_text())
-        self.assertIn("Boundary Clarity", review_template.read_text())
-        self.assertIn("Theory Track Evidence", review_template.read_text())
-        self.assertIn("What changed in the human?", review_template.read_text())
-        self.assertIn("What should be remembered before the next cycle?", review_template.read_text())
-        self.assertIn("Next Run Change", review_template.read_text())
-        self.assertIn("context index + boundary map + artifact contracts + evaluator specs + release gates + evidence write-back", harness_readme.read_text())
-        self.assertIn("NOUS OS Harness Context Index", harness_context.read_text())
-        self.assertIn("Second vertical work remains deferred", second_vertical.read_text())
-        self.assertIn("Cognitive COO Operating System", one_pager_en.read_text())
-        self.assertIn("TrustMem: agents' trustworthy hippocampus", one_pager_en.read_text())
-        self.assertIn("Obsidian knowledge sedimentation", one_pager_en.read_text())
-        student_trial_text = student_trial_guide.read_text()
-        self.assertIn("20-minute", student_trial_text)
-        self.assertIn("hints, not final answers", student_trial_text)
-        self.assertIn("Privacy", student_trial_text)
-        self.assertIn("What remains my responsibility?", student_trial_text)
-        self.assertIn("/api/student-sandbox-session", student_trial_text)
-        self.assertIn("student-session-review.html", student_trial_text)
-        student_workflow_text = student_workflow.read_text()
-        self.assertIn("Workflow State Machine", student_workflow_text)
-        self.assertIn("Skills Layer", student_workflow_text)
-        self.assertIn("NOUS Guide", student_workflow_text)
-        self.assertIn("research_signals", student_workflow_text)
-        self.assertIn("source_cards", student_workflow_text)
-        self.assertIn("must not mutate the protocol itself", student_workflow_text)
-        student_review_text = student_v1_review_template.read_text()
-        self.assertIn("Student Sandbox v1 Trial Review", student_review_text)
-        self.assertIn("What did the student understand?", student_review_text)
-        self.assertIn("What confused the student?", student_review_text)
-        self.assertIn("Theory track evidence", student_review_text)
-        self.assertIn("Human capability delta", student_review_text)
-        self.assertIn("Trust calibration", student_review_text)
-        self.assertIn("What should be remembered, challenged, decayed, or forgotten?", student_review_text)
-        self.assertIn("Next-run change", student_review_text)
-        coevolution_model_text = coevolution_model.read_text()
-        self.assertIn("Status / How to use", coevolution_model_text)
-        self.assertIn("Human-AI Symbiosis and Self-Evolution Theory", coevolution_model_text)
-        self.assertIn("Self-Evolution Metrics v0", coevolution_model_text)
-        self.assertIn("Memory Philosophy v0", coevolution_model_text)
-        self.assertIn("Student Sandbox and trading-agent are proof beds, not the goal", coevolution_model_text)
-        metrics_text = self_evolution_metrics.read_text()
-        self.assertIn("Status / How to use", metrics_text)
-        self.assertIn("qualitative observation or a measurable proxy", metrics_text)
-        self.assertIn("Human-AI Co-Evolution Model v0", metrics_text)
-        memory_text = memory_philosophy.read_text()
-        self.assertIn("Status / How to use", memory_text)
-        self.assertIn("verified memory substrate, not a stale personalization engine", memory_text)
-        self.assertIn("challenge, decay, and forgetting", memory_text)
-        theory_plan_text = theory_track_dev_plan.read_text()
-        self.assertIn("Phase 0", theory_plan_text)
-        self.assertIn("Phase 5", theory_plan_text)
-        self.assertIn("Definition of Done", theory_plan_text)
-        four_sprint_text = four_sprint_plan.read_text()
-        self.assertIn("Trial readiness", four_sprint_text)
-        self.assertIn("First real or student-adjacent trial", four_sprint_text)
-        self.assertIn("Evidence-Based Improvement", four_sprint_text)
-        self.assertIn("Research Track Productization", four_sprint_text)
-        self.assertIn("N = 0 real student sessions", four_sprint_text)
+        self.assertEqual([name for name, path in docs.items() if not path.exists()], [])
+        for linked_path in (
+            "ARCHITECTURE.md",
+            "docs/architecture/repository-layout.md",
+            "docs/north-star-v2-roadmap.md",
+            "docs/domain-evaluator-interface.md",
+            "docs/harness/README.md",
+            "docs/student-sandbox-deterministic-workflow.md",
+        ):
+            self.assertIn(linked_path, readme)
+
+        self.assertIn("DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents", docs["evaluator"].read_text())
+        self.assertIn(
+            "context index + boundary map + artifact contracts + evaluator specs + release gates + evidence write-back",
+            docs["harness"].read_text(),
+        )
+        student_workflow = docs["student_workflow"].read_text()
+        for clause in ("Workflow State Machine", "Skills Layer", "research_signals", "source_cards"):
+            self.assertIn(clause, student_workflow)
 
     def test_landing_page_uses_plain_human_ai_framing_without_overclaiming(self) -> None:
         html = (WEB_PUBLIC / "index.html").read_text()
@@ -1115,8 +991,6 @@ class SiteContractTests(unittest.TestCase):
 
     def test_homepage_publishes_research_track_links(self) -> None:
         homepage = (WEB_PUBLIC / "index.html").read_text()
-        readme = (ROOT / "README.md").read_text()
-        production_runtime = (ROOT / "docs" / "production-runtime.md").read_text()
 
         self.assertIn('id="research"', homepage)
         self.assertEqual(homepage.count('id="research"'), 1)
@@ -1127,9 +1001,6 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("/research.html#model", homepage)
         self.assertIn("/research.html#metrics", homepage)
         self.assertIn("/demo/student-sandbox-v1.html", homepage)
-        self.assertIn("docs/production-runtime.md", readme)
-        self.assertIn("NOUS_OS_RUNTIME_BACKEND=redis", production_runtime)
-        self.assertIn("NOUS_OS_RUNTIME_BACKEND=sqlite", production_runtime)
 
     def test_about_page_explains_nous_origin_and_human_ai_future(self) -> None:
         homepage = (WEB_PUBLIC / "index.html").read_text()

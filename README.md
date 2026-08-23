@@ -52,51 +52,41 @@ Human intent
 
 ## Integration Status
 
-Current as of 2026-05-16:
+Current as of 2026-08-23:
 
 | Area | Status | Evidence |
 |------|--------|----------|
-| Core repo | ✅ Standalone `nous-os` repo initialized | README, architecture docs, examples, tests |
-| Aria ↔ Synapse | ✅ Bridge exists in workspace Synapse | `AriaSynapseBridge`, `AriaOrchestrator.publish_from_agent_bus()` |
+| Core distribution | ✅ Python 3.11 package with one command Interface | `pyproject.toml`, `src/nous_os`, `tests` |
+| External runtimes | ✅ Explicit Adapter seams; no sibling-path imports | `ARCHITECTURE.md`, `src/nous_os/workflows/heartbeat.py` |
 | Harness kernel | ✅ Python Plugin lifecycle + YAML Profiles | `src/nous_os/core`, `config/profiles` |
 | Heartbeat flywheel | ✅ Evidence-backed local workflow | `nous-os run heartbeat --profile research` |
 | Dashboard | ✅ Python Web composition + Cloudflare edge Adapter | `nous-os serve web --profile student`, `apps/web` |
 | Benchmark | ✅ Public Q/C/E/R + CLS projection | `docs/benchmark-spec.md`, `$NOUS_OS_HOME/projections/dashboard-data.json` |
 | CI / deploy | ✅ Unit tests and Cloudflare Worker workflow | `.github/workflows/ci.yml`, `.github/workflows/cloudflare.yml` |
 
-Historical phase summary:
-
-| Phase | Description | Status |
-|-------|-------------|--------|
-| Phase 1 | Aria ↔ Synapse Bridge, Event Bus replaces JSON polling | Complete |
-| Phase 2 | Worker memory hooks, human override flywheel, quality scoring | Complete in demo/runtime path |
-| Phase 3 | Standalone repo, heartbeat demo, dashboard, benchmark, publish path | Complete for local/public demo |
-
-Remaining work is product hardening: wire a production Aria runtime, replace demo-quality scoring with domain evaluators, and add release automation for the upstream TrustMem/Synapse repos.
+Remaining work is product hardening: wire production runtime Adapters, replace remaining demo-quality scoring with domain evaluators, and automate releases for upstream TrustMem/Synapse repos.
 
 ---
 
 ## Documentation
 
-- [NOUS-OS-SPEC.md](./NOUS-OS-SPEC.md) — Full system specification
-- [NOUS-OS-PHASE3.md](./NOUS-OS-PHASE3.md) — Current Phase 3 completion notes and next hardening work
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Current Harness architecture and runtime composition
+- [docs/architecture/repository-layout.md](./docs/architecture/repository-layout.md) — Canonical repository layout
+- [CONTEXT.md](./CONTEXT.md) — Domain language used by code and documentation
+- [docs/adr/](./docs/adr/) — Accepted architecture decisions
 - [docs/north-star-v2-roadmap.md](./docs/north-star-v2-roadmap.md) — Human-AI learning roadmap and first-vertical proof scope
 - [docs/education-research-narrative.md](./docs/education-research-narrative.md) — Education/research narrative for high-school students, human-AI co-evolution, and safety boundaries
 - [docs/human-ai-symbiosis-self-evolution.md](./docs/human-ai-symbiosis-self-evolution.md) — Theory anchor for human-AI symbiosis and self-evolution
 - [docs/human-ai-coevolution-model-v0.md](./docs/human-ai-coevolution-model-v0.md) — v0 model for the human-agent co-evolution loop
 - [docs/self-evolution-metrics-v0.md](./docs/self-evolution-metrics-v0.md) — v0 metrics for human, agent, and relationship evolution
 - [docs/memory-philosophy-v0.md](./docs/memory-philosophy-v0.md) — Memory rules for remember, challenge, decay, and forget
-- [docs/production-runtime.md](./docs/production-runtime.md) — Production backend policy for Redis/SQLite instead of memory-only runtime state
-- [docs/hermes-student-agent-gateway.md](./docs/hermes-student-agent-gateway.md) — Hermes Gateway deployment contract for the Student Sandbox chat agent
 - [docs/cloudflare-hermes-architecture.md](./docs/cloudflare-hermes-architecture.md) — Cloudflare Worker, local webserver, and Hermes Gateway deployment architecture
 - [docs/student-sandbox-deterministic-workflow.md](./docs/student-sandbox-deterministic-workflow.md) — Deterministic Student Sandbox workflow and skill/playbook boundary
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
 - [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
 - [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
-- [docs/aria-integration.md](./docs/aria-integration.md) — Aria ↔ Synapse integration guide
 - [docs/getting-started.md](./docs/getting-started.md) — Getting started
-- [docs/demo-blueprint.md](./docs/demo-blueprint.md) — Runnable demo design
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
 - [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md) — Domain evaluator contract for CLS v2
 - [docs/harness/README.md](./docs/harness/README.md) — Harness engineering context, boundaries, and verification commands

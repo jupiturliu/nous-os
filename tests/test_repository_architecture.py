@@ -26,10 +26,29 @@ class RepositoryArchitectureTests(unittest.TestCase):
             "scripts/run_nous_heartbeat.py",
             "scripts/serve_nous_site.cjs",
             "scripts/stage_static_site.sh",
+            "examples/nous_os_demo.py",
+            "examples/nousos_demo.py",
             "examples/nousos_workspace_demo.py",
             "examples/nousos_heartbeat_demo.py",
+            "src/nous_os/workflows/student_sandbox_v0.py",
         )
         self.assertEqual([path for path in replaced if (ROOT / path).exists()], [])
+
+    def test_superseded_documents_are_deleted(self) -> None:
+        superseded = (
+            "ARIA-ARCHITECTURE.md",
+            "NOUS-OS-PHASE3.md",
+            "NOUS-OS-SPEC.md",
+            "docs/aria-integration.md",
+            "docs/aria-heartbeat-integration.md",
+            "docs/demo-blueprint.md",
+            "docs/hermes-student-agent-gateway.md",
+            "docs/production-runtime.md",
+            "docs/workspace-demo.md",
+            "docs/plans",
+            "docs/harness/handoffs",
+        )
+        self.assertEqual([path for path in superseded if (ROOT / path).exists()], [])
 
     def test_public_route_interface_remains_stable(self) -> None:
         source = (ROOT / "src" / "nous_os" / "web" / "server.py").read_text(encoding="utf-8")

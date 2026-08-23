@@ -110,9 +110,9 @@ These skills should read the deterministic artifacts rather than scraping page t
 
 Current web surfaces:
 
-- `demo/student-sandbox-v1.html` - student workflow, source cards, observer notes, NOUS Guide, save flow.
-- `demo/student-session-review.html` - latest or selected session review page.
-- `demo/student-sandbox-v1-guide.html` - student/parent explanation page.
+- `apps/web/public/demo/student-sandbox-v1.html` - student workflow, source cards, observer notes, NOUS Guide, save flow.
+- `apps/web/public/demo/student-session-review.html` - latest or selected session review page.
+- `apps/web/public/demo/student-sandbox-v1-guide.html` - student/parent explanation page.
 
 Current backend contract:
 

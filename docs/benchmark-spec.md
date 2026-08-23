@@ -102,7 +102,7 @@ The heartbeat demo can populate these fields deterministically, but production d
 
 ## Demo Mapping
 
-在 `demo/heartbeat-dashboard.html` 里，这些指标应该都有明确映射：
+在 `apps/web/public/demo/heartbeat-dashboard.html` 里，这些指标应该都有明确映射：
 
 - `Quality Lift` → Q
 - `Human Policy` → C

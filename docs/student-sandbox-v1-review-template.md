@@ -116,6 +116,6 @@ Safe one-paragraph summary, with no identifying student data:
 
 ## Linkage
 
-- Plan: `docs/plans/2026-05-16-student-sandbox-research-study-v1-plan.md`
+- Protocol: `docs/student-sandbox-deterministic-workflow.md`
 - Trial guide: `docs/student-sandbox-v1-trial-guide.md`
-- Local scaffold: `examples/student_sandbox_v1.py`
+- Local scaffold: `src/nous_os/workflows/student_sandbox_v1.py`

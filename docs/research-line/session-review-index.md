@@ -39,7 +39,7 @@ It is not the raw data store. Raw or human-readable review packets may live in O
 
 After a session:
 
-1. Export the Markdown packet from `demo/student-session-review.html`.
+1. Export the Markdown packet from `/demo/student-session-review.html` in the running Web composition.
 2. Save the full de-identified packet in Obsidian `NousOS/04 Reviews/`.
 3. Add or update one row in the ledger above.
 4. Link the preregistration file and review packet.

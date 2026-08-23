@@ -60,9 +60,7 @@ Forbidden by default:
 | Trading evaluator | `src/nous_os/evaluation/trading.py` | Read-only first vertical Adapter from trading-agent proof artifacts to CLS v2 components |
 | Cross-repo release gate | `docs/cross-repo-release-gate.md` | Read-only readiness check across NOUS OS repos |
 | Public release smoke docs | `docs/getting-started.md`, `docs/heartbeat-demo.md` | Demo/release verification path |
-| Student Sandbox v1 | `examples/student_sandbox_v1.py` | Local-only 20-minute high-school research learning loop + privacy-first study protocol |
-| Handoffs | `docs/harness/handoffs/` | Cross-agent pickup notes (Claude ↔ Codex) |
-| Agent Harness responsibility map | `docs/harness/agent-harness-responsibility-map.md` | External benchmark checklist mapping production Agent Harness responsibilities to NOUS OS harness surfaces |
+| Student Sandbox v1 | `src/nous_os/workflows/student_sandbox_v1.py` | Local-only 20-minute high-school research learning loop + privacy-first study protocol |
 | Domain compilation prototype | `docs/harness/domain-compilation-contract-map.md`, `src/nous_os/contracts/domain_compilation.py` | Narrow SpecIR/TargetDescription/PlatformConfig/VerificationReport contract and deterministic verifier |
 
 ## Standard Verification

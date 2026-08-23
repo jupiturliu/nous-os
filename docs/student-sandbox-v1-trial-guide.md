@@ -108,20 +108,20 @@ A session is useful if the student can say:
 
 ### Primary surface — open the web page
 
-The intended student experience is the local web page:
+Start the local Web composition:
 
-```text
-nous-os/demo/student-sandbox-v1.html
+```bash
+nous-os serve web --profile student
 ```
 
-Open it directly in a browser (double-click, or `open demo/student-sandbox-v1.html`). It renders the 6 phases, source checklist, reflection card, and parent/teacher observation prompts as a single self-contained page.
+Then open `http://127.0.0.1:8787/demo/student-sandbox-v1.html`. It renders the 6 phases, source checklist, reflection card, and parent/teacher observation prompts as a single self-contained page.
 
 If the local backend is running, the page can save a redacted session record through `/api/student-sandbox-session` for parent/teacher review. The saved record is local-first and should not include student identity, school identity, email, phone number, family details, account details, or the raw private prompt. If the backend is not running, the student can still use the worksheet and prompt cards in the browser.
 
 Review saved sessions at:
 
 ```text
-nous-os/demo/student-session-review.html
+http://127.0.0.1:8787/demo/student-session-review.html
 ```
 
 ### Student / parent why-and-how page
@@ -129,7 +129,7 @@ nous-os/demo/student-session-review.html
 For students and parents who want context before opening the sandbox, the matching guide page is:
 
 ```text
-nous-os/demo/student-sandbox-v1-guide.html
+http://127.0.0.1:8787/demo/student-sandbox-v1-guide.html
 ```
 
 It explains why the sandbox exists, the five promises it keeps, what a session looks like for a student, a parent, and a teacher, and a step-by-step run-through. The sandbox page links to it from the top bar (`why & how`).
@@ -140,7 +140,7 @@ If you also want a research-side record of the loop schedule:
 
 ```bash
 cd /Users/liyao/nousos/nous-os
-python3 examples/student_sandbox_v1.py --question "How should I research CRISPR ethics for biology class?"
+python3 -m nous_os.workflows.student_sandbox_v1 --question "How should I research CRISPR ethics for biology class?"
 ```
 
 This writes a local artifact under:

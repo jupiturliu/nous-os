@@ -13,7 +13,7 @@ are about the v1 design, not about any person.
 - Observer role: self-review (AI-conducted, operator-adjacent dry trial)
 - Topic area, not raw private prompt: "Do school smartphone bans improve student academic focus?" (high-school research-skills topic, source-rich, evidence-vs-opinion heavy)
 - Student level: high_school (simulated intent)
-- Artifact reviewed: `examples/runtime/research-records/student-sandbox-v1-latest.json` (built 2026-05-30T16:42)
+- Artifact reviewed: local `student-sandbox-v1-latest.json` (built 2026-05-30T16:42); its findings are summarized here and the raw runtime file is intentionally not retained in source.
 - Consent / stop-anytime reminder given: n/a (no human subject)
 
 ## Privacy check
@@ -118,10 +118,10 @@ The loop works and the source-check is its standout strength; friction is concen
 
 ## Linkage
 
-- Plan: `docs/plans/2026-05-16-student-sandbox-research-study-v1-plan.md`
+- Protocol: `docs/student-sandbox-deterministic-workflow.md`
 - Trial guide: `docs/student-sandbox-v1-trial-guide.md`
-- Local scaffold: `examples/student_sandbox_v1.py`
-- Artifact: `examples/runtime/research-records/student-sandbox-v1-latest.json`
+- Local scaffold: `src/nous_os/workflows/student_sandbox_v1.py`
+- Runtime artifact: `$NOUS_OS_HOME/projections/research-records/student-sandbox-v1-latest.json` (local-only)
 - Sources checked in the trial:
   - [Smartphone Free Childhood — evidence page (advocacy org)](https://www.smartphonefreechildhood.org/resource/smartphone-free-schools-evidence)
   - [Böttger & Zierer 2024, "To Ban or Not to Ban", *Education Sciences* 14:906 (peer-reviewed rapid review, d=0.162)](https://www.mdpi.com/2227-7102/14/8/906)

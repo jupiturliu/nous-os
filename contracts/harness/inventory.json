@@ -21,14 +21,6 @@
       "verification": "python3 -m unittest discover -s tests -v"
     },
     {
-      "id": "next_development_plan",
-      "path": "docs/plans/2026-05-16-nous-os-next-development-plan.md",
-      "kind": "development_plan",
-      "owner": "repo",
-      "published": true,
-      "verification": "python3 -m unittest discover -s tests -v"
-    },
-    {
       "id": "heartbeat_demo_dashboard",
       "path": "apps/web/public/demo/heartbeat-dashboard.html",
       "kind": "static_demo",
@@ -69,30 +61,6 @@
       "verification": "python3 -m unittest tests.test_trading_evaluator -v"
     },
     {
-      "id": "first_vertical_wiring_plan",
-      "path": "docs/plans/2026-05-16-first-vertical-proof-bed-wiring-plan.md",
-      "kind": "development_plan",
-      "owner": "repo",
-      "published": true,
-      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
-    },
-    {
-      "id": "harness_handoffs",
-      "path": "docs/harness/handoffs",
-      "kind": "cross_agent_handoff",
-      "owner": "repo",
-      "published": true,
-      "verification": "python3 -m unittest discover -s tests -v"
-    },
-    {
-      "id": "agent_harness_responsibility_map",
-      "path": "docs/harness/agent-harness-responsibility-map.md",
-      "kind": "external_benchmark_map",
-      "owner": "repo",
-      "published": true,
-      "verification": "nous-os validate harness"
-    },
-    {
       "id": "domain_compilation_contract_map",
       "path": "docs/harness/domain-compilation-contract-map.md",
       "kind": "artifact_contract",
@@ -123,14 +91,6 @@
       "owner": "repo",
       "published": false,
       "verification": "python3 -m unittest tests.test_documentation_reproducibility -v"
-    },
-    {
-      "id": "student_sandbox_v0",
-      "path": "src/nous_os/workflows/student_sandbox_v0.py",
-      "kind": "local_sandbox",
-      "owner": "repo",
-      "published": false,
-      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_emits_local_private_research_record -v"
     },
     {
       "id": "student_sandbox_v1",

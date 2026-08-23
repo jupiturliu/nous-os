@@ -6,7 +6,7 @@ NOUS OS V2 spans multiple repositories. The release gate is a read-only readines
 
 | Repo | Current command | Fallback command | Docs link | Secret/path scan | Status | Owner |
 |------|-----------------|------------------|-----------|------------------|--------|-------|
-| `nous-os` | `python3 -m unittest discover -s tests -v` | `python3 examples/nousos_demo.py` | `README.md`, `NOUS-OS-PHASE3.md` | required | unknown | Hermes |
+| `nous-os` | `python3 -m unittest discover -s tests -v` | `nous-os run heartbeat --profile research` | `README.md`, `ARCHITECTURE.md` | required | unknown | Hermes |
 | `trustmem` | project check script if available | `python3 tools/knowledge_search.py agent --top 1` | `README.md` | required | unknown | Hermes |
 | `synapse` | `make test` | `python3 synapse.py test` | `README.md`, `ARCHITECTURE.md` | required | unknown | Hermes |
 | `hermes-agent` | focused docs/tool tests | `python3 -m pytest tests -q` | `README.md`, docs | required | unknown | Hermes |
