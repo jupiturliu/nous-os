@@ -5,8 +5,11 @@ NOUS OS separates source, runtime artifacts, and deployable compositions:
 - `src/nous_os/` contains the single Python distribution.
 - `config/profiles/` contains versioned Harness compositions.
 - `contracts/` contains machine-readable harness and domain contracts.
+- `specs/changes/` contains durable Software Change Specs, Implementation Plans, Approvals, and VerificationReports.
 - `apps/web/` contains the static Web composition and Cloudflare Adapter.
 - `tests/` exercises the same Interfaces used by callers.
 - `$NOUS_OS_HOME` contains mutable Evidence Events, Artifacts, state, cache, and runtime Projections.
 
 The Harness kernel is a deep Module: callers learn one lifecycle and capability Interface while configuration, ordering, validation, and teardown stay local. External systems sit at real Seams only when an in-memory or test Adapter also exists.
+
+The Software Change Spec Module under `src/nous_os/specs/` is a separate deep Module. Its command Interface concentrates strict artifact schemas, Git-history invariants, protected-path policy, safe check execution, and Evidence Event write-back. Domain Compilation remains under `src/nous_os/contracts/` and answers a different question: target feasibility rather than repository change governance.
