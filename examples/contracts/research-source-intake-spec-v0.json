@@ -1,0 +1,44 @@
+{
+  "spec_id": "research-source-intake-v0",
+  "intent": "Create a research note whose material claims have source provenance and whose uncertainty is explicit.",
+  "goals": [
+    {
+      "metric": "material_claim_provenance",
+      "direction": "satisfy",
+      "threshold": "primary source or explicitly labeled secondary/partial source"
+    }
+  ],
+  "hard_constraints": [
+    {
+      "id": "no-unsupported-material-claim",
+      "predicate": "Each material claim is backed by an evidence reference or labeled as unverified/inference.",
+      "source": "human"
+    },
+    {
+      "id": "human-approval-boundary",
+      "predicate": "The artifact cannot authorize a capital, clinical, legal, or production action.",
+      "source": "policy"
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "id": "source-state-labeled",
+      "pass_condition": "The source access state and evidence tier are present."
+    },
+    {
+      "id": "claim-boundary-present",
+      "pass_condition": "The note separates verified facts, inferences, and unresolved claims."
+    }
+  ],
+  "authority": {
+    "proposer": "agent",
+    "verifier": "deterministic_validator",
+    "approver": "human"
+  },
+  "assumptions": [
+    {
+      "statement": "The accessible source material is sufficient for a limited, evidence-labeled conclusion but may omit context.",
+      "validation_state": "unverified"
+    }
+  ]
+}

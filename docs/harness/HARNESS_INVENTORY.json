@@ -85,6 +85,38 @@
       "verification": "python3 -m unittest discover -s tests -v"
     },
     {
+      "id": "agent_harness_responsibility_map",
+      "path": "docs/harness/agent-harness-responsibility-map.md",
+      "kind": "external_benchmark_map",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 scripts/check_harness_inventory.py --json"
+    },
+    {
+      "id": "domain_compilation_contract_map",
+      "path": "docs/harness/domain-compilation-contract-map.md",
+      "kind": "artifact_contract",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_domain_compilation_contract -v"
+    },
+    {
+      "id": "domain_compilation_contract_examples",
+      "path": "examples/contracts",
+      "kind": "contract_examples",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 scripts/check_domain_compilation_contract.py examples/contracts/research-source-intake-spec-v0.json examples/contracts/research-source-intake-verification-report-v0.json --target examples/contracts/research-source-intake-target-description-v0.json --platform-config examples/contracts/research-source-intake-platform-config-v0.json --json"
+    },
+    {
+      "id": "domain_compilation_contract_validator",
+      "path": "scripts/check_domain_compilation_contract.py",
+      "kind": "contract_validator",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_domain_compilation_contract -v"
+    },
+    {
       "id": "documentation_reproducibility_test",
       "path": "tests/test_documentation_reproducibility.py",
       "kind": "reproducibility_smoke",

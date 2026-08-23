@@ -1,0 +1,19 @@
+{
+  "config_id": "logged-out-public-web-recovery-v0",
+  "version": "v0",
+  "permissions": [
+    "public-web read",
+    "public syndication endpoint read",
+    "local artifact write"
+  ],
+  "enabled_features": [
+    "X syndication metadata recovery",
+    "public-browser navigation",
+    "local JSON and Markdown validation"
+  ],
+  "integration_endpoints": [
+    "cdn.syndication.twimg.com",
+    "public issuer/press/IR pages",
+    "local contract validator"
+  ]
+}

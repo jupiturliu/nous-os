@@ -154,6 +154,20 @@ When an external anchor moves from `queued` → `scanned` → `note-written` it 
 - **Where we differ / what we add:** DeepMind's evidence is on AI capability; ours is on human capability when AI is present.
 - **Status:** `queued`
 
+### Zhang et al. · "Autogenesis: A Self-Evolving Agent Protocol" (2026, arXiv preprint)
+- **What it is:** protocol/runtime proposal for self-evolving LLM agents, centered on RSPL resource governance and SEPL improvement loops.
+- **Claim:** prompts, agents, tools, environments, and memory should be protocol-registered, versioned, auditable resources, while self-improvement should proceed through closed-loop propose/evaluate/commit/rollback interfaces.
+- **Where we share:** directly reinforces NOUS OS Harness Engineering and Trading Brain self-improvement contracts: self-evolution must be typed, auditable, rollback-safe, and evidence-gated.
+- **Where we differ / what we add:** Autogenesis governs agent self-evolution; NOUS OS adds human capability, responsibility boundaries, reflection evidence, and capability-without-AI deltas.
+- **Status:** `note-written` → `inbound/2026-05-30-autogenesis-agent-protocol.md`
+
+### Yang et al. · "SkillOpt: Executive Strategy for Self-Evolving Agent Skills" (2026, arXiv preprint)
+- **What it is:** a method for treating agent skill files as compact, trainable artifacts updated through bounded edits and held-out validation.
+- **Claim:** reusable agent skills can improve through scored rollouts and gated textual changes without adding inference-time model calls.
+- **Where we share:** supports the NOUS OS view that skills are versioned procedural memory whose promotion should be evidence-backed and auditable.
+- **Where we differ / what we add:** SkillOpt optimizes agent task success; NOUS OS also requires human review, capability preservation, source discipline, and no privacy/capital/runtime drift.
+- **Status:** `note-written` → `inbound/2026-05-30-skillopt-self-evolving-skills.md`
+
 ### OpenAI · "GPTs in the classroom" + educator partnership reports
 - **What it is:** deployment-study work on AI in education contexts.
 - **Claim:** GPTs as tutors, study helpers, etc.
@@ -294,6 +308,13 @@ When an external anchor moves from `queued` → `scanned` → `note-written` it 
 - **Where we share:** product-strategy literacy informs our "what is happening in product land" tracking.
 - **Where we differ / what we add:** Thompson is product-strategy-focused; we are research-method-focused. Different lens, complementary.
 - **Status:** `queued`
+
+### Mike Piccolo / ii.dev · "How to Build Your Own Agent Harness" (2026, essay)
+- **What it is:** practitioner architecture essay / visual checklist on production-grade agent harnesses.
+- **Claim:** production agent systems require explicit harness responsibilities — workers, FSM, fail-closed policy, approval, budgets, traces, session state, sandboxing — not just a framework choice.
+- **Where we share:** directly reinforces NOUS OS Harness Engineering: the missing middle layer between model calls and reliable human-AI operation.
+- **Where we differ / what we add:** Piccolo's frame is production-agent infrastructure; NOUS OS adds human-capability preservation, boundary integrity, reflection evidence, and capability-without-AI deltas.
+- **Status:** `note-written` → `inbound/2026-05-30-piccolo-agent-harness.md`
 
 ### Latent Space podcast (Swyx + others)
 - **What it is:** AI engineering practitioners' podcast.

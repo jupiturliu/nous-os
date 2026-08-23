@@ -1,0 +1,24 @@
+{
+  "target_id": "public-source-snapshot-v0",
+  "observed_at": "2026-07-12T16:22:45Z",
+  "provenance": "Public X syndication payload and directly accessible public web pages captured during the research session.",
+  "assets": [
+    "X status metadata",
+    "quoted X Article title and preview metadata",
+    "attached-video frame inspection",
+    "publicly accessible attributable secondary article"
+  ],
+  "capacities": [
+    "logged-out public metadata recovery",
+    "public HTML/PDF retrieval where accessible"
+  ],
+  "constraints": [
+    "The full X Article body is login-gated.",
+    "Some source text may be preview-only or secondary reporting.",
+    "No private account, client research portal, or authenticated data source is available."
+  ],
+  "current_state": [
+    "Outer social post and quoted-article metadata recovered.",
+    "Full source completeness remains unverified."
+  ]
+}
