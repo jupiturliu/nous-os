@@ -38,8 +38,9 @@ jobs:
         id: capture
         run: |
           set -euo pipefail
+          python -m pip install -e .
           MAX_AGE="${{ github.event.inputs.max_age_days || '2' }}"
-          python scripts/research_line_capture.py --max-age-days "$MAX_AGE"
+          nous-os run research-line --profile research --max-age-days "$MAX_AGE"
           # Capture the dated filename for downstream steps.
           DATE_LABEL="$(date -u +%Y-%m-%d)"
           echo "date_label=${DATE_LABEL}" >> "$GITHUB_OUTPUT"
@@ -83,7 +84,7 @@ jobs:
           git checkout -b "$BRANCH"
           git add "$INBOX_FILE"
           git commit -m "L1 capture · ${DATE_LABEL}" \
-            -m "Daily Research Line L1 capture produced by scripts/research_line_capture.py. Raw, keyword-filtered, awaiting L2 triage. Merge to publish into the inbox corpus; close to discard; transform an entry into a full inbound note via docs/research-line/inbound/_template.md before merging if it is worth keeping."
+            -m "Daily Research Line L1 capture produced by nous_os.workflows.research_line. Raw, keyword-filtered, awaiting L2 triage. Merge to publish into the inbox corpus; close to discard; transform an entry into a full inbound note via docs/research-line/inbound/_template.md before merging if it is worth keeping."
 
           git push --force-with-lease origin "$BRANCH"
 

@@ -16,13 +16,13 @@ Use this index before starting NOUS OS work.
 | Need | Read / Run |
 |---|---|
 | Harness boundary | `docs/harness/README.md` |
-| Harness inventory | `docs/harness/HARNESS_INVENTORY.json`, `python3 scripts/check_harness_inventory.py --json` |
+| Harness inventory | `contracts/harness/inventory.json`, `nous-os validate harness` |
 | Student Sandbox v1 | `docs/student-sandbox-deterministic-workflow.md`, `docs/plans/2026-05-16-student-sandbox-research-study-v1-plan.md`, `examples/student_sandbox_v1.py` |
 | Skill-first / harness-second principle | `docs/harness/README.md`, `docs/student-sandbox-deterministic-workflow.md` |
 | Benchmark contract | `docs/benchmark-spec.md` |
 | Domain evaluator contract | `docs/domain-evaluator-interface.md` |
-| Trading evaluator | `examples/runtime/trading_evaluator.py`, `tests/test_trading_evaluator.py` |
-| Domain compilation prototype | `docs/harness/domain-compilation-contract-map.md`, `examples/contracts/`, `scripts/check_domain_compilation_contract.py`, `tests/test_domain_compilation_contract.py` |
+| Trading evaluator | `src/nous_os/evaluation/trading.py`, `tests/test_trading_evaluator.py` |
+| Domain compilation prototype | `docs/harness/domain-compilation-contract-map.md`, `contracts/domain-compilation/`, `src/nous_os/contracts/domain_compilation.py`, `tests/test_domain_compilation_contract.py` |
 | Cross-repo release readiness | `docs/cross-repo-release-gate.md`, `scripts/check_cross_repo_release_gate.py` |
 | Unit/site contract tests | `python3 -m unittest discover -s tests -v` |
 

@@ -8,7 +8,7 @@ Domain evaluators convert domain-specific outcomes into NOUS OS CLS v2 component
 DomainEvaluator.evaluate(run_context, outcome_artifacts) -> CLSComponents
 ```
 
-The runtime side lives in `examples/runtime/domain_evaluator.py`. New
+The runtime side lives in `src/nous_os/evaluation/domain.py`. New
 domain evaluators should import `DomainEvaluator` (a runtime-checkable
 `Protocol`) and `validate_cls_components()` from that module so contract
 drift fails fast at the import and test boundary rather than at first

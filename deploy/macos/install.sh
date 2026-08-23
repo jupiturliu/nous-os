@@ -13,6 +13,14 @@ GUI_DOMAIN="gui/${UID_NUM}"
 
 mkdir -p "$INSTALL_DIR" "$HOME/.cloudflared" "$REPO_ROOT/logs"
 
+PYTHON_BIN="${NOUS_OS_PYTHON:-python3.11}"
+if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+    echo "[install] Python 3.11 is required; set NOUS_OS_PYTHON to its executable."
+    exit 1
+fi
+"$PYTHON_BIN" -m venv "$REPO_ROOT/.venv"
+"$REPO_ROOT/.venv/bin/pip" install -e "$REPO_ROOT"
+
 sed "s|{{HOME}}|$HOME|g" "$CLOUDFLARED_CONFIG_SRC" > "$CLOUDFLARED_CONFIG_DST"
 echo "[install] wrote $CLOUDFLARED_CONFIG_DST"
 

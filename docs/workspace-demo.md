@@ -1,29 +1,23 @@
-# Workspace Demo
+# External Runtime Adapters
 
-这个入口直接复用 `workspace` 下三套代码，而不是只做本仓库内 mock：
+The former workspace-wired demo modified `sys.path` and coupled NOUS OS to a particular sibling-directory layout. It has been replaced by the Harness capability Interface.
 
-- `aria`：沿用其架构角色，把 Aria 作为 planner / coordination layer 的接口边界
-- `synapse`：直接 import `AgentWorker`、`AriaSynapseBridge`、`HumanOverrideHandler`
-- `trustmem`：直接调用 `trustmem/tools/knowledge_search.py` 做知识检索
+## Heartbeat
 
-## 运行
+Run the deterministic local Adapter:
 
 ```bash
-python3 examples/nousos_workspace_demo.py
+NOUS_OS_HOME=/tmp/nous-os-demo nous-os run heartbeat --profile research
 ```
 
-## 运行时数据
+If Synapse is installed in the Python environment, Heartbeat may use its runtime Implementation. It no longer searches for or imports sibling repositories by filesystem position.
 
-为了不污染现有工作区状态，demo 运行时数据写到：
+## Trading Proof
 
-- `examples/runtime/data/episodes/episodes.jsonl`
-- `examples/runtime/insights.json`
-- `examples/runtime/alerts.json`
+The read-only Trading evaluator accepts an explicit workspace through its constructor. For the Heartbeat demonstration, set:
 
-## 证明点
+```bash
+NOUS_TRADING_WORKSPACE=/path/to/workspace nous-os run heartbeat --profile trading-proof --demo-mode trading_vertical
+```
 
-- 多 worker 执行来自真实 `synapse` `AgentWorker` 基类
-- task dispatch 经过真实 `AriaSynapseBridge`
-- human override 经过真实 `HumanOverrideHandler`
-- recall 走真实 episode logger 逻辑
-- 长期知识补充来自真实 `trustmem` search 工具
+All mutable evidence, state and Projections remain under `$NOUS_OS_HOME`.

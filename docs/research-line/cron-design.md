@@ -9,7 +9,7 @@ The north star — *compounding wisdom in human-AI pairs* — cannot be served b
 ## Architecture: 3 tiers
 
 ```text
-L1 · Capture     daily       scripts/research_line_capture.py
+L1 · Capture     daily       nous_os.workflows.research_line
                               → docs/research-line/inbound/_inbox/YYYY-MM-DD.md
                               → opened as a PR by .github/workflows/research-line-capture.yml
 
@@ -28,7 +28,7 @@ Daily at **07:15 UTC** (one window per day, via `.github/workflows/research-line
 
 ### Sources (current set — keep small)
 
-The configured source list lives in `scripts/research_line_capture.py::SOURCES`. The design point is **≤ 8 sources** to keep noise low. Initial set:
+The configured source list lives in `nous_os.workflows.research_line::SOURCES`. The design point is **≤ 8 sources** to keep noise low. Initial set:
 
 | ID | Title | Feed | Anchor bucket |
 |---|---|---|---|
@@ -42,7 +42,7 @@ When a feed URL changes or goes dead, update the `SOURCES` list in the script an
 
 ### Keyword filter
 
-The filter is a flat list of anchor keywords (`scripts/research_line_capture.py::KEYWORDS`). An entry is kept if its title or summary contains any keyword (case-insensitive substring). Order does not matter. Initial keywords are deliberately specific:
+The filter is a flat list of anchor keywords (`nous_os.workflows.research_line::KEYWORDS`). An entry is kept if its title or summary contains any keyword (case-insensitive substring). Order does not matter. Initial keywords are deliberately specific:
 
 - *AI literacy*, *AI tutor*, *AI scaffolding*, *AI in education*, *AI in the classroom*
 - *cognitive offloading*, *tools for thought*, *self-regulated learning*, *metacognition*
@@ -68,7 +68,7 @@ The file is plain markdown so it can be diff-reviewed in a PR. The capture scrip
 
 ### Deploy stance
 
-`scripts/stage_static_site.sh` does **not** ship `_inbox/` contents. Only L2-promoted notes (the top-level `docs/research-line/inbound/*.md`) reach `nousos.ai`. Raw L1 is repo-internal until triage.
+`apps/web/site-manifest.yaml` does **not** ship `_inbox/` contents. Only L2-promoted notes (the top-level `docs/research-line/inbound/*.md`) reach `nousos.ai`. Raw L1 is repo-internal until triage.
 
 ## L2 triage — what the operator does
 
@@ -107,7 +107,7 @@ Once per quarter, write `docs/research-line/synthesis/YYYY-QN.md`:
 
 ## Verification
 
-- `python3 scripts/research_line_capture.py --dry-run` — confirms feed parsing, keyword matching, and markdown rendering end-to-end without writing anything.
+- `nous-os run research-line --profile research --dry-run` — confirms feed parsing, keyword matching, and markdown rendering end-to-end without writing anything.
 - `python3 -m unittest tests.test_research_line_capture -v` — unit tests against fixture RSS / Atom data. No network.
 - Workflow integration is verified end-to-end the first time the cron fires (or by `gh workflow run "Research Line · L1 daily capture"`).
 

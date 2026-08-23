@@ -1,0 +1,12 @@
+schema_version: 1
+public_root: apps/web/public
+files:
+  - README.md
+  - ARCHITECTURE.md
+document_patterns:
+  - docs/*.md
+  - docs/harness/**/*.md
+  - docs/research-line/*.md
+  - docs/research-line/inbound/*.md
+  - docs/research-line/preregistration/*.md
+  - docs/research-line/synthesis/*.md

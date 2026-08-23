@@ -5,7 +5,7 @@
 This guards against documentation drift: every ``python3 <path>`` and
 ``python3 -m <module>`` command documented in README.md and
 docs/getting-started.md must point to an existing, importable target.
-The lightweight no-external-deps command (``run_nous_heartbeat.py``) is
+The lightweight no-external-deps ``nous-os run heartbeat`` command is
 also invoked end-to-end to confirm the dashboard snapshot pipeline still
 produces output the documented workflow promises.
 """
@@ -13,6 +13,7 @@ produces output the documented workflow promises.
 from __future__ import annotations
 
 import re
+import os
 import subprocess
 import sys
 import unittest
@@ -73,25 +74,16 @@ class DocumentedCommandsExistTests(unittest.TestCase):
 
 
 class HeartbeatScriptIsRunnableTests(unittest.TestCase):
-    """``run_nous_heartbeat.py`` is the documented public-release smoke entry.
-
-    Documentation promises this command works from this repo alone. Invoke
-    it as a subprocess (matching the documented invocation), confirm exit
-    code 0, and confirm it produces the dashboard snapshot the docs
-    advertise.
-    """
+    """The unified CLI writes Projections without touching tracked snapshots."""
 
     def test_run_nous_heartbeat_exits_zero_and_writes_snapshot(self) -> None:
-        snapshot_path = ROOT / "examples" / "runtime" / "dashboard-data.json"
-        latest_record_path = ROOT / "examples" / "runtime" / "research-records" / "latest.json"
-        original_snapshot = snapshot_path.read_bytes() if snapshot_path.exists() else None
-        original_latest_record = latest_record_path.read_bytes() if latest_record_path.exists() else None
-        original_mtime = snapshot_path.stat().st_mtime if snapshot_path.exists() else 0
-
-        try:
+        tracked_snapshot = ROOT / "apps" / "web" / "public" / "examples" / "runtime" / "dashboard-data.json"
+        original_snapshot = tracked_snapshot.read_bytes()
+        with __import__("tempfile").TemporaryDirectory() as runtime_home:
             result = subprocess.run(
-                [sys.executable, "scripts/run_nous_heartbeat.py"],
+                [sys.executable, "-m", "nous_os", "--runtime-home", runtime_home, "run", "heartbeat"],
                 cwd=ROOT,
+                env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -99,18 +91,14 @@ class HeartbeatScriptIsRunnableTests(unittest.TestCase):
 
             self.assertEqual(
                 result.returncode, 0,
-                f"run_nous_heartbeat.py exited {result.returncode}; stderr={result.stderr[-1000:]}",
+                f"nous-os heartbeat exited {result.returncode}; stderr={result.stderr[-1000:]}",
             )
+            snapshot_path = Path(runtime_home) / "projections" / "dashboard-data.json"
+            latest_record_path = Path(runtime_home) / "projections" / "research-records" / "latest.json"
             self.assertTrue(snapshot_path.exists(), "dashboard snapshot was not produced")
-            self.assertGreater(
-                snapshot_path.stat().st_mtime, original_mtime,
-                "dashboard snapshot mtime did not advance; script may have skipped writing",
-            )
-        finally:
-            if original_snapshot is not None:
-                snapshot_path.write_bytes(original_snapshot)
-            if original_latest_record is not None:
-                latest_record_path.write_bytes(original_latest_record)
+            self.assertTrue(latest_record_path.exists(), "research projection was not produced")
+            self.assertTrue((Path(runtime_home) / "events" / "evidence.jsonl").exists())
+        self.assertEqual(tracked_snapshot.read_bytes(), original_snapshot)
 
 
 if __name__ == "__main__":

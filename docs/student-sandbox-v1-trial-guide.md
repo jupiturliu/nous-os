@@ -146,7 +146,7 @@ python3 examples/student_sandbox_v1.py --question "How should I research CRISPR 
 This writes a local artifact under:
 
 ```text
-examples/runtime/research-records/student-sandbox-v1-latest.json
+$NOUS_OS_HOME/projections/research-records/student-sandbox-v1-latest.json
 ```
 
 The artifact is the same loop content the web page renders; the page is the human-facing surface, the JSON is for archival and contract testing. Both are local-only and do not call external models.

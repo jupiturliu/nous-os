@@ -1,0 +1,827 @@
+{
+  "audience": "high_school_student",
+  "benchmark": {
+    "baseline": {
+      "memory_hit_rate": 0.0,
+      "quality": 0.74,
+      "tasks": 2
+    },
+    "cls": {
+      "components": {
+        "c_correction_absorption": 1.0,
+        "e_memory_reuse": 1.0,
+        "q_quality_improvement": 0.257,
+        "r_repeatability_gain": 0.5
+      },
+      "score": 0.603
+    },
+    "cls_v2": {
+      "components": {
+        "boundary_integrity": 1.0,
+        "correction_absorption": 1.0,
+        "human_agency_preservation": 1.0,
+        "memory_reuse_precision": 1.0,
+        "outcome_quality_delta": 0.257,
+        "repeatability_gain": 0.5
+      },
+      "evidence_refs": [
+        "runtime://round1",
+        "runtime://round2",
+        "runtime://human_override"
+      ],
+      "evidence_source": "synthetic_demo",
+      "score": 0.665
+    },
+    "derived": {
+      "alerts_created": 6,
+      "correction_applied_rate": 1.0,
+      "episodes_logged": 5,
+      "memory_reuse_rate": 1.0,
+      "quality_improvement_rate": 0.257,
+      "task_expansion_rate": 0.5
+    },
+    "evidence_source": "synthetic_demo",
+    "public_standard": [
+      {
+        "detail": "Does the second run improve task quality against the baseline first run?",
+        "id": "Q",
+        "label": "Quality Improvement",
+        "value": 0.257
+      },
+      {
+        "detail": "Does one human correction enter the system and alter later behavior?",
+        "id": "C",
+        "label": "Correction Absorption",
+        "value": 1.0
+      },
+      {
+        "detail": "What fraction of second-run tasks actually reuse memory?",
+        "id": "E",
+        "label": "Memory Reuse",
+        "value": 1.0
+      },
+      {
+        "detail": "Does the loop expand or refine the second-run plan in a measurable way?",
+        "id": "R",
+        "label": "Repeatability Gain",
+        "value": 0.5
+      }
+    ],
+    "treatment": {
+      "memory_hit_rate": 1.0,
+      "quality": 0.93,
+      "tasks": 3
+    }
+  },
+  "completed": [
+    {
+      "job_id": "impl-demo-002",
+      "output": {
+        "agent": "vibe-vpe",
+        "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "memory_hits": 1,
+        "quality_score": 0.9,
+        "round": 2,
+        "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+        "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "topic": "implementation_queue"
+      },
+      "topic": "implementation_queue"
+    },
+    {
+      "job_id": "boundary-demo-002",
+      "output": {
+        "agent": "vibe-vpe",
+        "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "memory_hits": 1,
+        "quality_score": 0.94,
+        "round": 2,
+        "summary": "Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a ",
+        "task": "Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "topic": "implementation_queue"
+      },
+      "topic": "implementation_queue"
+    },
+    {
+      "job_id": "learn-demo-002",
+      "output": {
+        "agent": "research-cto",
+        "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "memory_hits": 1,
+        "quality_score": 0.94,
+        "round": 2,
+        "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+        "task": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+        "topic": "learning_queue"
+      },
+      "topic": "learning_queue"
+    }
+  ],
+  "current_round": 2,
+  "demo_mode": "student",
+  "demo_mode_label": "Student Learning Companion",
+  "first_vertical": {
+    "lesson": "High-stakes agents require approval gates, reconciliation, provenance, and review.",
+    "name": "trading-agent",
+    "not_for": "not to recommend trades, not student investing advice, and not a commercialization endpoint",
+    "role": "first vertical application / research proof bed"
+  },
+  "generated_at": "2026-08-23T13:08:23",
+  "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+  "human_agency": {
+    "ai_helps_with": [
+      "search",
+      "decomposition",
+      "simulation",
+      "critique",
+      "memory recall",
+      "practice generation"
+    ],
+    "human_keeps": [
+      "goal",
+      "values",
+      "verification",
+      "final responsibility"
+    ],
+    "human_keeps_final_responsibility": true,
+    "human_sets_boundary": true,
+    "human_sets_goal": true,
+    "human_verifies": true
+  },
+  "metrics": {
+    "alerts_created": 6,
+    "avg_quality": 0.93,
+    "cls_score": 0.603,
+    "cls_v2_score": 0.665,
+    "episodes_logged": 5,
+    "quality_delta": 0.19,
+    "tasks_completed": 3,
+    "tasks_dispatched": 3
+  },
+  "mode_lesson": "AI gets more useful after human feedback, but the human keeps goals, values, verification, and responsibility.",
+  "north_star": "education/research-first human-AI co-evolution",
+  "override": {
+    "created_at": "2026-08-23T13:08:23",
+    "demo_mode": "student",
+    "domain": "demo",
+    "evidence_ref": "runtime://human_override",
+    "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+    "id": "override-1787515703291",
+    "kind": "privacy",
+    "label": "Privacy boundary",
+    "reason": "Human boundary: do not reveal private family, school, or friend information.",
+    "round_1_quality": 0.74
+  },
+  "paths": {
+    "alerts": "runtime://state/heartbeat/agent-bus/alerts.json",
+    "dashboard_data": "projection://dashboard-data.json",
+    "implementation_queue": "runtime://state/heartbeat/agent-bus/implementation_queue.json",
+    "latest_research_record": "projection://research-records/latest.json",
+    "learning_queue": "runtime://state/heartbeat/agent-bus/learning_queue.json",
+    "research_record": "projection://research-records/20260823T130823-student-privacy.json"
+  },
+  "queues": {
+    "alerts": {
+      "items": [
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "research-cto-1787515703293",
+          "level": "medium",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+          "metadata": {
+            "job_id": "learn-demo-002",
+            "quality_score": 0.94,
+            "round": 2
+          },
+          "source": "research-cto",
+          "type": "task_complete"
+        },
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "vibe-vpe-1787515703292",
+          "level": "medium",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a ",
+          "metadata": {
+            "job_id": "boundary-demo-002",
+            "quality_score": 0.94,
+            "round": 2
+          },
+          "source": "vibe-vpe",
+          "type": "task_complete"
+        },
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "vibe-vpe-1787515703292",
+          "level": "medium",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+          "metadata": {
+            "job_id": "impl-demo-002",
+            "quality_score": 0.9,
+            "round": 2
+          },
+          "source": "vibe-vpe",
+          "type": "task_complete"
+        },
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "aria-1787515703291",
+          "level": "medium",
+          "message": "Human override recorded for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "metadata": {
+            "reason": "Human boundary: do not reveal private family, school, or friend information.",
+            "round_1_quality": 0.74
+          },
+          "source": "aria",
+          "type": "task_complete"
+        },
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "research-cto-1787515703290",
+          "level": "medium",
+          "message": "research-cto completed learning_queue: Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+          "metadata": {
+            "job_id": "learn-demo-001",
+            "quality_score": 0.76,
+            "round": 1
+          },
+          "source": "research-cto",
+          "type": "task_complete"
+        },
+        {
+          "acknowledged": false,
+          "action_required": false,
+          "created_at": "2026-08-23T13:08:23",
+          "id": "vibe-vpe-1787515703289",
+          "level": "medium",
+          "message": "vibe-vpe completed implementation_queue: Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+          "metadata": {
+            "job_id": "impl-demo-001",
+            "quality_score": 0.72,
+            "round": 1
+          },
+          "source": "vibe-vpe",
+          "type": "task_complete"
+        }
+      ]
+    },
+    "implementation_queue": {
+      "items": [
+        {
+          "completed_at": "2026-08-23T13:08:23",
+          "created_at": "2026-08-23T13:08:23",
+          "demo_mode": "student",
+          "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "id": "impl-demo-002",
+          "memory_hits": 1,
+          "priority": "high",
+          "quality_score": 0.9,
+          "reason": "Aria wants a refined second pass that applies the human boundary for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "result_path": "runtime://implementation_queue/impl-demo-002",
+          "round": 2,
+          "status": "done",
+          "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+          "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "type": "implementation_queue"
+        },
+        {
+          "boundary_label": "Privacy boundary",
+          "completed_at": "2026-08-23T13:08:23",
+          "created_at": "2026-08-23T13:08:23",
+          "demo_mode": "student",
+          "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "id": "boundary-demo-002",
+          "memory_hits": 1,
+          "override_kind": "privacy",
+          "priority": "high",
+          "quality_score": 0.94,
+          "reason": "TrustMem already contains the previous round and a human correction about privacy.",
+          "result_path": "runtime://implementation_queue/boundary-demo-002",
+          "role": "privacy_guard",
+          "round": 2,
+          "status": "done",
+          "summary": "Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a ",
+          "task": "Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "type": "implementation_queue"
+        }
+      ]
+    },
+    "learning_queue": {
+      "items": [
+        {
+          "completed_at": "2026-08-23T13:08:23",
+          "created_at": "2026-08-23T13:08:23",
+          "demo_mode": "student",
+          "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "id": "learn-demo-002",
+          "memory_hits": 1,
+          "priority": "high",
+          "quality_score": 0.94,
+          "reason": "Aria wants the next run to reuse prior learning and preserve human agency for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "result_path": "runtime://learning_queue/learn-demo-002",
+          "round": 2,
+          "status": "done",
+          "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+          "topic": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+          "type": "learning_queue"
+        }
+      ]
+    }
+  },
+  "reflection": {
+    "prompt": "What did the AI help with, and what remains my responsibility?",
+    "student_takeaway": "AI can assist my thinking, but it should not replace my judgment."
+  },
+  "research_record": {
+    "ai_first_pass": {
+      "risks": [
+        "first pass may be fluent without enough evidence",
+        "student/private context must stay minimized"
+      ],
+      "summary": "vibe-vpe q=0.72: Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec | research-cto q=0.76: Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi"
+    },
+    "ai_second_pass": {
+      "behavior_changed": true,
+      "evidence_refs": [
+        "runtime://round1",
+        "runtime://round2",
+        "runtime://human_override"
+      ],
+      "summary": "vibe-vpe q=0.9: Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec | vibe-vpe q=0.94: Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a  | research-cto q=0.94: Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi"
+    },
+    "artifact_path": "projection://research-records/20260823T130823-student-privacy.json",
+    "audience": "student",
+    "demo_mode": "student",
+    "generated_at": "2026-08-23T13:08:23",
+    "human_boundary": {
+      "kind": "privacy",
+      "label": "Privacy boundary",
+      "reason": "Human boundary: do not reveal private family, school, or friend information."
+    },
+    "human_intent": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+    "latest_path": "projection://research-records/latest.json",
+    "memory_update": {
+      "evidence_refs": [
+        "runtime://human_override",
+        "runtime://round1",
+        "runtime://round2",
+        "projection://dashboard-data"
+      ],
+      "stored": true
+    },
+    "metrics": {
+      "boundary_integrity": 1.0,
+      "correction_absorption": 1.0,
+      "human_agency_preservation": 1.0,
+      "memory_reuse": 1.0,
+      "reflection_completeness": 1.0,
+      "repeatability_gain": 0.5
+    },
+    "privacy": {
+      "contains_private_student_data": false,
+      "policy": "local/demo artifact only; do not collect real student private data",
+      "redaction_applied": true
+    },
+    "reflection": {
+      "prompt": "What did the AI help with, and what remains my responsibility?",
+      "student_takeaway": "AI can assist my thinking, but it should not replace my judgment."
+    },
+    "run_id": "20260823T130823-student-privacy",
+    "snapshot_ref": "projection://dashboard-data"
+  },
+  "runs": [
+    {
+      "completed": [
+        {
+          "job_id": "impl-demo-001",
+          "output": {
+            "agent": "vibe-vpe",
+            "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "memory_hits": 0,
+            "quality_score": 0.72,
+            "round": 1,
+            "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+            "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "topic": "implementation_queue"
+          },
+          "topic": "implementation_queue"
+        },
+        {
+          "job_id": "learn-demo-001",
+          "output": {
+            "agent": "research-cto",
+            "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "memory_hits": 0,
+            "quality_score": 0.76,
+            "round": 1,
+            "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+            "task": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "topic": "learning_queue"
+          },
+          "topic": "learning_queue"
+        }
+      ],
+      "dispatch_results": {
+        "implementation_queue": [
+          "impl-demo-001"
+        ],
+        "learning_queue": [
+          "learn-demo-001"
+        ]
+      },
+      "metrics": {
+        "avg_quality": 0.74,
+        "memory_hit_rate": 0.0,
+        "tasks_completed": 2,
+        "tasks_dispatched": 2
+      },
+      "queues": {
+        "implementation_queue": {
+          "items": [
+            {
+              "completed_at": "2026-08-23T13:08:23",
+              "created_at": "2026-08-23T13:08:23",
+              "demo_mode": "student",
+              "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "id": "impl-demo-001",
+              "memory_hits": 0,
+              "priority": "high",
+              "quality_score": 0.72,
+              "reason": "Aria wants a visible Student Learning Companion first pass for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "result_path": "runtime://implementation_queue/impl-demo-001",
+              "round": 1,
+              "status": "done",
+              "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+              "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "type": "implementation_queue"
+            }
+          ]
+        },
+        "learning_queue": {
+          "items": [
+            {
+              "completed_at": "2026-08-23T13:08:23",
+              "created_at": "2026-08-23T13:08:23",
+              "demo_mode": "student",
+              "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "id": "learn-demo-001",
+              "memory_hits": 0,
+              "priority": "high",
+              "quality_score": 0.76,
+              "reason": "Aria needs an education/research narrative for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "result_path": "runtime://learning_queue/learn-demo-001",
+              "round": 1,
+              "status": "done",
+              "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+              "topic": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "type": "learning_queue"
+            }
+          ]
+        }
+      },
+      "round": 1
+    },
+    {
+      "completed": [
+        {
+          "job_id": "impl-demo-002",
+          "output": {
+            "agent": "vibe-vpe",
+            "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "memory_hits": 1,
+            "quality_score": 0.9,
+            "round": 2,
+            "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+            "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "topic": "implementation_queue"
+          },
+          "topic": "implementation_queue"
+        },
+        {
+          "job_id": "boundary-demo-002",
+          "output": {
+            "agent": "vibe-vpe",
+            "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "memory_hits": 1,
+            "quality_score": 0.94,
+            "round": 2,
+            "summary": "Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a ",
+            "task": "Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "topic": "implementation_queue"
+          },
+          "topic": "implementation_queue"
+        },
+        {
+          "job_id": "learn-demo-002",
+          "output": {
+            "agent": "research-cto",
+            "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "memory_hits": 1,
+            "quality_score": 0.94,
+            "round": 2,
+            "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+            "task": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+            "topic": "learning_queue"
+          },
+          "topic": "learning_queue"
+        }
+      ],
+      "dispatch_results": {
+        "implementation_queue": [
+          "impl-demo-002",
+          "boundary-demo-002"
+        ],
+        "learning_queue": [
+          "learn-demo-002"
+        ]
+      },
+      "metrics": {
+        "avg_quality": 0.93,
+        "memory_hit_rate": 1.0,
+        "tasks_completed": 3,
+        "tasks_dispatched": 3
+      },
+      "queues": {
+        "implementation_queue": {
+          "items": [
+            {
+              "completed_at": "2026-08-23T13:08:23",
+              "created_at": "2026-08-23T13:08:23",
+              "demo_mode": "student",
+              "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "id": "impl-demo-002",
+              "memory_hits": 1,
+              "priority": "high",
+              "quality_score": 0.9,
+              "reason": "Aria wants a refined second pass that applies the human boundary for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "result_path": "runtime://implementation_queue/impl-demo-002",
+              "round": 2,
+              "status": "done",
+              "summary": "Built implementation draft: Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research projec",
+              "task": "Prototype the execution surface for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "type": "implementation_queue"
+            },
+            {
+              "boundary_label": "Privacy boundary",
+              "completed_at": "2026-08-23T13:08:23",
+              "created_at": "2026-08-23T13:08:23",
+              "demo_mode": "student",
+              "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "id": "boundary-demo-002",
+              "memory_hits": 1,
+              "override_kind": "privacy",
+              "priority": "high",
+              "quality_score": 0.94,
+              "reason": "TrustMem already contains the previous round and a human correction about privacy.",
+              "result_path": "runtime://implementation_queue/boundary-demo-002",
+              "role": "privacy_guard",
+              "round": 2,
+              "status": "done",
+              "summary": "Built implementation draft: Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a ",
+              "task": "Protect privacy while guiding the research project: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "type": "implementation_queue"
+            }
+          ]
+        },
+        "learning_queue": {
+          "items": [
+            {
+              "completed_at": "2026-08-23T13:08:23",
+              "created_at": "2026-08-23T13:08:23",
+              "demo_mode": "student",
+              "goal": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "id": "learn-demo-002",
+              "memory_hits": 1,
+              "priority": "high",
+              "quality_score": 0.94,
+              "reason": "Aria wants the next run to reuse prior learning and preserve human agency for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "result_path": "runtime://learning_queue/learn-demo-002",
+              "round": 2,
+              "status": "done",
+              "summary": "Produced research brief: Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project wi",
+              "topic": "Research the flywheel story for: I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+              "type": "learning_queue"
+            }
+          ]
+        }
+      },
+      "round": 2
+    }
+  ],
+  "runtime_backend": {
+    "episode_store": "jsonl",
+    "memory_fallback_allowed": true,
+    "mode": "local",
+    "requested_backend": "memory",
+    "sqlite_path": "runtime://state/heartbeat/episodes/episodes.sqlite",
+    "synapse_backend": "memory"
+  },
+  "safety_boundaries": [
+    {
+      "evidence_ref": "runtime://human_override",
+      "id": "privacy",
+      "label": "Privacy boundary",
+      "reason": "Human boundary: do not reveal private family, school, or friend information.",
+      "status": "active"
+    },
+    {
+      "evidence_ref": "runtime://boundary_catalog",
+      "id": "facts",
+      "label": "Fact-check boundary",
+      "reason": "Human boundary: add source checks before accepting the answer.",
+      "status": "available"
+    },
+    {
+      "evidence_ref": "runtime://boundary_catalog",
+      "id": "learning",
+      "label": "Learning-not-answering boundary",
+      "reason": "Human boundary: do not give final answers; guide with hints and practice.",
+      "status": "available"
+    },
+    {
+      "evidence_ref": "runtime://boundary_catalog",
+      "id": "values",
+      "label": "Value/goal boundary",
+      "reason": "Human boundary: do not decide the student's goals or values for them.",
+      "status": "available"
+    }
+  ],
+  "timeline": [
+    {
+      "accent": "intent",
+      "detail": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking.",
+      "stage": "Step 1",
+      "title": "Student / human sets intent"
+    },
+    {
+      "accent": "aria",
+      "detail": "Aria and Synapse produce a first pass with 2 tasks and 0.74 baseline quality.",
+      "stage": "Step 2",
+      "title": "AI first pass"
+    },
+    {
+      "accent": "override",
+      "detail": "Human boundary: do not reveal private family, school, or friend information.",
+      "stage": "Step 3",
+      "title": "Human boundary / correction"
+    },
+    {
+      "accent": "trustmem",
+      "detail": "Round 2 recalled episode memory and expanded to 3 tasks.",
+      "stage": "Step 4",
+      "title": "Memory and evidence update"
+    },
+    {
+      "accent": "compound",
+      "detail": "Average quality improved from 0.74 to 0.93.",
+      "stage": "Step 5",
+      "title": "AI second pass changes behavior"
+    },
+    {
+      "accent": "reflection",
+      "detail": "AI can assist my thinking, but it should not replace my judgment.",
+      "stage": "Step 6",
+      "title": "Student reflection"
+    },
+    {
+      "accent": "human",
+      "detail": "Human keeps goal, values, verification, and final responsibility.",
+      "stage": "Step 7",
+      "title": "What remains human-owned"
+    }
+  ],
+  "topology": {
+    "edges": [
+      {
+        "from": "human",
+        "label": "notes",
+        "to": "obsidian"
+      },
+      {
+        "from": "obsidian",
+        "label": "context",
+        "to": "aria"
+      },
+      {
+        "from": "aria",
+        "label": "plan",
+        "to": "synapse"
+      },
+      {
+        "from": "synapse",
+        "label": "r1 2",
+        "to": "research"
+      },
+      {
+        "from": "synapse",
+        "label": "r2 3",
+        "to": "vibe"
+      },
+      {
+        "from": "human",
+        "label": "feedback",
+        "to": "override"
+      },
+      {
+        "from": "override",
+        "label": "policy",
+        "to": "trustmem"
+      },
+      {
+        "from": "obsidian",
+        "label": "sediment",
+        "to": "trustmem"
+      },
+      {
+        "from": "research",
+        "label": "episodes",
+        "to": "trustmem"
+      },
+      {
+        "from": "vibe",
+        "label": "episodes",
+        "to": "trustmem"
+      },
+      {
+        "from": "trustmem",
+        "label": "recall",
+        "to": "synapse"
+      },
+      {
+        "from": "synapse",
+        "label": "completion",
+        "to": "alerts"
+      },
+      {
+        "from": "alerts",
+        "label": "summary",
+        "to": "aria"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "human",
+        "kind": "human",
+        "label": "Human",
+        "meta": "I am a high-school student trying to understand how to use AI for a research project without losing my own thinking."
+      },
+      {
+        "id": "obsidian",
+        "kind": "knowledge",
+        "label": "Obsidian",
+        "meta": "readable notes"
+      },
+      {
+        "id": "aria",
+        "kind": "aria",
+        "label": "Aria",
+        "meta": "intent router"
+      },
+      {
+        "id": "synapse",
+        "kind": "synapse",
+        "label": "Synapse",
+        "meta": "3 tasks"
+      },
+      {
+        "id": "research",
+        "kind": "agent",
+        "label": "Research",
+        "meta": "research lane"
+      },
+      {
+        "id": "vibe",
+        "kind": "agent",
+        "label": "Vibe",
+        "meta": "implementation lane"
+      },
+      {
+        "id": "override",
+        "kind": "override",
+        "label": "Override",
+        "meta": "privacy"
+      },
+      {
+        "id": "trustmem",
+        "kind": "trustmem",
+        "label": "TrustMem",
+        "meta": "0.93 round2"
+      },
+      {
+        "id": "alerts",
+        "kind": "alerts",
+        "label": "Alerts",
+        "meta": "return to Aria"
+      }
+    ]
+  }
+}

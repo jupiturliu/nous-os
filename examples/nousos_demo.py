@@ -11,9 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
+from nous_os.core.runtime import RuntimePaths
 
-ROOT = Path(__file__).resolve().parent
-MEMORY_PATH = ROOT / "demo_memory.json"
+
+MEMORY_PATH = RuntimePaths.resolve().state / "examples" / "demo_memory.json"
 
 
 def now_iso() -> str:
@@ -42,6 +43,7 @@ class TrustMemStore:
         return json.loads(self.path.read_text())
 
     def _save(self) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.data, indent=2, ensure_ascii=True))
 
     def search(self, domain: str, intent: str) -> List[dict]:

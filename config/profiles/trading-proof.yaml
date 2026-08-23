@@ -1,0 +1,14 @@
+schema_version: 1
+name: trading-proof
+plugins:
+  - id: evidence
+    module: nous_os.plugins.evidence
+  - id: trading-evaluator
+    module: nous_os.plugins.trading_evaluator
+  - id: heartbeat
+    module: nous_os.plugins.heartbeat
+workflows:
+  - heartbeat
+web:
+  host: 127.0.0.1
+  port: 8787

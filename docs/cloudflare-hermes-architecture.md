@@ -30,7 +30,7 @@ The source pattern already exists in `/Users/liyao/nousos/trading-agent`:
 | Concern | Trading-agent evidence | NOUS OS adaptation |
 |---|---|---|
 | Cloudflare public edge | `docs/notes/deployment/DNS_SETUP_GUIDE.md`, `docs/notes/product/release_runbook.md` | `wrangler.toml`, `.github/workflows/cloudflare.yml` |
-| Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `backend/server.cjs` on `127.0.0.1:8787` |
+| Local origin / dev server | `web/server.py` on `127.0.0.1:8766` | `src/nous_os/web/server.py` on `127.0.0.1:8787` |
 | Hermes Gateway endpoint | `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` | backend uses `HERMES_API_SERVER_URL=http://127.0.0.1:8642/v1/chat/completions` |
 | Service health model | `ai.hermes.gateway`, `com.trading.webserver`, `com.trading.cloudflared` | `com.nousos.webbackend`, `com.nousos.cloudflared`, CI-gated Worker deploy |
 | Browser safety boundary | web calls first-party API routes, not model providers | browser calls `/api/hermes-student-agent` only |
@@ -68,11 +68,11 @@ POST ${HERMES_GATEWAY_URL}/v1/chat/completions
 ## Files
 
 - `wrangler.toml` — Cloudflare Worker Static Assets config
-- `worker/index.mjs` — production static frontend and `/api/*` backend proxy
-- `scripts/stage_static_site.sh` — deterministic `_site/` staging step
-- `backend/server.cjs` — NOUS OS web backend server
-- `scripts/serve_nous_site.cjs` — compatibility wrapper for the backend server
-- `api/hermes-student-agent.js` — Node/CommonJS Hermes Gateway adapter used by the backend
+- `apps/web/edge/worker.mjs` — production static frontend and `/api/*` backend proxy
+- `apps/web/site-manifest.yaml` — deterministic `_site/` staging contract
+- `src/nous_os/web/server.py` — NOUS OS Python web composition
+- `src/nous_os/web/hermes.py` — Hermes Gateway Adapter used by the backend
+- `config/profiles/student.yaml` — local Web Harness composition
 - `.github/workflows/cloudflare.yml` — CI-gated Cloudflare deploy workflow
 - `deploy/macos/install.sh` — macOS LaunchAgent installer for the local backend and Cloudflare Tunnel
 - `deploy/macos/launchagents/com.nousos.webbackend.plist` — keeps the NOUS OS backend running on `127.0.0.1:8787`
@@ -86,10 +86,9 @@ Required GitHub secrets:
 ```text
 CLOUDFLARE_ACCOUNT_ID
 CLOUDFLARE_API_TOKEN
-NOUS_BACKEND_ORIGIN_URL
 ```
 
-The deploy workflow writes `NOUS_BACKEND_ORIGIN_URL` into the Cloudflare Worker as a secret before `wrangler deploy`.
+The public backend origin is the non-sensitive `NOUS_BACKEND_ORIGIN_URL` variable in `wrangler.toml`.
 
 The Worker is routed to:
 
@@ -100,7 +99,7 @@ www.nousos.ai/*
 
 These routes only receive traffic when the matching DNS records are proxied through Cloudflare. During cutover, keep the existing GitHub Pages A/CNAME records if needed, but switch them from DNS-only to Proxied so Cloudflare can run the Worker before any origin fallback.
 
-Required Cloudflare Worker secret after deploy:
+Required Cloudflare Worker variable after deploy:
 
 ```text
 NOUS_BACKEND_ORIGIN_URL=https://backend.nousos.ai
@@ -180,6 +179,9 @@ The local backend stages `_site/`, serves static assets for local convenience, a
 
 ```text
 POST /api/hermes-student-agent
+GET|POST /api/student-sandbox-session
+GET /api/dashboard-data
+POST /api/run-heartbeat
 GET /api/health
 ```
 

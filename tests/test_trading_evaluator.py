@@ -9,23 +9,16 @@ workspace being populated.
 from __future__ import annotations
 
 import json
-import sys
 import unittest
 from pathlib import Path
 from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME = ROOT / "examples" / "runtime"
 FIXTURES = ROOT / "tests" / "fixtures" / "trading_evaluator"
 
-for path in (RUNTIME,):
-    path_str = str(path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-
-from trading_evaluator import TradingEvaluator, CLS_V2_FIELDS
-from domain_evaluator import (
+from nous_os.evaluation.trading import TradingEvaluator, CLS_V2_FIELDS
+from nous_os.evaluation.domain import (
     CLS_V2_COMPONENT_FIELDS,
     DomainEvaluator,
     validate_cls_components,
@@ -625,9 +618,7 @@ class TradingVerticalDemoWiringTests(unittest.TestCase):
         self._tmp = Path(__import__("tempfile").mkdtemp(prefix="trading_evaluator_wiring_"))
         self.addCleanup(lambda: __import__("shutil").rmtree(self._tmp, ignore_errors=True))
 
-        sys.path.insert(0, str(ROOT / "examples"))
-        sys.path.insert(0, str(ROOT / "scripts"))
-        import nousos_heartbeat_demo as heartbeat_demo
+        from nous_os.workflows import heartbeat as heartbeat_demo
         self.heartbeat_demo = heartbeat_demo
         self._orig_root = heartbeat_demo._trading_workspace_root
 

@@ -1,5 +1,5 @@
 name = "nous-os"
-main = "worker/index.mjs"
+main = "apps/web/edge/worker.mjs"
 compatibility_date = "2026-05-17"
 workers_dev = true
 preview_urls = false

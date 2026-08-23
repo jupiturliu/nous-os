@@ -34,7 +34,7 @@ export NOUS_OS_RUNTIME_BACKEND=sqlite
 The local episode logger writes SQLite-compatible artifacts at:
 
 ```text
-examples/runtime/data/episodes/episodes.sqlite
+$NOUS_OS_HOME/state/heartbeat/episodes/episodes.sqlite
 ```
 
 ## Runtime Contract

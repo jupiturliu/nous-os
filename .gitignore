@@ -8,6 +8,8 @@ examples/runtime/research-records/*.json
 !examples/runtime/research-records/latest.json
 __pycache__/
 *.pyc
+*.egg-info/
+.venv/
 _site/
 node_modules/
 .wrangler/

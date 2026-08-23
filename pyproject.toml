@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nous-os"
+version = "0.2.0"
+description = "Evidence-backed harness for human-AI co-evolution workflows"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6,<7"]
+
+[project.scripts]
+nous-os = "nous_os.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

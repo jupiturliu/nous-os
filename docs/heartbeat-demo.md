@@ -10,44 +10,26 @@
 ## 运行
 
 ```bash
-python3 examples/nousos_heartbeat_demo.py
-```
-
-正式入口：
-
-```bash
-python3 scripts/run_nous_heartbeat.py
+NOUS_OS_HOME=/tmp/nous-os-demo nous-os run heartbeat --profile research
 ```
 
 它会同时生成前端可消费的数据文件：
 
 ```bash
-examples/runtime/dashboard-data.json
-examples/runtime/research-records/latest.json
+$NOUS_OS_HOME/projections/dashboard-data.json
+$NOUS_OS_HOME/projections/research-records/latest.json
 ```
 
 ## 可视化页面
 
 ```bash
-python3 -m http.server
+nous-os serve web --profile student
 ```
 
 然后打开：
 
 ```text
-http://localhost:8000/demo/heartbeat-dashboard.html
-```
-
-## 带按钮的本地控制台
-
-```bash
-python3 scripts/run_nous_dashboard.py
-```
-
-然后打开：
-
-```text
-http://127.0.0.1:8765/demo/heartbeat-dashboard.html
+http://127.0.0.1:8787/demo/heartbeat-dashboard.html
 ```
 
 页面里的 `Run heartbeat` 按钮会直接调用本地 `POST /api/run-heartbeat`，重新生成 snapshot。
@@ -96,24 +78,24 @@ The generated snapshot includes:
 Every run also emits a structured education/research record:
 
 ```text
-examples/runtime/research-records/<run_id>.json
-examples/runtime/research-records/latest.json
+$NOUS_OS_HOME/projections/research-records/<run_id>.json
+$NOUS_OS_HOME/projections/research-records/latest.json
 ```
 
-The per-run files are local research artifacts and are ignored by git. `latest.json` is tracked and published so reviewers can inspect the current demo's human intent, AI first pass, human boundary, memory/evidence update, AI second pass, reflection, and agency metrics.
+The per-run files are local research projections and are ignored by git. Reviewers update the tracked Public Snapshot only with `nous-os publish-site-data --profile research`.
 
 ## Student Sandbox v0
 
 Phase 4 starts with a local-only sandbox:
 
 ```bash
-python3 examples/student_sandbox_v0.py
+nous-os serve web --profile student
 ```
 
 It asks clarifying questions, returns hints and practice instead of a final answer, requires source checks, redacts private details before record emission, and ends with a reflection prompt. It writes:
 
 ```text
-examples/runtime/research-records/student-sandbox-latest.json
+$NOUS_OS_HOME/projections/research-records/student-sandbox-latest.json
 ```
 
 ## Benchmark Mapping
@@ -133,21 +115,22 @@ examples/runtime/research-records/student-sandbox-latest.json
 This command set checks the public demo path and the read-only cross-repo release gate:
 
 ```bash
-python3 examples/nousos_demo.py
-python3 scripts/run_nous_heartbeat.py
+NOUS_OS_HOME=/tmp/nous-os-smoke nous-os run heartbeat --profile research
+nous-os validate harness
+nous-os validate contracts
 python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
-python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-`examples/nousos_demo.py`, `run_nous_heartbeat.py`, and the unit tests run inside this repository. When sibling Synapse/Aria modules are unavailable, `run_nous_heartbeat.py` uses the local deterministic fallback harness. `check_cross_repo_release_gate.py` expects the full workspace with sibling `synapse`, `trustmem`, `hermes-agent`, and `trading-agent` repos.
+Heartbeat and the unit tests run inside this repository. When installed Synapse/Aria runtime modules are unavailable, Heartbeat uses the local deterministic Adapter. `check_cross_repo_release_gate.py` expects the full workspace with sibling `synapse`, `trustmem`, `hermes-agent`, and `trading-agent` repos.
 
 ## 隔离运行态
 
 为了不碰现有线上队列，demo 使用：
 
-- `examples/runtime/agent-bus/implementation_queue.json`
-- `examples/runtime/agent-bus/learning_queue.json`
-- `examples/runtime/agent-bus/alerts.json`
+- `$NOUS_OS_HOME/state/heartbeat/agent-bus/implementation_queue.json`
+- `$NOUS_OS_HOME/state/heartbeat/agent-bus/learning_queue.json`
+- `$NOUS_OS_HOME/state/heartbeat/agent-bus/alerts.json`
 
 ## 价值
 

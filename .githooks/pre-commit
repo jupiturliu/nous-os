@@ -4,6 +4,6 @@ set -eu
 echo "Running NOUS OS pre-commit checks..."
 
 git diff --check
-python3 -m unittest discover -s tests -v
+PYTHONPATH=src NOUS_OS_HOME="${TMPDIR:-/tmp}/nous-os-precommit" python3 -m unittest discover -s tests -v
 
 echo "NOUS OS pre-commit checks passed."

@@ -2,37 +2,28 @@
 
 This guide shows the current TrustMem + Synapse integration path. The `AriaSynapseBridge` and `AriaOrchestrator.publish_from_agent_bus()` implementations live in the sibling `synapse/` workspace repo; this repository keeps the NOUS OS narrative, demos, dashboard, and public benchmark surface.
 
-This repository also includes a self-contained demo that preserves the NOUS OS layer boundaries without depending on the external component repos.
+The repository ships a Python Harness kernel and deterministic local Adapters, so the primary workflow does not depend on sibling repos.
 
 ---
 
 ## Prerequisites
 
 ```bash
-# Synapse
-cd synapse && pip install -e .
-
-# TrustMem (Node.js)
-cd trustmem && npm install
+python3 -m venv .venv
+.venv/bin/pip install -e .
 ```
 
 ---
 
-## Step 1 — Run the Flywheel Demo
+## Step 1 — Validate a Profile
 
-The fastest way to see the system in action (no real API needed):
+Profiles compose Plugins, workflows, and Web settings:
 
 ```bash
-python3 examples/nousos_demo.py
+.venv/bin/nous-os validate profile --profile student
 ```
 
-This shows the full loop:
-1. Intent → TrustMem-style search
-2. Synapse-style parallel execution
-3. Episode log + quality evaluation
-4. Promotion to shared memory
-5. Human override recording
-6. Second run with memory context
+The included Profiles are `student`, `research`, and `trading-proof` under `config/profiles/`.
 
 ---
 
@@ -41,9 +32,6 @@ This shows the full loop:
 `AriaSynapseBridge` is the Phase 1 integration point in the workspace Synapse repo. Aria itself is still treated as the private consciousness/alignment layer, while the bridge and heartbeat demo prove the public integration boundary.
 
 ```python
-import sys
-sys.path.insert(0, 'synapse')
-
 from orchestration.aria_synapse_bridge import AriaSynapseBridge
 
 bridge = AriaSynapseBridge()
@@ -96,8 +84,8 @@ print(f"Override recorded: {insight_id}")
 For the current public demo, inspect the benchmark snapshot:
 
 ```bash
-python3 scripts/run_nous_heartbeat.py
-cat examples/runtime/dashboard-data.json
+NOUS_OS_HOME=/tmp/nous-os-demo .venv/bin/nous-os run heartbeat --profile research
+cat "${NOUS_OS_HOME:-$HOME/.nous-os}/projections/dashboard-data.json"
 ```
 
 The snapshot maps directly to Q/C/E/R and CLS in [benchmark-spec.md](./benchmark-spec.md).
@@ -115,14 +103,15 @@ See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full three-layer design and in
 These commands require only this `nous-os` repository:
 
 ```bash
-python3 examples/nousos_demo.py
-python3 -m unittest discover -s tests -v
+.venv/bin/nous-os validate harness
+.venv/bin/nous-os validate contracts
+PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
 This command is self-contained. When sibling Synapse/Aria runtime modules are absent, it uses the local deterministic fallback harness:
 
 ```bash
-python3 scripts/run_nous_heartbeat.py
+NOUS_OS_HOME=/tmp/nous-os-smoke .venv/bin/nous-os run heartbeat --profile research
 ```
 
 This command requires the full `/Users/liyao/nousos` workspace with sibling repos:

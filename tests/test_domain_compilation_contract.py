@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -11,11 +12,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
 
-from check_domain_compilation_contract import validate_contract_bundle, validate_full_contract_bundle
+from nous_os.contracts.domain_compilation import validate_contract_bundle, validate_full_contract_bundle
 
 
 class DomainCompilationContractTests(unittest.TestCase):
@@ -131,15 +129,19 @@ class DomainCompilationContractTests(unittest.TestCase):
             run = subprocess.run(
                 [
                     sys.executable,
-                    str(SCRIPTS / "check_domain_compilation_contract.py"),
+                    "-m",
+                    "nous_os",
+                    "contract",
+                    "validate",
                     str(paths["spec"]),
                     str(paths["report"]),
                     "--target",
                     str(paths["target"]),
                     "--platform-config",
                     str(paths["config"]),
-                    "--json",
                 ],
+                cwd=ROOT,
+                env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
                 capture_output=True,
                 text=True,
                 check=False,

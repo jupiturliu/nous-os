@@ -40,7 +40,7 @@ Numeric snapshot of the last 14 days. Do not editorialize in this section — th
 What did our reading actually look like this period?
 
 - **Bucket distribution of promoted notes:** how many fell in each of the 6 atlas buckets.
-- **Sources to remove:** any source from `scripts/research_line_capture.py::SOURCES` that produced zero promotions this period — but do not over-react to a single quiet bi-week; consider trend across recent periods.
+- **Sources to remove:** any source from `nous_os.workflows.research_line::SOURCES` that produced zero promotions this period — but do not over-react to a single quiet bi-week; consider trend across recent periods.
 - **Sources to add:** new candidate sources discovered during the period. Name + reason + first-pass keyword fit.
 - **Keyword list adjustments:** any keyword that was load-bearing for ≥ 1 promotion this period, or any keyword that produced only firehose noise.
 - **Languages:** were Chinese / non-English sources represented? Where did the manual inbound flow land?

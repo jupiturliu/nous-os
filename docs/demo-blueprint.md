@@ -59,15 +59,15 @@ Dashboard 现在提供三个 narrative mode：
 2. Trading Agent Research Proof
 3. Research Lab / Teacher View
 
-每个 mode 都有对应 human boundary choices，并写入 `examples/runtime/dashboard-data.json`。Trading-agent 仍然是第一个垂直类应用 / research proof bed，但被明确解释为高约束边界研究案例，不是投资建议或商业化终点。
+每个 mode 都有对应 human boundary choices，并写入 `$NOUS_OS_HOME/projections/dashboard-data.json`。Trading-agent 仍然是第一个垂直类应用 / research proof bed，但被明确解释为高约束边界研究案例，不是投资建议或商业化终点。
 
 ## Research Harness Artifact
 
 当前 heartbeat demo 每次运行都会生成一个 structured research record：
 
 ```text
-examples/runtime/research-records/<run_id>.json
-examples/runtime/research-records/latest.json
+$NOUS_OS_HOME/projections/research-records/<run_id>.json
+$NOUS_OS_HOME/projections/research-records/latest.json
 ```
 
 这个 record 让 demo 从“看起来有动效的页面”变成可复盘的 education/research harness。它记录：
@@ -104,7 +104,7 @@ student intent
 输出写到：
 
 ```text
-examples/runtime/research-records/student-sandbox-latest.json
+$NOUS_OS_HOME/projections/research-records/student-sandbox-latest.json
 ```
 
 这个 sandbox 的目的不是替学生完成答案，而是让学生保留目标、验证、反思和最终责任。

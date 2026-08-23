@@ -3,7 +3,7 @@
 Aria 当前 heartbeat 是 prompt 驱动，不是单独 Python runner。最直接的接法是让 heartbeat 在发现 queue 里有 pending 项时，调用：
 
 ```bash
-python3 /home/fei/.openclaw/workspace/nous-os/scripts/run_nous_heartbeat.py
+nous-os run heartbeat --profile research
 ```
 
 ## 推荐接法
@@ -13,11 +13,11 @@ python3 /home/fei/.openclaw/workspace/nous-os/scripts/run_nous_heartbeat.py
 ```text
 若 implementation_queue 或 learning_queue 有 pending 项，不要手工逐条 spawn。
 优先执行：
-python3 /home/fei/.openclaw/workspace/nous-os/scripts/run_nous_heartbeat.py
+nous-os run heartbeat --profile research
 
 如果脚本返回 tasks_dispatched > 0：
 - 说明任务已通过 Synapse Event Bus 派发
-- 读取 examples/runtime/agent-bus/alerts.json 里的 summary
+- 读取 `$NOUS_OS_HOME/state/heartbeat/agent-bus/alerts.json` 里的 summary
 - 只向飞哥汇报关键完成项或异常
 ```
 

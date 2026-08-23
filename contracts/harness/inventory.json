@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "project": "nous-os",
+  "purpose": "Machine-readable inventory of NOUS OS harness surfaces, boundaries, artifacts, and verification commands.",
+  "default_boundary": "NOUS OS harness may inspect, route, evaluate, verify, summarize, and create review artifacts; it must not mutate live trading state, broker state, secrets, risk config, or production queues.",
+  "surfaces": [
+    {
+      "id": "harness_readme",
+      "path": "docs/harness/README.md",
+      "kind": "boundary_map",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "harness_context_index",
+      "path": "docs/harness/context-index.md",
+      "kind": "context_index",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "next_development_plan",
+      "path": "docs/plans/2026-05-16-nous-os-next-development-plan.md",
+      "kind": "development_plan",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "heartbeat_demo_dashboard",
+      "path": "apps/web/public/demo/heartbeat-dashboard.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "nous-os run heartbeat --profile research && python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "heartbeat_runtime",
+      "path": "src/nous_os/workflows/heartbeat.py",
+      "kind": "runtime_demo",
+      "owner": "repo",
+      "published": false,
+      "verification": "nous-os run heartbeat --profile research"
+    },
+    {
+      "id": "domain_evaluator_interface",
+      "path": "docs/domain-evaluator-interface.md",
+      "kind": "evaluator_contract",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "domain_evaluator_runtime",
+      "path": "src/nous_os/evaluation/domain.py",
+      "kind": "runtime_protocol",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
+      "id": "trading_evaluator",
+      "path": "src/nous_os/evaluation/trading.py",
+      "kind": "domain_evaluator",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
+      "id": "first_vertical_wiring_plan",
+      "path": "docs/plans/2026-05-16-first-vertical-proof-bed-wiring-plan.md",
+      "kind": "development_plan",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_trading_evaluator -v"
+    },
+    {
+      "id": "harness_handoffs",
+      "path": "docs/harness/handoffs",
+      "kind": "cross_agent_handoff",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "agent_harness_responsibility_map",
+      "path": "docs/harness/agent-harness-responsibility-map.md",
+      "kind": "external_benchmark_map",
+      "owner": "repo",
+      "published": true,
+      "verification": "nous-os validate harness"
+    },
+    {
+      "id": "domain_compilation_contract_map",
+      "path": "docs/harness/domain-compilation-contract-map.md",
+      "kind": "artifact_contract",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_domain_compilation_contract -v"
+    },
+    {
+      "id": "domain_compilation_contract_examples",
+      "path": "contracts/domain-compilation",
+      "kind": "contract_examples",
+      "owner": "repo",
+      "published": false,
+      "verification": "nous-os validate contracts"
+    },
+    {
+      "id": "domain_compilation_contract_validator",
+      "path": "src/nous_os/contracts/domain_compilation.py",
+      "kind": "contract_validator",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_domain_compilation_contract -v"
+    },
+    {
+      "id": "documentation_reproducibility_test",
+      "path": "tests/test_documentation_reproducibility.py",
+      "kind": "reproducibility_smoke",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_documentation_reproducibility -v"
+    },
+    {
+      "id": "student_sandbox_v0",
+      "path": "src/nous_os/workflows/student_sandbox_v0.py",
+      "kind": "local_sandbox",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_emits_local_private_research_record -v"
+    },
+    {
+      "id": "student_sandbox_v1",
+      "path": "src/nous_os/workflows/student_sandbox_v1.py",
+      "kind": "local_learning_loop",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_builds_20_minute_learning_loop_without_final_answer tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_research_study_protocol_is_privacy_first -v"
+    },
+    {
+      "id": "student_sandbox_v1_web",
+      "path": "apps/web/public/demo/student-sandbox-v1.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_web_renders_phases_checklist_and_reflection -v"
+    },
+    {
+      "id": "student_sandbox_v1_guide",
+      "path": "apps/web/public/demo/student-sandbox-v1-guide.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_guide_explains_why_and_how -v"
+    },
+    {
+      "id": "student_sandbox_v1_recruitment",
+      "path": "docs/student-sandbox-v1-recruitment.md",
+      "kind": "recruitment_template",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_student_sandbox_v1_recruitment_keeps_promises_honest -v"
+    },
+    {
+      "id": "research_line_spec",
+      "path": "docs/research-line/research-line.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_web",
+      "path": "apps/web/public/research-line.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_atlas_spec",
+      "path": "docs/research-line/anchor-atlas.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_atlas_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_atlas_web",
+      "path": "apps/web/public/research-line-atlas.html",
+      "kind": "static_demo",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_atlas_spec_and_web_are_aligned -v"
+    },
+    {
+      "id": "research_line_inbound_template",
+      "path": "docs/research-line/inbound/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_templates_exist_and_are_well_formed -v"
+    },
+    {
+      "id": "research_line_preregistration_template",
+      "path": "docs/research-line/preregistration/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_templates_exist_and_are_well_formed -v"
+    },
+    {
+      "id": "research_line_capture_script",
+      "path": "src/nous_os/workflows/research_line.py",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_research_line_capture -v"
+    },
+    {
+      "id": "research_line_capture_workflow",
+      "path": ".github/workflows/research-line-capture.yml",
+      "kind": "deployment_workflow",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_research_line_capture.CronWorkflowExistsTests -v"
+    },
+    {
+      "id": "research_line_cron_design",
+      "path": "docs/research-line/cron-design.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "research_line_hermes_integration_spec",
+      "path": "docs/research-line/hermes-integration.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_hermes_integration_spec_holds_load_bearing_clauses -v"
+    },
+    {
+      "id": "research_line_synthesis_template",
+      "path": "docs/research-line/synthesis/_template.md",
+      "kind": "research_line",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_nous_os.BenchmarkTests.test_research_line_hermes_integration_spec_holds_load_bearing_clauses -v"
+    },
+    {
+      "id": "latest_research_record",
+      "path": "apps/web/public/examples/runtime/research-records/latest.json",
+      "kind": "research_artifact",
+      "owner": "runtime",
+      "published": true,
+      "verification": "nous-os run heartbeat --profile research && nous-os publish-site-data --profile research"
+    },
+    {
+      "id": "review_template",
+      "path": "docs/review-template.md",
+      "kind": "review_protocol",
+      "owner": "repo",
+      "published": true,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "cross_repo_release_gate",
+      "path": "scripts/check_cross_repo_release_gate.py",
+      "kind": "release_gate",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json"
+    },
+    {
+      "id": "cloudflare_worker_deployment",
+      "path": ".github/workflows/cloudflare.yml",
+      "kind": "deployment_workflow",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest discover -s tests -v"
+    },
+    {
+      "id": "harness_kernel",
+      "path": "src/nous_os/core",
+      "kind": "harness_kernel",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_harness_kernel -v"
+    },
+    {
+      "id": "harness_profiles",
+      "path": "config/profiles",
+      "kind": "harness_composition",
+      "owner": "repo",
+      "published": false,
+      "verification": "nous-os validate profile --profile student"
+    },
+    {
+      "id": "evidence_plane",
+      "path": "src/nous_os/core/events.py",
+      "kind": "evidence_store",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_harness_kernel.EvidencePlaneTests -v"
+    },
+    {
+      "id": "python_web_composition",
+      "path": "src/nous_os/web",
+      "kind": "web_composition",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_harness_web.HarnessWebTests -v"
+    },
+    {
+      "id": "static_site_manifest",
+      "path": "apps/web/site-manifest.yaml",
+      "kind": "deployment_manifest",
+      "owner": "repo",
+      "published": false,
+      "verification": "nous-os site stage"
+    }
+  ]
+}

@@ -12,18 +12,14 @@ What they protect against:
 
 from __future__ import annotations
 
-import sys
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
 
-import research_line_capture as cap  # noqa: E402
+from nous_os.workflows import research_line as cap
 
 
 RSS_FIXTURE = b"""<?xml version="1.0" encoding="UTF-8"?>
@@ -228,7 +224,7 @@ class CronWorkflowExistsTests(unittest.TestCase):
         self.assertIn("schedule:", workflow)
         self.assertIn("cron:", workflow)
         # Must run the capture script.
-        self.assertIn("scripts/research_line_capture.py", workflow)
+        self.assertIn("nous-os run research-line --profile research", workflow)
         # Must open a PR (no direct master commits — operator-gated triage).
         self.assertIn("gh pr create", workflow)
         # Must NOT auto-merge.

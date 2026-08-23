@@ -2,18 +2,14 @@ from __future__ import annotations
 
 import json
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
 
-import check_cross_repo_release_gate as gate
+from scripts import check_cross_repo_release_gate as gate
 
 
 def _init_repo(path: Path) -> None:

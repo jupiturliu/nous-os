@@ -13,7 +13,7 @@ Machine artifacts:
 - `trading-agent/data/users/feige/research/contract_bundles/2026-07-12/china-ai-thermal-commercial-proof-*.json`
 - shared config: `.../public-source-plus-local-pdf-platform-config-v0.json`
 
-Both passed `scripts/check_domain_compilation_contract.py` against `research-source-intake-spec-v0.json` with `verdict=conditionally_feasible` and zero structural issues.
+Both passed `nous-os validate contracts` against `research-source-intake-spec-v0.json` with `verdict=conditionally_feasible` and zero structural issues.
 
 ## What repeated across real cases
 

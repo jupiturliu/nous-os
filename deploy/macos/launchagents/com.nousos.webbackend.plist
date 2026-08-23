@@ -6,8 +6,11 @@
     <string>com.nousos.webbackend</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/node</string>
-        <string>backend/server.cjs</string>
+        <string>{{REPO_ROOT}}/.venv/bin/nous-os</string>
+        <string>serve</string>
+        <string>web</string>
+        <string>--profile</string>
+        <string>student</string>
     </array>
     <key>WorkingDirectory</key>
     <string>{{REPO_ROOT}}</string>
@@ -19,6 +22,8 @@
         <string>8787</string>
         <key>NOUS_PUBLIC_ORIGIN</key>
         <string>https://nousos.ai</string>
+        <key>NOUS_OS_HOME</key>
+        <string>{{HOME}}/.nous-os</string>
         <key>PATH</key>
         <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     </dict>

@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOUS OS — Student Sandbox v1</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="description" content="A 20-minute AI-assisted research learning loop for high-school students with a local worksheet and NOUS Guide hints.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #eef5f2;
+    --ink: #162018;
+    --muted: #5b645d;
+    --line: rgba(24, 49, 43, 0.13);
+    --panel: rgba(255, 255, 255, 0.88);
+    --panel-strong: rgba(255, 255, 255, 0.98);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.12);
+    --teal-glow: rgba(15, 118, 110, 0.22);
+    --gold: #b7791f;
+    --gold-soft: rgba(183, 121, 31, 0.14);
+    --red: #b42318;
+    --red-soft: rgba(180, 35, 24, 0.11);
+    --navy: #21406b;
+    --navy-soft: rgba(33, 64, 107, 0.10);
+    --shadow: 0 28px 80px rgba(24, 49, 43, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 24%),
+      radial-gradient(circle at 18% 14%, rgba(33, 64, 107, 0.12), transparent 22%),
+      radial-gradient(circle at left 62%, rgba(183, 121, 31, 0.07), transparent 26%),
+      linear-gradient(180deg, #f8fbf8 0%, var(--bg) 100%);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(15, 118, 110, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 118, 110, 0.025) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+  }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 36px 22px 80px;
+    position: relative;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .topbar a {
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(15,118,110,0.35);
+  }
+  .topbar a:hover { color: var(--ink); }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  .eyebrow .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 4px var(--teal-soft);
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: clamp(34px, 4.4vw, 58px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+  }
+
+  .headline-gradient {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--teal) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .lede {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 44rem;
+  }
+
+  .privacy-banner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(15,118,110,0.22);
+    background: linear-gradient(135deg, rgba(15,118,110,0.08), rgba(183,121,31,0.05));
+    color: var(--ink);
+    margin-bottom: 36px;
+    box-shadow: var(--shadow);
+  }
+
+  .privacy-banner .icon {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    background: var(--teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .privacy-banner .body { font-size: 14px; line-height: 1.55; }
+  .privacy-banner strong { color: var(--teal); }
+
+  .trial-checklist {
+    border: 1px solid rgba(33,64,107,0.16);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.68);
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin: 18px 0 0;
+  }
+
+  .trial-checklist h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: var(--navy);
+  }
+
+  .trial-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .trial-step {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(15,118,110,0.045);
+    padding: 12px;
+    min-height: 118px;
+  }
+
+  .trial-step b {
+    display: block;
+    color: var(--teal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .trial-step span {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 36px 0 16px;
+  }
+
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .phase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .phase-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 20px 20px 22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .phase-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(15,118,110,0.28);
+  }
+
+  .phase-card.active {
+    border-color: rgba(15,118,110,0.55);
+    box-shadow: 0 28px 60px rgba(15,118,110,0.18), 0 0 0 4px rgba(15,118,110,0.10);
+    background: var(--panel-strong);
+  }
+
+  .phase-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .phase-id {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .phase-min {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .phase-card.active .phase-min {
+    background: rgba(15,118,110,0.14);
+    color: var(--teal);
+  }
+
+  .phase-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 8px 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .phase-row dt {
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 2px;
+  }
+
+  .phase-row dd {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .total-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .total-bar strong { color: var(--ink); font-weight: 600; }
+
+  .checklist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .checklist-item:hover { border-color: rgba(15,118,110,0.28); }
+
+  .checklist-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(33,47,35,0.30);
+    background: #fff;
+    cursor: pointer;
+    margin-top: 1px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.18s;
+  }
+
+  .checklist-item input[type="checkbox"]:checked {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+
+  .checklist-item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px; top: 1px;
+    width: 5px; height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checklist-item input:checked + span {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(91,100,93,0.5);
+  }
+
+  .reflection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  .reflection-block {
+    padding: 18px 18px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .reflection-block label {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .reflection-block textarea {
+    width: 100%;
+    min-height: 90px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .reflection-block textarea:focus {
+    border-color: rgba(15,118,110,0.45);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.10);
+  }
+
+  .observer-panel {
+    margin-top: 16px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    border: 1px dashed rgba(33,47,35,0.20);
+    background: rgba(255,250,242,0.55);
+  }
+
+  .observer-panel summary {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--navy);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .observer-panel ul {
+    margin: 14px 0 4px;
+    padding-left: 20px;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .observer-panel ul li { margin-bottom: 6px; }
+
+  .observer-panel .observer-note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  footer.foot {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  footer.foot code {
+    background: var(--gold-soft);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* Phase title + secondary id */
+  .phase-title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .phase-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+    background: var(--teal-soft);
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .phase-label {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .phase-id-sub {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    margin-left: 34px;
+    letter-spacing: 0.02em;
+  }
+  .phase-card.active .phase-num {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  /* Boundary definition tip on phase 3 */
+  .boundary-tip {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--gold-soft);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.5;
+    border-left: 3px solid var(--gold);
+  }
+  .boundary-tip strong { color: var(--gold); }
+  .boundary-examples {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+  }
+  .boundary-examples li { margin: 0; }
+
+  /* Plain-English policy phrasing + secondary monospace token */
+  .hints-policy-chip {
+    margin-left: 10px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    cursor: help;
+  }
+
+  /* Privacy reminder beside reflection */
+  .reflection-privacy-note {
+    margin: 6px 0 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(15,118,110,0.32);
+    background: rgba(15,118,110,0.04);
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .reflection-privacy-note strong { color: var(--teal); }
+
+  /* 20-minute timer + segmented progress strip */
+  .timer-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 14px 0 18px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    flex-wrap: wrap;
+  }
+  .timer-bar .timer-display {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    min-width: 100px;
+  }
+  .timer-bar .timer-display .of {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .start-btn {
+    border: 1px solid rgba(15,118,110,0.35);
+    background: linear-gradient(135deg, var(--teal), #117e76);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  }
+  .start-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(15,118,110,0.20);
+  }
+  .start-btn[data-state="running"] {
+    background: linear-gradient(135deg, var(--red), #a01b10);
+    border-color: rgba(180,35,24,0.35);
+  }
+  .start-btn[data-state="done"] {
+    background: var(--panel-strong);
+    color: var(--muted);
+    cursor: default;
+    border-color: var(--line);
+  }
+  .progress-strip {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(15,118,110,0.06);
+    border: 1px solid var(--line);
+  }
+  .progress-segment {
+    flex-grow: var(--seg-weight, 1);
+    position: relative;
+    border-right: 1px solid rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+  .progress-segment:last-child { border-right: none; }
+  .progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--teal-glow));
+    transition: width 0.35s linear;
+  }
+
+  .execution-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .worksheet-grid, .prompt-stack {
+    display: grid;
+    gap: 12px;
+  }
+
+  .field-card, .prompt-card, .summary-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  .field-card label, .prompt-card label, .summary-card label {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .field-card input, .field-card textarea, .field-card select, .prompt-card textarea, .summary-card textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 11px 12px;
+    font: inherit;
+    color: var(--ink);
+    outline: none;
+    resize: vertical;
+  }
+
+  .field-card textarea { min-height: 74px; }
+  .prompt-card textarea { min-height: 150px; font-size: 13px; line-height: 1.5; }
+  .summary-card textarea { min-height: 190px; font-size: 13px; line-height: 1.55; }
+
+  .field-card input:focus, .field-card textarea:focus, .field-card select:focus, .prompt-card textarea:focus, .summary-card textarea:focus {
+    border-color: rgba(15,118,110,0.45);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.10);
+  }
+
+  .field-help {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .prompt-head, .summary-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .prompt-head label, .summary-actions label { margin-bottom: 0; }
+
+  .copy-btn, .plain-btn {
+    border: 1px solid rgba(15,118,110,0.28);
+    background: rgba(15,118,110,0.08);
+    color: var(--teal);
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover, .plain-btn:hover { background: rgba(15,118,110,0.13); }
+
+  .copy-btn.copied {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .session-note {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 780px;
+  }
+
+  .summary-hint {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .readiness-panel {
+    border: 1px solid rgba(15,118,110,0.18);
+    border-radius: 18px;
+    background: rgba(15,118,110,0.05);
+    padding: 14px;
+    margin: 0 0 16px;
+  }
+
+  .readiness-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .readiness-head strong { color: var(--navy); }
+
+  .readiness-head span {
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+  }
+
+  .readiness-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .readiness-item {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.72);
+    padding: 12px;
+    min-height: 94px;
+  }
+
+  .readiness-item b {
+    display: block;
+    color: var(--navy);
+    margin-bottom: 5px;
+  }
+
+  .readiness-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  .readiness-item[data-ready="yes"] {
+    border-color: rgba(15,118,110,0.34);
+    background: rgba(15,118,110,0.08);
+  }
+
+  .readiness-item[data-ready="yes"] b::before { content: "Ready · "; color: var(--teal); }
+  .readiness-item[data-ready="no"] b::before { content: "Missing · "; color: var(--gold); }
+
+  .source-card-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .source-card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.54);
+    padding: 14px;
+  }
+
+  .source-card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .source-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .source-fields label {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .source-fields input, .source-fields textarea, .source-fields select {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 9px 10px;
+    font: inherit;
+    color: var(--ink);
+  }
+
+  .source-fields textarea {
+    min-height: 62px;
+    grid-column: span 2;
+    resize: vertical;
+  }
+
+  .review-link-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .observer-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 10px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .observer-checklist label {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .observer-panel textarea {
+    width: 100%;
+    min-height: 72px;
+    margin-top: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 10px 12px;
+    font: inherit;
+    resize: vertical;
+  }
+
+  .hermes-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .hermes-card {
+    border: 1px solid rgba(33,64,107,0.18);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(33,64,107,0.08), rgba(15,118,110,0.05));
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .hermes-card h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .hermes-card p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .hermes-rules {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .hermes-rule {
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: rgba(255,255,255,0.54);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .hermes-window {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .hermes-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.55);
+  }
+
+  .hermes-name {
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .hermes-mode {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: var(--teal-soft);
+    padding: 4px 8px;
+    border-radius: 999px;
+  }
+
+  .hermes-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 260px;
+    max-height: 360px;
+    overflow: auto;
+    padding: 16px;
+  }
+
+  .hermes-message {
+    width: min(92%, 620px);
+    padding: 11px 13px;
+    border-radius: 15px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  .hermes-message.agent {
+    align-self: flex-start;
+    background: rgba(33,64,107,0.08);
+    border: 1px solid rgba(33,64,107,0.16);
+  }
+
+  .hermes-message.user {
+    align-self: flex-end;
+    background: rgba(15,118,110,0.10);
+    border: 1px solid rgba(15,118,110,0.22);
+  }
+
+  .hermes-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .hermes-input-row textarea {
+    min-height: 58px;
+    max-height: 140px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    padding: 11px 12px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+  }
+
+  .hermes-input-row button {
+    align-self: start;
+    border: 1px solid rgba(33,64,107,0.26);
+    background: var(--navy);
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .hermes-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 14px;
+  }
+
+  .hermes-chips button {
+    border: 1px solid rgba(33,64,107,0.18);
+    background: rgba(33,64,107,0.07);
+    color: var(--navy);
+    border-radius: 999px;
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .save-status {
+    padding: 0 16px 14px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .save-status strong { color: var(--teal); }
+
+  @media (max-width: 640px) {
+    .shell { padding: 24px 16px 60px; }
+    h1 { font-size: 30px; }
+    .phase-row { grid-template-columns: 1fr; }
+    .phase-row dt { padding-top: 0; }
+    .phase-id-sub { margin-left: 0; }
+    .timer-bar .timer-display { min-width: auto; }
+    .execution-panel { grid-template-columns: 1fr; }
+    .prompt-head, .summary-actions { align-items: flex-start; flex-direction: column; }
+    .hermes-panel { grid-template-columns: 1fr; }
+    .hermes-input-row { grid-template-columns: 1fr; }
+    .source-fields { grid-template-columns: 1fr; }
+    .source-fields textarea { grid-column: span 1; }
+    .readiness-grid { grid-template-columns: 1fr; }
+    .trial-steps { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <div class="topbar">
+    <span>NOUS OS · Student Sandbox v1 · local worksheet</span>
+    <span><a href="student-sandbox-v1-guide.html">why &amp; how</a> &nbsp;·&nbsp; <a href="../index.html">← back to NOUS OS</a></span>
+  </div>
+
+  <span class="eyebrow"><span class="dot"></span> 20-minute AI-assisted research loop</span>
+  <h1 class="headline-gradient">Hints, not answers.</h1>
+  <p class="lede">
+    Use AI like a tutor, not a ghostwriter. In 20 minutes you frame a research
+    question, set one human boundary, check two sources, revise with AI, and
+    end with a reflection that names what AI helped with, what you verified,
+    and what remains yours. Press <strong>Start</strong> to pace yourself with
+    the 20-minute clock, or click a phase to browse.
+  </p>
+
+  <div class="privacy-banner">
+    <div class="icon">🔒</div>
+    <div class="body">
+      <strong>Privacy:</strong> The worksheet runs in this browser tab and is
+      saved only to the NOUS OS local backend on this machine. NOUS Guide chat sends
+      only the question and worksheet context when you click <strong>Ask</strong>,
+      through a server-side Gateway route that keeps keys out of the browser.
+      Software can detect emails, phones, and
+      SSN-style patterns — but it <strong>cannot</strong> catch your name,
+      school name, or family details, so please don't type them. Use topic
+      area ("CRISPR ethics for biology class"), not identifying context
+      ("Mrs. Smith's class at Lincoln HS").
+    </div>
+  </div>
+
+  <div class="trial-checklist" aria-label="First trial execution checklist">
+    <h2>First-trial run checklist</h2>
+    <p class="session-note">Use this page with one student or student-adjacent participant. The goal is not to grade the student; it is to see whether the protocol preserves thinking, evidence checks, and responsibility.</p>
+    <div class="trial-steps">
+      <div class="trial-step"><b>Before</b><span>Pick one topic, keep identities out of the page, and ask a parent/teacher/researcher to observe process only.</span></div>
+      <div class="trial-step"><b>During</b><span>Start the timer, let the student click Ask only when ready, and require two source cards before review.</span></div>
+      <div class="trial-step"><b>After</b><span>Open Session Review, export the Markdown packet, and copy it into Obsidian 04 Reviews.</span></div>
+      <div class="trial-step"><b>Next</b><span>Choose exactly one next-run change from review evidence before changing the product again.</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-label">NOUS Guide · ask any student question</div>
+    <div class="hermes-panel">
+      <div class="hermes-card">
+        <h2>NOUS Guide is optimized for this project.</h2>
+        <p>
+          NOUS Guide is the learning companion for this sandbox. Ask a research
+          question, source question, or "what should I do next?" It will keep
+          the session inside the NOUS OS rules: hints, boundaries, source
+          checks, and human responsibility.
+        </p>
+        <div class="hermes-rules">
+          <div class="hermes-rule"><strong>It will not write your final answer.</strong> It turns questions into subquestions, checks, and next moves.</div>
+          <div class="hermes-rule"><strong>It saves locally.</strong> Worksheet snapshots and chat turns are written to the local backend, not browser storage.</div>
+          <div class="hermes-rule"><strong>It uses the secure NOUS backend route.</strong> Gateway keys stay server-side in <code>/api/hermes-student-agent</code>; the browser never sees them.</div>
+        </div>
+      </div>
+
+      <div class="hermes-window" aria-label="NOUS Guide student learning chat">
+        <div class="hermes-top">
+          <div>
+            <div class="hermes-name">NOUS Guide</div>
+            <div class="field-help">NOUS OS learning guide · hints_not_answers</div>
+          </div>
+          <div class="hermes-mode">LLM agent</div>
+        </div>
+        <div class="hermes-log" id="hermes-chat-log" aria-live="polite">
+          <div class="hermes-message agent">
+            Hi, I'm NOUS Guide. Ask me your research question. I will help you frame it, set one boundary, choose source checks, and decide your next learning move — but I will not write the final answer for you.
+          </div>
+        </div>
+        <div class="hermes-input-row">
+          <textarea id="hermes-input" placeholder="Ask NOUS Guide: How should I research CRISPR ethics? What sources should I check? How do I avoid letting AI write my answer?"></textarea>
+          <button id="hermes-send" type="button">Ask</button>
+        </div>
+        <div class="hermes-chips" aria-label="NOUS Guide quick prompts">
+          <button type="button" data-hermes-prompt="Help me turn my topic into a better research question.">Improve my question</button>
+          <button type="button" data-hermes-prompt="What sources should I check for this topic?">Suggest source checks</button>
+          <button type="button" data-hermes-prompt="Help me choose a boundary so AI does not do my thinking.">Choose a boundary</button>
+        </div>
+        <div class="save-status" id="save-status">Local backend save: waiting for notes.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Guided worksheet · no prompt engineering required</div>
+    <p class="session-note">
+      This is the execution surface. Fill in short notes here, ask NOUS Guide only
+      when you want guided help, or copy the prompt cards into another AI tool.
+      The worksheet is saved only through the local backend so you can recover
+      session notes on this machine without exposing Gateway keys or using
+      browser storage.
+    </p>
+
+    <div class="readiness-panel" id="readiness-panel" aria-live="polite">
+      <div class="readiness-head">
+        <strong>Session readiness</strong>
+        <span>deterministic checks · student clicks when ready</span>
+      </div>
+      <div class="readiness-grid">
+        <div class="readiness-item" id="ready-first-pass" data-ready="no">
+          <b>First pass</b>
+          <span>Write a question and a prior-belief note before asking AI for a learning plan.</span>
+        </div>
+        <div class="readiness-item" id="ready-second-pass" data-ready="no">
+          <b>Second pass</b>
+          <span>Add a human boundary and at least one complete source card before asking AI to revise.</span>
+        </div>
+        <div class="readiness-item" id="ready-review" data-ready="no">
+          <b>Review</b>
+          <span>Complete two source cards, revised plan, and all reflection fields before exporting review.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="execution-panel">
+      <div class="worksheet-grid" aria-label="Student session worksheet">
+        <div class="field-card">
+          <label for="student-question">My question</label>
+          <input id="student-question" data-summary-label="Question" type="text" placeholder="Example: How should I research CRISPR ethics for biology class?">
+          <div class="field-help">Use topic area only. Do not type your full name, school, teacher, email, or family details.</div>
+        </div>
+
+        <div class="field-card">
+          <label for="prior-belief">What I think before asking AI</label>
+          <textarea id="prior-belief" data-summary-label="Prior belief" placeholder="One sentence about what you currently believe or what you are unsure about."></textarea>
+        </div>
+
+        <div class="field-card">
+          <label for="student-boundary">My boundary</label>
+          <select id="student-boundary" data-summary-label="Boundary">
+            <option value="AI should not choose my opinion.">AI should not choose my opinion.</option>
+            <option value="AI should not write my conclusion.">AI should not write my conclusion.</option>
+            <option value="AI should not use private personal details.">AI should not use private personal details.</option>
+            <option value="AI should not accept weak sources.">AI should not accept weak sources.</option>
+            <option value="AI should show uncertainty instead of sounding final.">AI should show uncertainty instead of sounding final.</option>
+          </select>
+          <div class="field-help">A boundary is one thing AI is not allowed to do for you in this session.</div>
+        </div>
+
+        <div class="field-card">
+          <label for="ai-plan-notes">AI plan notes</label>
+          <textarea id="ai-plan-notes" data-summary-label="AI plan notes" placeholder="Paste or summarize the useful parts of the AI's learning plan. Do not paste private information."></textarea>
+        </div>
+
+        <div class="field-card">
+          <label for="source-notes">Sources I checked</label>
+          <textarea id="source-notes" data-summary-label="Source notes" placeholder="Source 1: author/date/evidence. Source 2: author/date/evidence. What looked weak?"></textarea>
+        </div>
+
+        <div class="field-card">
+          <label>Structured source cards</label>
+          <div class="source-card-grid" id="source-card-grid">
+            <div class="source-card" data-source-card="source-1">
+              <div class="source-card-title"><span>Source 1</span><span>required for research review</span></div>
+              <div class="source-fields">
+                <label>Title or URL<input data-source-field="title" placeholder="Article, paper, page, or URL"></label>
+                <label>Author / institution<input data-source-field="author" placeholder="Who produced it?"></label>
+                <label>Date<input data-source-field="date" placeholder="Year or publication date"></label>
+                <label>Decision<select data-source-field="decision"><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>
+                <label>Evidence<textarea data-source-field="evidence" placeholder="What evidence does it give?"></textarea></label>
+                <label>Uncertainty<textarea data-source-field="uncertainty" placeholder="What is weak, missing, biased, or uncertain?"></textarea></label>
+              </div>
+            </div>
+            <div class="source-card" data-source-card="source-2">
+              <div class="source-card-title"><span>Source 2</span><span>compare against Source 1</span></div>
+              <div class="source-fields">
+                <label>Title or URL<input data-source-field="title" placeholder="Article, paper, page, or URL"></label>
+                <label>Author / institution<input data-source-field="author" placeholder="Who produced it?"></label>
+                <label>Date<input data-source-field="date" placeholder="Year or publication date"></label>
+                <label>Decision<select data-source-field="decision"><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>
+                <label>Evidence<textarea data-source-field="evidence" placeholder="What evidence does it give?"></textarea></label>
+                <label>Uncertainty<textarea data-source-field="uncertainty" placeholder="What is weak, missing, biased, or uncertain?"></textarea></label>
+              </div>
+            </div>
+          </div>
+          <div class="field-help">Research review works best when at least two source cards have author, date, evidence, uncertainty, and a decision.</div>
+        </div>
+
+        <div class="field-card">
+          <label for="revised-plan">Revised plan after boundary + sources</label>
+          <textarea id="revised-plan" data-summary-label="Revised plan" placeholder="What changed after your boundary and source check?"></textarea>
+        </div>
+      </div>
+
+      <div class="prompt-stack" aria-label="Copyable AI prompts">
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-plan">Copy prompt to AI · learning plan</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-plan">Copy prompt</button>
+          </div>
+          <textarea id="prompt-plan" readonly data-prompt-template="plan"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-critique">Copy prompt to AI · source critique</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-critique">Copy prompt</button>
+          </div>
+          <textarea id="prompt-critique" readonly data-prompt-template="critique"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-head">
+            <label for="prompt-revise">Copy prompt to AI · revise plan</label>
+            <button class="copy-btn" type="button" data-copy-target="prompt-revise">Copy prompt</button>
+          </div>
+          <textarea id="prompt-revise" readonly data-prompt-template="revise"></textarea>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-actions">
+            <label for="session-summary">Local session summary</label>
+            <div>
+              <button class="plain-btn" id="build-summary" type="button">Build local summary</button>
+              <button class="plain-btn" id="clear-worksheet" type="button">Clear</button>
+            </div>
+          </div>
+          <textarea id="session-summary" readonly placeholder="Your local summary appears here and is saved through the local backend."></textarea>
+          <div class="summary-hint">Saved sessions can be reviewed locally after the backend receives a snapshot.</div>
+          <div class="review-link-row">
+            <a class="plain-btn" id="review-session-link" href="student-session-review.html" target="_blank" rel="noopener">Open review</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">20-minute loop · 6 phases</div>
+
+    <div class="timer-bar" role="group" aria-label="Session timer">
+      <button class="start-btn" id="start-btn" type="button" data-state="idle">Start 20-min session</button>
+      <div class="progress-strip" id="progress-strip" aria-hidden="true">
+        <div class="progress-segment" data-idx="0" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="1" style="--seg-weight:4"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="2" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="3" style="--seg-weight:4"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="4" style="--seg-weight:3"><div class="progress-fill"></div></div>
+        <div class="progress-segment" data-idx="5" style="--seg-weight:3"><div class="progress-fill"></div></div>
+      </div>
+      <div class="timer-display"><span id="time-elapsed">0:00</span> <span class="of">/ 20:00</span></div>
+    </div>
+
+    <div class="phase-grid" id="phase-grid">
+
+      <article class="phase-card" data-phase="intent">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">1</span>
+            <span class="phase-label">Frame your question</span>
+          </div>
+          <span class="phase-min">3 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: intent</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Write the research question in your own words and name what you already believe.</dd>
+          <dt>AI helps</dt><dd>Suggest clearer subquestions without choosing the thesis.</dd>
+          <dt>You keep</dt><dd>goal, curiosity, and initial judgment</dd>
+          <dt>Output</dt><dd>one-sentence question + prior-belief note</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="ai_first_pass">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">2</span>
+            <span class="phase-label">Ask AI for a plan</span>
+          </div>
+          <span class="phase-min">4 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: ai_first_pass</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Ask for a learning plan, not an answer paragraph.</dd>
+          <dt>AI helps</dt><dd>Offer concepts, vocabulary, possible source types, and common traps.</dd>
+          <dt>You keep</dt><dd>which path to explore first</dd>
+          <dt>Output</dt><dd>three possible subquestions</dd>
+        </dl>
+        <div class="boundary-tip"><strong>Example prompt.</strong> <em>"Don't answer the question yet. Give me a short plan to research it myself: the key concepts I'll need, two types of sources to check, and two common mistakes to avoid."</em></div>
+      </article>
+
+      <article class="phase-card" data-phase="human_boundary">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">3</span>
+            <span class="phase-label">Set your boundary</span>
+          </div>
+          <span class="phase-min">3 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: human_boundary</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Choose one boundary: privacy, facts, learning, decision, or values.</dd>
+          <dt>AI helps</dt><dd>Restate the boundary and adapt the plan around it.</dd>
+          <dt>You keep</dt><dd>values, privacy choices, and assignment constraints</dd>
+          <dt>Output</dt><dd>boundary card</dd>
+        </dl>
+        <div class="boundary-tip"><strong>What's a boundary?</strong> Something you decide AI is <em>not</em> allowed to do for you in this session. Pick one:
+          <ul class="boundary-examples">
+            <li><strong>privacy</strong> — I won't share my name, school, or family details with the AI.</li>
+            <li><strong>facts</strong> — I care most about accuracy and source quality, not persuasion.</li>
+            <li><strong>learning</strong> — I want to understand the topic myself, not just get a finished answer.</li>
+            <li><strong>decision</strong> — the conclusion (what to claim or recommend) stays mine to make.</li>
+            <li><strong>values</strong> — my own judgment about what's right or fair leads; the AI doesn't decide it.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="phase-card" data-phase="source_check">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">4</span>
+            <span class="phase-label">Check your sources</span>
+          </div>
+          <span class="phase-min">5 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: source_check</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Check at least two reviewable sources for author, date, evidence, and uncertainty.</dd>
+          <dt>AI helps</dt><dd>Provide a checklist and critique weak evidence.</dd>
+          <dt>You keep</dt><dd>verification and source acceptance</dd>
+          <dt>Output</dt><dd>source checklist</dd>
+        </dl>
+        <div class="boundary-tip"><strong>Floor, not finish.</strong> Two reviewable sources is a floor, not a finish. Before moving on, say what a third source would need to show to change your conclusion.</div>
+      </article>
+
+      <article class="phase-card" data-phase="ai_second_pass">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">5</span>
+            <span class="phase-label">Revise with AI</span>
+          </div>
+          <span class="phase-min">2 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: ai_second_pass</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Ask AI to revise the research plan using the chosen boundary and source notes.</dd>
+          <dt>AI helps</dt><dd>Improve next steps, practice questions, and uncertainty notes.</dd>
+          <dt>You keep</dt><dd>the final claim and whether evidence is enough</dd>
+          <dt>Output</dt><dd>revised learning plan</dd>
+        </dl>
+      </article>
+
+      <article class="phase-card" data-phase="reflection">
+        <div class="phase-head">
+          <div class="phase-title">
+            <span class="phase-num">6</span>
+            <span class="phase-label">Reflect</span>
+          </div>
+          <span class="phase-min">3 min</span>
+        </div>
+        <span class="phase-id-sub">phase id: reflection</span>
+        <dl class="phase-row">
+          <dt>You do</dt><dd>Answer the reflection card below before writing any final assignment text.</dd>
+          <dt>AI helps</dt><dd>Help compare first-pass vs second-pass behavior.</dd>
+          <dt>You keep</dt><dd>responsibility for final work and next learning move</dd>
+          <dt>Output</dt><dd>reflection card</dd>
+        </dl>
+      </article>
+
+    </div>
+
+    <div class="total-bar">
+      <strong>Total:</strong> 20 minutes · AI only gives hints — it will not write your answer for you.
+      <span class="hints-policy-chip" title="machine policy token; see harness contract">hints_not_answers</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Source checklist · for each source, twice</div>
+    <ul class="checklist-list">
+      <li><label class="checklist-item"><input type="checkbox"><span>Original source found, not only a summary.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Author or institution is identifiable.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Date is current enough for the topic.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Evidence is separated from opinion.</span></label></li>
+      <li><label class="checklist-item"><input type="checkbox"><span>Write what would change your mind.</span></label></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Reflection · finish before drafting</div>
+    <div class="reflection-privacy-note"><strong>Your answers save to the local NOUS OS backend.</strong> They are stored on this machine under the sandbox session runtime folder. Copy anything important into your own notes before you leave.</div>
+    <div class="reflection-grid">
+      <div class="reflection-block">
+        <label>What did AI help with?</label>
+        <textarea id="reflect-help" data-summary-label="AI helped with" placeholder="One concrete thing — vocabulary, a subquestion, a trap to avoid…"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What did I verify?</label>
+        <textarea id="reflect-verify" data-summary-label="I verified" placeholder="Which source survived the checklist? What was the evidence?"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What remains my responsibility?</label>
+        <textarea id="reflect-responsibility" data-summary-label="My responsibility" placeholder="The claim. The values. The boundary. Anything else?"></textarea>
+      </div>
+      <div class="reflection-block">
+        <label>What would I ask differently next time?</label>
+        <textarea id="reflect-next" data-summary-label="Next time" placeholder="What kind of prompt would have saved you 5 minutes?"></textarea>
+      </div>
+    </div>
+
+    <details class="observer-panel">
+      <summary>Parent / teacher observation checklist (optional)</summary>
+      <ul class="observer-checklist">
+        <li><label><input type="checkbox"> <span>The student could explain the research question without AI reading it back.</span></label></li>
+        <li><label><input type="checkbox"> <span>The student named one source-quality issue or uncertainty.</span></label></li>
+        <li><label><input type="checkbox"> <span>The student kept their own claim, values, and final responsibility.</span></label></li>
+        <li><label><input type="checkbox"> <span>The AI was used for hints, critique, or planning, not final-answer writing.</span></label></li>
+      </ul>
+      <textarea placeholder="Observer note: what did the student do differently after AI feedback? Do not record names, school, or raw prompt text."></textarea>
+      <div class="observer-note">
+        Record process observations only — not student identity or raw prompt
+        text. The trial guide's 8-field safe-observation format is the
+        recommended note shape.
+      </div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <div>NOUS OS · Student Sandbox v1 · local worksheet scaffold</div>
+    <div>artifact: <code>$NOUS_OS_HOME/projections/research-records/student-sandbox-v1-latest.json</code></div>
+  </footer>
+
+</main>
+
+<script>
+  // Browser state is in-memory only. Persistence goes through the local backend API, never browser storage.
+  (function () {
+    const PHASE_MINUTES = [3, 4, 3, 4, 3, 3]; // total 20
+    const TOTAL_SECONDS = PHASE_MINUTES.reduce((a, b) => a + b, 0) * 60;
+    const cards = Array.from(document.querySelectorAll('.phase-card'));
+    const fills = Array.from(document.querySelectorAll('.progress-fill'));
+    const startBtn = document.getElementById('start-btn');
+    const elapsedEl = document.getElementById('time-elapsed');
+    const questionEl = document.getElementById('student-question');
+    const priorEl = document.getElementById('prior-belief');
+    const boundaryEl = document.getElementById('student-boundary');
+    const planNotesEl = document.getElementById('ai-plan-notes');
+    const sourceNotesEl = document.getElementById('source-notes');
+    const revisedPlanEl = document.getElementById('revised-plan');
+    const summaryEl = document.getElementById('session-summary');
+    const reviewSessionLink = document.getElementById('review-session-link');
+    const hermesLog = document.getElementById('hermes-chat-log');
+    const hermesInput = document.getElementById('hermes-input');
+    const hermesSend = document.getElementById('hermes-send');
+    const hermesEndpoint = window.NOUSOS_HERMES_ENDPOINT || '/api/hermes-student-agent';
+    const sessionEndpoint = window.NOUSOS_STUDENT_SESSION_ENDPOINT || '/api/student-sandbox-session';
+    const saveStatus = document.getElementById('save-status');
+    const readinessEls = {
+      first: document.getElementById('ready-first-pass'),
+      second: document.getElementById('ready-second-pass'),
+      review: document.getElementById('ready-review')
+    };
+    const sessionId = 'sandbox-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    const chatTurns = [];
+
+    let timerHandle = null;
+    let startMs = null;
+    let saveHandle = null;
+
+    function clean(value, fallback) {
+      const text = String(value || '').trim();
+      return text || fallback;
+    }
+
+    function promptText(kind) {
+      const question = clean(questionEl.value, '[my research question]');
+      const prior = clean(priorEl.value, '[what I currently think or wonder]');
+      const boundary = clean(boundaryEl.value, 'AI should not choose my opinion.');
+      const planNotes = clean(planNotesEl.value, '[my first AI plan notes]');
+      const sources = clean(sourceNotesEl.value, '[my two source notes]');
+      const sourceCards = structuredSourceCards()
+        .filter(card => card.title || card.author || card.evidence || card.uncertainty)
+        .map(card => `${card.id}: ${card.title || '[untitled]'}; ${card.author || '[unknown author]'}; ${card.date || '[unknown date]'}; decision=${card.decision}; evidence=${card.evidence || '[not filled]'}; uncertainty=${card.uncertainty || '[not filled]'}`)
+        .join('\n') || '[no structured source cards yet]';
+
+      if (kind === 'plan') {
+        return [
+          'Act like a research tutor. Do not write my final answer.',
+          'My research question: ' + question,
+          'What I currently think or wonder: ' + prior,
+          'My boundary: ' + boundary,
+          '',
+          'Help me make a learning plan. Give me:',
+          '1. three subquestions I could investigate,',
+          '2. key vocabulary I should understand,',
+          '3. source types I should look for,',
+          '4. common traps or weak evidence to avoid.',
+          '',
+          'Keep it as hints and planning, not a final paragraph.'
+        ].join('\n');
+      }
+
+      if (kind === 'critique') {
+        return [
+          'Act like a source-check coach. Do not decide my final opinion.',
+          'My research question: ' + question,
+          'My boundary: ' + boundary,
+          'My source notes: ' + sources,
+          'Structured source cards:',
+          sourceCards,
+          '',
+          'Help me critique these sources. For each one, ask:',
+          '1. Who is the author or institution?',
+          '2. Is the date current enough?',
+          '3. What is evidence and what is opinion?',
+          '4. What would change my mind?',
+          '',
+          'End with questions I should answer myself.'
+        ].join('\n');
+      }
+
+      return [
+        'Act like a tutor revising a research plan. Do not write my final answer.',
+        'My research question: ' + question,
+        'My boundary: ' + boundary,
+        'First AI plan notes: ' + planNotes,
+        'Source notes: ' + sources,
+        'Structured source cards:',
+        sourceCards,
+        '',
+        'Revise the plan using my boundary and source checks.',
+        'Show what changed, what is still uncertain, and what I should do next.',
+        'Keep the final claim and final wording as my responsibility.'
+      ].join('\n');
+    }
+
+    function refreshPrompts() {
+      document.querySelectorAll('[data-prompt-template]').forEach(el => {
+        el.value = promptText(el.dataset.promptTemplate);
+      });
+    }
+
+    function buildSummary() {
+      const fields = Array.from(document.querySelectorAll('[data-summary-label]'));
+      const lines = [
+        'Student Sandbox v1.1 local summary',
+        'Privacy: worksheet notes are saved only to the local NOUS OS backend; NOUS Guide chat is sent only when I click Ask.',
+        ''
+      ];
+      fields.forEach(field => {
+        const label = field.dataset.summaryLabel;
+        const value = field.value && field.value.trim() ? field.value.trim() : '[not filled]';
+        lines.push(label + ': ' + value);
+      });
+      structuredSourceCards().forEach(card => {
+        lines.push(`${card.id} title: ${card.title || '[not filled]'}`);
+        lines.push(`${card.id} author/date: ${card.author || '[not filled]'} / ${card.date || '[not filled]'}`);
+        lines.push(`${card.id} decision: ${card.decision || 'pending'}`);
+        lines.push(`${card.id} evidence: ${card.evidence || '[not filled]'}`);
+        lines.push(`${card.id} uncertainty: ${card.uncertainty || '[not filled]'}`);
+      });
+      summaryEl.value = lines.join('\n');
+      scheduleSave('summary');
+    }
+
+    function clearWorksheet() {
+      document.querySelectorAll('.field-card input, .field-card textarea, .reflection-block textarea, .observer-panel textarea').forEach(el => {
+        el.value = '';
+      });
+      boundaryEl.selectedIndex = 0;
+      document.querySelectorAll('[data-source-field]').forEach(el => {
+        if (el.tagName === 'SELECT') el.value = 'pending';
+        else el.value = '';
+      });
+      summaryEl.value = '';
+      chatTurns.length = 0;
+      refreshPrompts();
+      scheduleSave('clear');
+    }
+
+    function copyPrompt(button) {
+      const target = document.getElementById(button.dataset.copyTarget);
+      target.focus();
+      target.select();
+      const done = () => {
+        button.classList.add('copied');
+        button.textContent = 'Copied';
+        setTimeout(() => {
+          button.classList.remove('copied');
+          button.textContent = 'Copy prompt';
+        }, 1200);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(target.value).then(done).catch(done);
+      } else {
+        document.execCommand('copy');
+        done();
+      }
+    }
+
+    function worksheetContext() {
+      return {
+        question: questionEl.value.trim(),
+        prior_belief: priorEl.value.trim(),
+        boundary: boundaryEl.value.trim(),
+        ai_plan_notes: planNotesEl.value.trim(),
+        source_notes: sourceNotesEl.value.trim(),
+        revised_plan: revisedPlanEl.value.trim()
+      };
+    }
+
+    function structuredSourceCards() {
+      return Array.from(document.querySelectorAll('[data-source-card]')).map(card => {
+        const get = field => {
+          const el = card.querySelector('[data-source-field="' + field + '"]');
+          return el ? el.value.trim() : '';
+        };
+        return {
+          id: card.dataset.sourceCard,
+          title: get('title'),
+          author: get('author'),
+          date: get('date'),
+          decision: get('decision') || 'pending',
+          evidence: get('evidence'),
+          uncertainty: get('uncertainty')
+        };
+      });
+    }
+
+    function observerContext() {
+      const checked = Array.from(document.querySelectorAll('.observer-checklist input')).map(input => input.checked ? 'yes' : 'no');
+      return {
+        student_explained_question: checked[0] || 'no',
+        named_source_issue: checked[1] || 'no',
+        kept_human_responsibility: checked[2] || 'no',
+        used_ai_for_hints: checked[3] || 'no',
+        note: (document.querySelector('.observer-panel textarea') || {}).value || ''
+      };
+    }
+
+    function reflectionContext() {
+      return {
+        reflect_help: document.getElementById('reflect-help').value.trim(),
+        reflect_verify: document.getElementById('reflect-verify').value.trim(),
+        reflect_responsibility: document.getElementById('reflect-responsibility').value.trim(),
+        reflect_next: document.getElementById('reflect-next').value.trim()
+      };
+    }
+
+    function sourceCardComplete(card) {
+      return Boolean(card.title && card.author && card.date && card.evidence && card.uncertainty && card.decision !== 'pending');
+    }
+
+    function updateReadiness() {
+      const worksheet = worksheetContext();
+      const reflection = reflectionContext();
+      const completeSources = structuredSourceCards().filter(sourceCardComplete).length;
+      const reflectionComplete = [
+        reflection.reflect_help,
+        reflection.reflect_verify,
+        reflection.reflect_responsibility,
+        reflection.reflect_next
+      ].filter(Boolean).length;
+      const firstReady = Boolean(worksheet.question && worksheet.prior_belief);
+      const secondReady = Boolean(firstReady && worksheet.boundary && completeSources >= 1);
+      const reviewReady = Boolean(secondReady && completeSources >= 2 && worksheet.revised_plan && reflectionComplete >= 4);
+
+      readinessEls.first.dataset.ready = firstReady ? 'yes' : 'no';
+      readinessEls.second.dataset.ready = secondReady ? 'yes' : 'no';
+      readinessEls.review.dataset.ready = reviewReady ? 'yes' : 'no';
+      readinessEls.first.querySelector('span').textContent = firstReady
+        ? 'Ready to click Ask or copy the learning-plan prompt.'
+        : 'Write a question and a prior-belief note before asking AI for a learning plan.';
+      readinessEls.second.querySelector('span').textContent = secondReady
+        ? 'Ready to ask for a revised plan using your boundary and source evidence.'
+        : 'Add a human boundary and at least one complete source card before asking AI to revise.';
+      readinessEls.review.querySelector('span').textContent = reviewReady
+        ? 'Ready for parent/teacher review and Markdown packet export.'
+        : 'Complete two source cards, revised plan, and all reflection fields before exporting review.';
+    }
+
+    async function saveSession(reason) {
+      const payload = {
+        session_id: sessionId,
+        reason,
+        worksheet: worksheetContext(),
+        source_cards: structuredSourceCards(),
+        reflection: reflectionContext(),
+        observer: observerContext(),
+        summary: summaryEl.value.trim(),
+        chat_turns: chatTurns,
+        policy: {
+          storage: 'local_backend_only',
+          browser_storage: false,
+          privacy: 'redact_email_phone_ssn_patterns'
+        }
+      };
+      const response = await fetch(sessionEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Local session save failed.');
+      saveStatus.innerHTML = '<strong>Saved locally</strong> · ' + new Date(data.saved_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      reviewSessionLink.href = 'student-session-review.html?session_id=' + encodeURIComponent(data.session_id);
+      if (data.private_pattern_detected) {
+        saveStatus.innerHTML += ' · private pattern redacted';
+      }
+    }
+
+    function scheduleSave(reason) {
+      updateReadiness();
+      clearTimeout(saveHandle);
+      saveStatus.textContent = 'Local backend save: pending...';
+      saveHandle = setTimeout(() => {
+        saveSession(reason).catch(() => {
+          saveStatus.textContent = 'Local backend save: unavailable. Keep your notes copied locally.';
+        });
+      }, 450);
+    }
+
+    function appendHermesMessage(role, text) {
+      const message = document.createElement('div');
+      message.className = 'hermes-message ' + role;
+      message.textContent = text;
+      hermesLog.appendChild(message);
+      hermesLog.scrollTop = hermesLog.scrollHeight;
+      chatTurns.push({
+        role: role === 'agent' ? 'agent' : 'student',
+        text,
+        created_at: new Date().toISOString()
+      });
+      if (chatTurns.length > 24) chatTurns.splice(0, chatTurns.length - 24);
+      return message;
+    }
+
+    function syncQuestionFromHermes(text) {
+      if (questionEl.value.trim()) return;
+      const normalized = text.trim();
+      if (normalized.length < 12) return;
+      questionEl.value = normalized.slice(0, 220);
+      refreshPrompts();
+    }
+
+    async function callHermesAgent(message) {
+      const response = await fetch(hermesEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          worksheet: worksheetContext(),
+          policy: {
+            product: 'NOUS OS Student Sandbox v1.1',
+            audience: 'high_school_student_with_parent_or_teacher',
+            stance: 'hints_not_answers',
+            privacy: 'do_not_request_or_store_private_student_data'
+          }
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || 'Hermes endpoint is not available yet.');
+      }
+      return data.reply || 'Hermes did not return a reply. Try asking again with a shorter question.';
+    }
+
+    async function sendHermesMessage(text) {
+      const message = clean(text, '').slice(0, 1200);
+      if (!message) return;
+      appendHermesMessage('user', message);
+      syncQuestionFromHermes(message);
+      hermesInput.value = '';
+      hermesSend.disabled = true;
+      hermesSend.textContent = 'Thinking';
+      const pending = appendHermesMessage('agent', 'NOUS Guide is thinking...');
+      try {
+        pending.textContent = await callHermesAgent(message);
+        chatTurns[chatTurns.length - 1].text = pending.textContent;
+        scheduleSave('hermes_reply');
+      } catch (error) {
+        pending.textContent = [
+          'NOUS Guide is not connected to the Gateway yet.',
+          'Ask an adult or operator to deploy /api/hermes-student-agent with HERMES_API_SERVER_URL and, if needed, HERMES_API_SERVER_KEY on the backend server.',
+          'No Gateway key is stored in the page.'
+        ].join('\n');
+        chatTurns[chatTurns.length - 1].text = pending.textContent;
+        scheduleSave('hermes_error');
+      } finally {
+        hermesSend.disabled = false;
+        hermesSend.textContent = 'Ask';
+      }
+    }
+
+    function fmt(sec) {
+      sec = Math.max(0, Math.min(TOTAL_SECONDS, Math.floor(sec)));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function phaseIndexFor(elapsedMin) {
+      let acc = 0;
+      for (let i = 0; i < PHASE_MINUTES.length; i++) {
+        if (elapsedMin < acc + PHASE_MINUTES[i]) return i;
+        acc += PHASE_MINUTES[i];
+      }
+      return PHASE_MINUTES.length - 1;
+    }
+
+    function paint(elapsedSec) {
+      elapsedEl.textContent = fmt(elapsedSec);
+      const elapsedMin = elapsedSec / 60;
+      let acc = 0;
+      for (let i = 0; i < PHASE_MINUTES.length; i++) {
+        const start = acc;
+        const end = acc + PHASE_MINUTES[i];
+        let pct = 0;
+        if (elapsedMin >= end) pct = 100;
+        else if (elapsedMin > start) pct = ((elapsedMin - start) / PHASE_MINUTES[i]) * 100;
+        fills[i].style.width = pct + '%';
+        acc = end;
+      }
+      const active = phaseIndexFor(elapsedMin);
+      cards.forEach((c, i) => c.classList.toggle('active', i === active));
+    }
+
+    function tick() {
+      const elapsed = (Date.now() - startMs) / 1000;
+      if (elapsed >= TOTAL_SECONDS) {
+        paint(TOTAL_SECONDS);
+        finish();
+        return;
+      }
+      paint(elapsed);
+    }
+
+    function start() {
+      startMs = Date.now();
+      startBtn.dataset.state = 'running';
+      startBtn.textContent = 'Stop · reset';
+      paint(0);
+      timerHandle = setInterval(tick, 500);
+    }
+
+    function reset() {
+      clearInterval(timerHandle);
+      timerHandle = null;
+      startMs = null;
+      startBtn.dataset.state = 'idle';
+      startBtn.textContent = 'Start 20-min session';
+      elapsedEl.textContent = '0:00';
+      fills.forEach(f => f.style.width = '0%');
+      cards.forEach(c => c.classList.remove('active'));
+    }
+
+    function finish() {
+      clearInterval(timerHandle);
+      timerHandle = null;
+      startBtn.dataset.state = 'done';
+      startBtn.textContent = 'Session done · reset';
+    }
+
+    startBtn.addEventListener('click', () => {
+      const state = startBtn.dataset.state;
+      if (state === 'idle') start();
+      else reset();
+    });
+
+    // Manual browse: clicking a phase card highlights it when timer is idle.
+    // While the timer runs, the timer owns the active highlight.
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (timerHandle) return; // timer drives active state
+        const wasActive = card.classList.contains('active');
+        cards.forEach(c => c.classList.remove('active'));
+        if (!wasActive) card.classList.add('active');
+      });
+    });
+
+    [questionEl, priorEl, boundaryEl, planNotesEl, sourceNotesEl].forEach(el => {
+      el.addEventListener('input', refreshPrompts);
+      el.addEventListener('change', refreshPrompts);
+      el.addEventListener('input', () => scheduleSave('worksheet'));
+      el.addEventListener('change', () => scheduleSave('worksheet'));
+    });
+    [revisedPlanEl, document.getElementById('reflect-help'), document.getElementById('reflect-verify'), document.getElementById('reflect-responsibility'), document.getElementById('reflect-next')].forEach(el => {
+      el.addEventListener('input', () => scheduleSave('worksheet'));
+      el.addEventListener('change', () => scheduleSave('worksheet'));
+    });
+    document.querySelectorAll('[data-source-field], .observer-checklist input, .observer-panel textarea').forEach(el => {
+      el.addEventListener('input', () => {
+        refreshPrompts();
+        scheduleSave('research_fields');
+      });
+      el.addEventListener('change', () => {
+        refreshPrompts();
+        scheduleSave('research_fields');
+      });
+    });
+    document.querySelectorAll('.copy-btn').forEach(button => {
+      button.addEventListener('click', () => copyPrompt(button));
+    });
+    hermesSend.addEventListener('click', () => sendHermesMessage(hermesInput.value));
+    hermesInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        sendHermesMessage(hermesInput.value);
+      }
+    });
+    document.querySelectorAll('[data-hermes-prompt]').forEach(button => {
+      button.addEventListener('click', () => sendHermesMessage(button.dataset.hermesPrompt));
+    });
+    document.getElementById('build-summary').addEventListener('click', buildSummary);
+    document.getElementById('clear-worksheet').addEventListener('click', clearWorksheet);
+    refreshPrompts();
+    updateReadiness();
+  })();
+</script>
+</body>
+</html>

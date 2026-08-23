@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import io
 import os
 import subprocess
 import sys
@@ -12,21 +11,13 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLES = ROOT / "examples"
-SCRIPTS = ROOT / "scripts"
-RUNTIME = EXAMPLES / "runtime"
+WEB_PUBLIC = ROOT / "apps" / "web" / "public"
 
-for path in (EXAMPLES, SCRIPTS, RUNTIME):
-    path_str = str(path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-
-from cls_v2 import compute_cls_v2
-import nousos_heartbeat_demo as heartbeat_demo
-import run_nous_dashboard as dashboard_server
-import student_sandbox_v0 as student_sandbox
-import student_sandbox_v1
-import check_harness_inventory as harness_inventory
+from nous_os.evaluation.cls_v2 import compute_cls_v2
+from nous_os.workflows import heartbeat as heartbeat_demo
+from nous_os.workflows import student_sandbox_v0 as student_sandbox
+from nous_os.workflows import student_sandbox_v1
+from nous_os.contracts import harness_inventory
 
 
 class BenchmarkTests(unittest.TestCase):
@@ -261,9 +252,11 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("responsibility", record["reflection"]["prompt"])
 
     def test_heartbeat_demo_import_does_not_emit_optional_redis_warning(self) -> None:
+        env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
         result = subprocess.run(
-            [sys.executable, "-c", "import sys; sys.path.insert(0, 'examples'); import nousos_heartbeat_demo"],
+            [sys.executable, "-c", "import nous_os.workflows.heartbeat"],
             cwd=ROOT,
+            env=env,
             text=True,
             capture_output=True,
             check=True,
@@ -274,13 +267,15 @@ class BenchmarkTests(unittest.TestCase):
         self.assertNotIn("MemoryBackend only", result.stderr)
 
     def test_heartbeat_demo_run_does_not_emit_optional_redis_warning(self) -> None:
-        result = subprocess.run(
-            [sys.executable, "scripts/run_nous_heartbeat.py"],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=True,
-        )
+        with tempfile.TemporaryDirectory() as runtime_home:
+            result = subprocess.run(
+                [sys.executable, "-m", "nous_os", "--runtime-home", runtime_home, "run", "heartbeat"],
+                cwd=ROOT,
+                env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+                text=True,
+                capture_output=True,
+                check=True,
+            )
 
         combined = result.stdout + result.stderr
         self.assertNotIn("Redis not available", combined)
@@ -412,7 +407,7 @@ class BenchmarkTests(unittest.TestCase):
     def test_student_sandbox_v1_web_renders_phases_checklist_and_reflection(self) -> None:
         """The WYSIWYG page must mirror the deterministic builder's content."""
 
-        web_path = ROOT / "demo" / "student-sandbox-v1.html"
+        web_path = WEB_PUBLIC / "demo" / "student-sandbox-v1.html"
         self.assertTrue(web_path.exists(), "demo/student-sandbox-v1.html must exist as the human-facing surface")
         html = web_path.read_text()
 
@@ -480,7 +475,7 @@ class BenchmarkTests(unittest.TestCase):
         self.assertNotIn("final_answer", html.lower(), "web page must not promise or display a final answer")
 
     def test_student_session_review_page_reads_local_backend_record(self) -> None:
-        review_path = ROOT / "demo" / "student-session-review.html"
+        review_path = WEB_PUBLIC / "demo" / "student-session-review.html"
         self.assertTrue(review_path.exists(), "demo/student-session-review.html must exist")
         html = review_path.read_text()
 
@@ -510,7 +505,7 @@ class BenchmarkTests(unittest.TestCase):
     def test_student_sandbox_v1_guide_explains_why_and_how(self) -> None:
         """The student/parent guide must keep its core invariants visible."""
 
-        guide_path = ROOT / "demo" / "student-sandbox-v1-guide.html"
+        guide_path = WEB_PUBLIC / "demo" / "student-sandbox-v1-guide.html"
         self.assertTrue(guide_path.exists(), "demo/student-sandbox-v1-guide.html must exist as the why-and-how surface")
         html = guide_path.read_text()
         lower = html.lower()
@@ -580,7 +575,7 @@ class BenchmarkTests(unittest.TestCase):
         the same load-bearing claims. If one drifts, the test catches it."""
 
         spec_path = ROOT / "docs" / "research-line" / "research-line.md"
-        web_path = ROOT / "research-line.html"
+        web_path = WEB_PUBLIC / "research-line.html"
         self.assertTrue(spec_path.exists(), "research-line spec markdown must exist")
         self.assertTrue(web_path.exists(), "research-line.html public mirror must exist")
 
@@ -645,7 +640,7 @@ class BenchmarkTests(unittest.TestCase):
         and the six-bucket structure in sync."""
 
         spec_path = ROOT / "docs" / "research-line" / "anchor-atlas.md"
-        web_path = ROOT / "research-line-atlas.html"
+        web_path = WEB_PUBLIC / "research-line-atlas.html"
         self.assertTrue(spec_path.exists(), "anchor-atlas markdown must exist")
         self.assertTrue(web_path.exists(), "research-line-atlas.html must exist")
 
@@ -809,64 +804,9 @@ class BenchmarkTests(unittest.TestCase):
             self.assertIn(section, synth, f"synthesis template missing {section!r}")
 
 
-class DashboardApiTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self._tempdir = tempfile.TemporaryDirectory()
-        self.root = Path(self._tempdir.name)
-        self.dashboard_path = self.root / "dashboard-data.json"
-        self.dashboard_path.write_text(json.dumps({"goal": "Saved snapshot", "metrics": {"avg_quality": 0.93}}))
-
-    def tearDown(self) -> None:
-        self._tempdir.cleanup()
-
-    def _make_handler(self, path: str, body: bytes = b"", headers: dict | None = None):
-        handler = dashboard_server.DashboardHandler.__new__(dashboard_server.DashboardHandler)
-        handler.path = path
-        handler.headers = headers or {}
-        handler.rfile = io.BytesIO(body)
-        handler.wfile = io.BytesIO()
-        handler.status_code = None
-        handler.response_headers = {}
-        handler.send_response = lambda status: setattr(handler, "status_code", status)
-        handler.send_header = lambda key, value: handler.response_headers.__setitem__(key, value)
-        handler.end_headers = lambda: None
-        return handler
-
-    def test_get_dashboard_data_returns_snapshot(self) -> None:
-        handler = self._make_handler("/api/dashboard-data")
-        with mock.patch.object(dashboard_server, "DASHBOARD_PATH", self.dashboard_path):
-            handler.do_GET()
-        payload = json.loads(handler.wfile.getvalue().decode("utf-8"))
-
-        self.assertEqual(payload["goal"], "Saved snapshot")
-        self.assertEqual(payload["metrics"]["avg_quality"], 0.93)
-        self.assertEqual(handler.status_code, 200)
-
-    def test_post_run_heartbeat_returns_created_snapshot(self) -> None:
-        fake_snapshot = {
-            "goal": "Live goal",
-            "metrics": {"avg_quality": 0.9},
-            "override": {"kind": "cost"},
-        }
-        body = json.dumps({"goal": "Live goal", "override_kind": "cost", "demo_mode": "research_lab"}).encode("utf-8")
-        handler = self._make_handler(
-            "/api/run-heartbeat",
-            body=body,
-            headers={"Content-Length": str(len(body)), "Content-Type": "application/json"},
-        )
-
-        with mock.patch.object(dashboard_server, "run_heartbeat_flow", return_value=fake_snapshot) as mocked:
-            handler.do_POST()
-        payload = json.loads(handler.wfile.getvalue().decode("utf-8"))
-
-        mocked.assert_called_once_with(goal="Live goal", override_kind="cost", demo_mode="research_lab")
-        self.assertEqual(handler.status_code, 201)
-        self.assertEqual(payload["override"]["kind"], "cost")
-
-
 class SiteContractTests(unittest.TestCase):
     def test_harness_inventory_is_machine_readable_and_current(self) -> None:
-        inventory_path = ROOT / "docs" / "harness" / "HARNESS_INVENTORY.json"
+        inventory_path = ROOT / "contracts" / "harness" / "inventory.json"
         inventory = json.loads(inventory_path.read_text())
         result = harness_inventory.validate_inventory(inventory_path)
 
@@ -1019,7 +959,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("N = 0 real student sessions", four_sprint_text)
 
     def test_landing_page_uses_plain_human_ai_framing_without_overclaiming(self) -> None:
-        html = (ROOT / "index.html").read_text()
+        html = (WEB_PUBLIC / "index.html").read_text()
 
         self.assertIn("Human-AI Learning System", html)
         self.assertIn("learning system", html)
@@ -1046,7 +986,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertNotIn("production-ready multi-tenant saas", html.lower())
 
     def test_architecture_asset_exists_for_homepage(self) -> None:
-        asset = ROOT / "demo" / "assets" / "architecture" / "nous-os-cognitive-coo-architecture-fireworks.png"
+        asset = WEB_PUBLIC / "demo" / "assets" / "architecture" / "nous-os-cognitive-coo-architecture-fireworks.png"
 
         self.assertTrue(asset.exists())
 
@@ -1059,7 +999,7 @@ class SiteContractTests(unittest.TestCase):
             self.assertIn("scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json", text)
 
     def test_dashboard_snapshot_contains_cls_v2_components(self) -> None:
-        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
+        snapshot = json.loads((WEB_PUBLIC / "examples" / "runtime" / "dashboard-data.json").read_text())
         components = snapshot["benchmark"]["cls_v2"]["components"]
 
         self.assertEqual(
@@ -1076,8 +1016,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertEqual(snapshot["metrics"]["cls_v2_score"], snapshot["benchmark"]["cls_v2"]["score"])
 
     def test_dashboard_snapshot_models_human_ai_coevolution(self) -> None:
-        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
-        dashboard = (ROOT / "demo" / "heartbeat-dashboard.html").read_text()
+        snapshot = json.loads((WEB_PUBLIC / "examples" / "runtime" / "dashboard-data.json").read_text())
+        dashboard = (WEB_PUBLIC / "demo" / "heartbeat-dashboard.html").read_text()
 
         self.assertIn(snapshot["demo_mode"], {"student", "trading_vertical", "research_lab"})
         self.assertEqual(snapshot["north_star"], "education/research-first human-AI co-evolution")
@@ -1102,8 +1042,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("edge-obsidian-trustmem", dashboard)
 
     def test_latest_research_record_is_published_and_private_by_default(self) -> None:
-        snapshot = json.loads((ROOT / "examples" / "runtime" / "dashboard-data.json").read_text())
-        record_path = ROOT / "examples" / "runtime" / "research-records" / "latest.json"
+        snapshot = json.loads((WEB_PUBLIC / "examples" / "runtime" / "dashboard-data.json").read_text())
+        record_path = WEB_PUBLIC / "examples" / "runtime" / "research-records" / "latest.json"
         record = json.loads(record_path.read_text())
 
         self.assertTrue(record_path.exists())
@@ -1121,30 +1061,19 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(record["memory_update"]["stored"])
         self.assertTrue(record["ai_second_pass"]["behavior_changed"])
 
-    def test_static_site_stage_script_publishes_demo_and_favicon(self) -> None:
-        """GitHub Pages CD has been removed; Cloudflare reads from _site/
-        which is produced by scripts/stage_static_site.sh. This test moved
-        from pages.yml to the stage script — the staging contract is
-        the same."""
+    def test_static_site_manifest_publishes_demo_and_favicon(self) -> None:
+        manifest = (ROOT / "apps" / "web" / "site-manifest.yaml").read_text()
 
-        stage_script = (ROOT / "scripts" / "stage_static_site.sh").read_text()
-
-        self.assertIn("cp about.html _site/", stage_script)
-        self.assertIn("cp favicon.svg _site/", stage_script)
-        self.assertIn("cp docs/*.md _site/docs/", stage_script)
-        self.assertIn("cp -R docs/harness _site/docs/", stage_script)
-        self.assertIn("cp -R demo/assets _site/demo/", stage_script)
-        self.assertIn("cp demo/heartbeat-dashboard.html _site/demo/", stage_script)
-        self.assertIn("cp demo/student-sandbox-v1.html _site/demo/", stage_script)
-        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", stage_script)
-        self.assertIn("cp demo/student-session-review.html _site/demo/", stage_script)
-        self.assertIn("cp demo/research-pipeline.html _site/demo/", stage_script)
-        self.assertIn("cp examples/runtime/dashboard-data.json _site/examples/runtime/", stage_script)
-        self.assertIn("cp examples/runtime/research-records/latest.json _site/examples/runtime/research-records/", stage_script)
+        self.assertIn("public_root: apps/web/public", manifest)
+        self.assertIn("docs/harness/**/*.md", manifest)
+        self.assertTrue((WEB_PUBLIC / "favicon.svg").exists())
+        self.assertTrue((WEB_PUBLIC / "demo" / "heartbeat-dashboard.html").exists())
+        self.assertTrue((WEB_PUBLIC / "demo" / "student-sandbox-v1.html").exists())
+        self.assertTrue((WEB_PUBLIC / "examples" / "runtime" / "dashboard-data.json").exists())
 
     def test_research_pipeline_cockpit_runs_northstar_workflow(self) -> None:
-        pipeline_path = ROOT / "demo" / "research-pipeline.html"
-        research_line = (ROOT / "research-line.html").read_text()
+        pipeline_path = WEB_PUBLIC / "demo" / "research-pipeline.html"
+        research_line = (WEB_PUBLIC / "research-line.html").read_text()
         self.assertTrue(pipeline_path.exists(), "demo/research-pipeline.html must exist")
 
         html = pipeline_path.read_text()
@@ -1174,10 +1103,10 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("/demo/research-pipeline.html", research_line)
 
     def test_site_pages_reference_favicon(self) -> None:
-        homepage = (ROOT / "index.html").read_text()
-        demo_page = (ROOT / "demo" / "heartbeat-dashboard.html").read_text()
-        student_sandbox_page = (ROOT / "demo" / "student-sandbox-v1.html").read_text()
-        about_page = (ROOT / "about.html").read_text()
+        homepage = (WEB_PUBLIC / "index.html").read_text()
+        demo_page = (WEB_PUBLIC / "demo" / "heartbeat-dashboard.html").read_text()
+        student_sandbox_page = (WEB_PUBLIC / "demo" / "student-sandbox-v1.html").read_text()
+        about_page = (WEB_PUBLIC / "about.html").read_text()
 
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', homepage)
         self.assertIn('<link rel="icon" href="../favicon.svg" type="image/svg+xml">', demo_page)
@@ -1185,7 +1114,7 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', about_page)
 
     def test_homepage_publishes_research_track_links(self) -> None:
-        homepage = (ROOT / "index.html").read_text()
+        homepage = (WEB_PUBLIC / "index.html").read_text()
         readme = (ROOT / "README.md").read_text()
         production_runtime = (ROOT / "docs" / "production-runtime.md").read_text()
 
@@ -1203,8 +1132,8 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("NOUS_OS_RUNTIME_BACKEND=sqlite", production_runtime)
 
     def test_about_page_explains_nous_origin_and_human_ai_future(self) -> None:
-        homepage = (ROOT / "index.html").read_text()
-        about_page = (ROOT / "about.html").read_text()
+        homepage = (WEB_PUBLIC / "index.html").read_text()
+        about_page = (WEB_PUBLIC / "about.html").read_text()
 
         self.assertIn('href="/about.html"', homepage)
         self.assertIn("Why <em>NOUS</em>?", about_page)

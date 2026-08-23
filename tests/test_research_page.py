@@ -5,13 +5,14 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+WEB_PUBLIC = ROOT / "apps" / "web" / "public"
 
 
 class ResearchPageTests(unittest.TestCase):
     def test_research_track_uses_friendly_page_not_raw_markdown_as_primary_path(self) -> None:
-        homepage = (ROOT / "index.html").read_text()
-        research = (ROOT / "research.html").read_text()
-        stage_script = (ROOT / "scripts" / "stage_static_site.sh").read_text()
+        homepage = (WEB_PUBLIC / "index.html").read_text()
+        research = (WEB_PUBLIC / "research.html").read_text()
+        manifest = (ROOT / "apps" / "web" / "site-manifest.yaml").read_text()
 
         self.assertIn('<a href="/research.html">Research</a>', homepage)
         self.assertIn('href="/research.html#anchor"', homepage)
@@ -40,10 +41,11 @@ class ResearchPageTests(unittest.TestCase):
         self.assertIn("Obsidian 04 Reviews", research)
         self.assertIn("Only one focused product change", research)
         self.assertIn('<link rel="icon" href="favicon.svg" type="image/svg+xml">', research)
-        # Cloudflare deploy reads from _site/ produced by stage_static_site.sh.
+        # Cloudflare deploy reads from _site/ produced by the site manifest.
         # GitHub Pages CD has been removed; pages.yml no longer exists.
-        self.assertIn("cp research.html _site/", stage_script)
-        self.assertIn("cp demo/student-sandbox-v1-guide.html _site/demo/", stage_script)
+        self.assertIn("public_root: apps/web/public", manifest)
+        self.assertTrue((WEB_PUBLIC / "research.html").exists())
+        self.assertTrue((WEB_PUBLIC / "demo" / "student-sandbox-v1-guide.html").exists())
 
 
 if __name__ == "__main__":

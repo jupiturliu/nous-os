@@ -178,21 +178,21 @@ Start with `VerificationReport v0` and a narrow `SpecIR v0` in one vertical; `Im
 
 A deliberately narrow `SpecIR v0`, `TargetDescription v0`, `PlatformConfig v0`, and `VerificationReport v0` now exist for the recurring workflow `source capture -> evidence-labeled research note`:
 
-- `examples/contracts/research-source-intake-spec-v0.json`
-- `examples/contracts/research-source-intake-target-description-v0.json`
-- `examples/contracts/research-source-intake-platform-config-v0.json`
-- `examples/contracts/research-source-intake-verification-report-v0.json`
-- `scripts/check_domain_compilation_contract.py`
+- `contracts/domain-compilation/research-source-intake-spec-v0.json`
+- `contracts/domain-compilation/research-source-intake-target-description-v0.json`
+- `contracts/domain-compilation/research-source-intake-platform-config-v0.json`
+- `contracts/domain-compilation/research-source-intake-verification-report-v0.json`
+- `src/nous_os/contracts/domain_compilation.py`
 - `tests/test_domain_compilation_contract.py`
 
 Verification command:
 
 ```bash
-python3 scripts/check_domain_compilation_contract.py \
-  examples/contracts/research-source-intake-spec-v0.json \
-  examples/contracts/research-source-intake-verification-report-v0.json \
-  --target examples/contracts/research-source-intake-target-description-v0.json \
-  --platform-config examples/contracts/research-source-intake-platform-config-v0.json --json
+nous-os contract validate \
+  contracts/domain-compilation/research-source-intake-spec-v0.json \
+  contracts/domain-compilation/research-source-intake-verification-report-v0.json \
+  --target contracts/domain-compilation/research-source-intake-target-description-v0.json \
+  --platform-config contracts/domain-compilation/research-source-intake-platform-config-v0.json
 python3 -m unittest tests.test_domain_compilation_contract -v
 ```
 

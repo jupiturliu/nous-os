@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "site:stage": "bash scripts/stage_static_site.sh",
-    "site:dev": "node backend/server.cjs",
-    "backend:dev": "node backend/server.cjs",
+    "site:stage": "PYTHONPATH=src python3 -m nous_os site stage",
+    "site:dev": "PYTHONPATH=src python3 -m nous_os serve web --profile student",
+    "backend:dev": "PYTHONPATH=src python3 -m nous_os serve web --profile student",
     "deploy:macos": "bash deploy/macos/install.sh",
     "worker:dev": "npm run site:stage && NOUS_BACKEND_ORIGIN_URL=${NOUS_BACKEND_ORIGIN_URL:-http://127.0.0.1:8787} wrangler dev",
     "deploy:cloudflare": "npm run site:stage && wrangler deploy",
-    "test": "python3 -m unittest discover -s tests"
+    "test": "PYTHONPATH=src python3 -m unittest discover -s tests"
   },
   "devDependencies": {
     "wrangler": "^4.51.0"

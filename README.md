@@ -58,10 +58,11 @@ Current as of 2026-05-16:
 |------|--------|----------|
 | Core repo | ✅ Standalone `nous-os` repo initialized | README, architecture docs, examples, tests |
 | Aria ↔ Synapse | ✅ Bridge exists in workspace Synapse | `AriaSynapseBridge`, `AriaOrchestrator.publish_from_agent_bus()` |
-| Heartbeat flywheel | ✅ Runnable local demo | `python3 scripts/run_nous_heartbeat.py` |
-| Dashboard | ✅ Local interactive console + GitHub Pages artifact | `scripts/run_nous_dashboard.py`, `demo/heartbeat-dashboard.html` |
-| Benchmark | ✅ Public Q/C/E/R + CLS snapshot | `docs/benchmark-spec.md`, `examples/runtime/dashboard-data.json` |
-| CI / Pages | ✅ Unit tests and static deploy workflow | `.github/workflows/ci.yml`, `.github/workflows/pages.yml` |
+| Harness kernel | ✅ Python Plugin lifecycle + YAML Profiles | `src/nous_os/core`, `config/profiles` |
+| Heartbeat flywheel | ✅ Evidence-backed local workflow | `nous-os run heartbeat --profile research` |
+| Dashboard | ✅ Python Web composition + Cloudflare edge Adapter | `nous-os serve web --profile student`, `apps/web` |
+| Benchmark | ✅ Public Q/C/E/R + CLS projection | `docs/benchmark-spec.md`, `$NOUS_OS_HOME/projections/dashboard-data.json` |
+| CI / deploy | ✅ Unit tests and Cloudflare Worker workflow | `.github/workflows/ci.yml`, `.github/workflows/cloudflare.yml` |
 
 Historical phase summary:
 
@@ -103,51 +104,45 @@ Remaining work is product hardening: wire a production Aria runtime, replace dem
 
 ---
 
-## Demo
+## Harness Quickstart
 
-Run the self-contained demo in this repo:
+Create an environment and install the unified command Interface:
 
 ```bash
-python3 examples/nousos_demo.py
+python3 -m venv .venv
+.venv/bin/pip install -e .
 ```
 
-It demonstrates:
-- Aria-style intent routing
-- Synapse-style multi-agent fan-out
-- TrustMem-style memory recall and human override reuse
-
-Run the workspace-wired demo when `aria/`, `synapse/`, and `trustmem/` exist under the shared workspace:
+Validate the Harness composition and machine contracts:
 
 ```bash
-python3 examples/nousos_workspace_demo.py
+.venv/bin/nous-os validate profile --profile student
+.venv/bin/nous-os validate contracts
+.venv/bin/nous-os validate harness
 ```
 
-See [docs/workspace-demo.md](./docs/workspace-demo.md) for details.
-
-Run the heartbeat bridge demo to show how Aria's `agent-bus` flow upgrades into NOUS OS:
+Run Heartbeat. Mutable state is written to `$NOUS_OS_HOME` (default `~/.nous-os`), not to the repository:
 
 ```bash
-python3 examples/nousos_heartbeat_demo.py
+NOUS_OS_HOME=/tmp/nous-os-demo .venv/bin/nous-os run heartbeat --profile research
 ```
 
 See [docs/heartbeat-demo.md](./docs/heartbeat-demo.md).
 
-Use the formal runner when you want a reusable heartbeat entry plus a dashboard snapshot:
+Start the local Web composition. It preserves `/api/health`, `/api/hermes-student-agent`, `/api/student-sandbox-session`, `/api/dashboard-data`, and `/api/run-heartbeat`:
 
 ```bash
-python3 scripts/run_nous_heartbeat.py
-python3 -m http.server
+.venv/bin/nous-os serve web --profile student
 ```
 
-Then open `demo/heartbeat-dashboard.html`.
+Then open `http://127.0.0.1:8787/demo/heartbeat-dashboard.html`.
 
-Or run the interactive local dashboard server:
+Runtime projections become tracked website data only through explicit publication:
 
 ```bash
-python3 scripts/run_nous_dashboard.py
+.venv/bin/nous-os publish-site-data --profile research
+npm run site:stage
 ```
-
-Then open `http://127.0.0.1:8765/demo/heartbeat-dashboard.html`.
 
 ---
 

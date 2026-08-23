@@ -12,7 +12,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
     def test_cloudflare_worker_config_runs_api_before_static_assets(self) -> None:
         wrangler = (ROOT / "wrangler.toml").read_text()
 
-        self.assertIn('main = "worker/index.mjs"', wrangler)
+        self.assertIn('main = "apps/web/edge/worker.mjs"', wrangler)
         self.assertIn('directory = "./_site"', wrangler)
         self.assertIn('binding = "ASSETS"', wrangler)
         self.assertIn('run_worker_first = ["/api/*"]', wrangler)
@@ -24,7 +24,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn('zone_name = "nousos.ai"', wrangler)
 
     def test_worker_proxies_api_to_web_backend_not_hermes_gateway_or_provider(self) -> None:
-        worker = (ROOT / "worker" / "index.mjs").read_text()
+        worker = (ROOT / "apps" / "web" / "edge" / "worker.mjs").read_text()
 
         self.assertIn("NOUS_BACKEND_ORIGIN_URL", worker)
         self.assertIn("NOUS_WEB_BACKEND_URL", worker)
@@ -38,23 +38,20 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertNotIn("api.openai.com", worker)
 
     def test_web_backend_uses_same_api_contract_and_gateway_boundary(self) -> None:
-        server = (ROOT / "backend" / "server.cjs").read_text()
+        server = (ROOT / "src" / "nous_os" / "web" / "server.py").read_text()
+        hermes = (ROOT / "src" / "nous_os" / "web" / "hermes.py").read_text()
 
-        self.assertIn("stage_static_site.sh", server)
         self.assertIn("/api/hermes-student-agent", server)
         self.assertIn("/api/student-sandbox-session", server)
         self.assertIn("/api/health", server)
-        self.assertIn("HERMES_API_SERVER_URL", server)
-        self.assertIn("API_SERVER_KEY", server)
-        self.assertIn(".hermes", server)
-        self.assertIn("HERMES_GATEWAY_URL", server)
-        self.assertIn("http://127.0.0.1:8642", server)
-        self.assertIn("/v1/chat/completions", server)
-        self.assertIn("require('../api/hermes-student-agent')", server)
-        self.assertIn("require('../api/student-sandbox-session')", server)
-
-        wrapper = (ROOT / "scripts" / "serve_nous_site.cjs").read_text()
-        self.assertIn("require('../backend/server.cjs').start()", wrapper)
+        self.assertIn("/api/dashboard-data", server)
+        self.assertIn("/api/run-heartbeat", server)
+        self.assertIn("HERMES_API_SERVER_URL", hermes)
+        self.assertIn("HERMES_API_SERVER_KEY", hermes)
+        self.assertIn(".hermes", hermes)
+        self.assertIn("HERMES_GATEWAY_URL", hermes)
+        self.assertIn("http://127.0.0.1:8642", hermes)
+        self.assertIn("/v1/chat/completions", hermes)
 
     def test_cloudflare_deploy_workflow_is_ci_gated(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "cloudflare.yml").read_text()
@@ -94,6 +91,8 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn("NOUS_BACKEND_ORIGIN_URL", doc)
         self.assertIn("Hermes Gateway", doc)
         self.assertIn("GitHub Pages-only limitation", doc)
+        self.assertIn("src/nous_os/web/server.py", doc)
+        self.assertIn("apps/web/edge/worker.mjs", doc)
         self.assertIn("nousos.ai/*", doc)
         self.assertIn("www.nousos.ai/*", doc)
         self.assertIn("DNS-only to Proxied", doc)
@@ -119,8 +118,9 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
         self.assertIn('full="com.nousos.$short"', install)
         self.assertIn('$HOME/.cloudflared/nous-os-backend.yml', install)
         self.assertIn("<string>com.nousos.webbackend</string>", backend_plist)
-        self.assertIn("<string>/opt/homebrew/bin/node</string>", backend_plist)
-        self.assertIn("<string>backend/server.cjs</string>", backend_plist)
+        self.assertIn("<string>{{REPO_ROOT}}/.venv/bin/nous-os</string>", backend_plist)
+        self.assertIn("<string>serve</string>", backend_plist)
+        self.assertIn("<string>web</string>", backend_plist)
         self.assertIn("<string>8787</string>", backend_plist)
         self.assertIn("<string>com.nousos.cloudflared</string>", cloudflared_plist)
         self.assertIn("<string>/opt/homebrew/bin/cloudflared</string>", cloudflared_plist)
@@ -137,11 +137,7 @@ class CloudflareHermesArchitectureTests(unittest.TestCase):
 
     def test_javascript_entrypoints_have_valid_syntax(self) -> None:
         for path in (
-            ROOT / "worker" / "index.mjs",
-            ROOT / "backend" / "server.cjs",
-            ROOT / "scripts" / "serve_nous_site.cjs",
-            ROOT / "api" / "hermes-student-agent.js",
-            ROOT / "api" / "student-sandbox-session.js",
+            ROOT / "apps" / "web" / "edge" / "worker.mjs",
         ):
             result = subprocess.run(
                 ["node", "--check", str(path)],

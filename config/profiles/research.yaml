@@ -1,0 +1,15 @@
+schema_version: 1
+name: research
+plugins:
+  - id: evidence
+    module: nous_os.plugins.evidence
+  - id: research-line
+    module: nous_os.plugins.research_line
+  - id: heartbeat
+    module: nous_os.plugins.heartbeat
+workflows:
+  - research-line
+  - heartbeat
+web:
+  host: 127.0.0.1
+  port: 8787
