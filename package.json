@@ -2,6 +2,7 @@
   "name": "nous-os-site",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "site:stage": "PYTHONPATH=src python3 -m nous_os site stage",
     "site:dev": "PYTHONPATH=src python3 -m nous_os serve web --profile student",

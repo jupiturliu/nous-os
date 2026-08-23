@@ -36,7 +36,9 @@ class RepositoryArchitectureTests(unittest.TestCase):
 
     def test_superseded_documents_are_deleted(self) -> None:
         superseded = (
+            ".codex",
             "ARIA-ARCHITECTURE.md",
+            "CO-EXIST-FLYWHEEL.md",
             "NOUS-OS-PHASE3.md",
             "NOUS-OS-SPEC.md",
             "docs/aria-integration.md",
@@ -49,6 +51,14 @@ class RepositoryArchitectureTests(unittest.TestCase):
             "docs/harness/handoffs",
         )
         self.assertEqual([path for path in superseded if (ROOT / path).exists()], [])
+
+    def test_root_metadata_matches_public_claims(self) -> None:
+        license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        self.assertTrue(license_text.startswith("MIT License\n"))
+        self.assertIn("Copyright (c) 2026 Liu Fei / jupiturliu", license_text)
+        self.assertIn("](LICENSE)", readme)
 
     def test_public_route_interface_remains_stable(self) -> None:
         source = (ROOT / "src" / "nous_os" / "web" / "server.py").read_text(encoding="utf-8")

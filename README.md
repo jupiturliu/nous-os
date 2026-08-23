@@ -84,7 +84,6 @@ Remaining work is product hardening: wire production runtime Adapters, replace r
 - [docs/student-sandbox-deterministic-workflow.md](./docs/student-sandbox-deterministic-workflow.md) — Deterministic Student Sandbox workflow and skill/playbook boundary
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.md) — Chinese one-page product narrative
 - [docs/NOUS-OS-Cognitive-COO-One-Pager.en.md](./docs/NOUS-OS-Cognitive-COO-One-Pager.en.md) — English one-page product narrative
-- [CO-EXIST-FLYWHEEL.md](./CO-EXIST-FLYWHEEL.md) — Flywheel design
 - [docs/flywheel-architecture.md](./docs/flywheel-architecture.md) — Technical architecture
 - [docs/getting-started.md](./docs/getting-started.md) — Getting started
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured

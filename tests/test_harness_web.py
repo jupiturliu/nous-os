@@ -79,6 +79,7 @@ class SiteArtifactTests(unittest.TestCase):
             self.assertTrue((target / "demo" / "student-sandbox-v1.html").exists())
             self.assertTrue((target / "examples" / "runtime" / "dashboard-data.json").exists())
             self.assertTrue((target / "docs" / "harness" / "README.md").exists())
+            self.assertTrue((target / "LICENSE").exists())
 
     def test_publication_is_explicit_and_rejects_private_data(self):
         with tempfile.TemporaryDirectory() as runtime, tempfile.TemporaryDirectory() as public:

@@ -3,6 +3,7 @@ public_root: apps/web/public
 files:
   - README.md
   - ARCHITECTURE.md
+  - LICENSE
 document_patterns:
   - docs/*.md
   - docs/harness/**/*.md
