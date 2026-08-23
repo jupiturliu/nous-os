@@ -130,7 +130,28 @@ NOUS OS should preserve at least seven boundaries:
 
 These boundaries are not friction to remove. They are part of the symbiosis design.
 
-## 6. Why the current infra exists
+## 6. Skill-first, harness-second
+
+When NOUS OS learns a new agent workflow, the default is not to hard-code it immediately. The preferred maturation path is:
+
+```text
+agent practice
+  -> skill/playbook
+  -> repeated evidence
+  -> deterministic workflow
+  -> harness/eval gate
+```
+
+This preserves two truths at the same time:
+
+- co-evolution judgment is contextual and should remain editable while we are still learning;
+- student/research/review scaffolding must become reliable, reproducible, and checkable once the pattern stabilizes.
+
+Use a skill when the workflow contains judgment: how to challenge a weak premise, how to coach without giving an answer, how to decide whether memory should be stored, or how to interpret a reflection. Use deterministic software when the workflow is stable scaffolding: folder creation, required note sections, source-card schema, redaction, completeness checks, review-packet generation, or contract tests.
+
+The target ratio should change over time. Early NOUS OS work may be mostly skills with a light harness; after repeated sessions, the high-frequency reliable parts should migrate into deterministic workflow. But the upper cognitive protocol should remain skill-based so the human-agent pair can keep learning.
+
+## 7. Why the current infra exists
 
 The infrastructure stack maps to the co-evolution loop:
 
@@ -146,7 +167,7 @@ The infrastructure stack maps to the co-evolution loop:
 
 The infra is not the philosophy. It is the experimental apparatus.
 
-## 7. Research questions
+## 8. Research questions
 
 The theoretical track should explore:
 
@@ -161,7 +182,7 @@ The theoretical track should explore:
 9. When should the agent refuse to adapt because the requested adaptation harms the human?
 10. How do we design review rituals that make the human-agent relationship compound over months and years?
 
-## 8. Candidate evaluation metrics
+## 9. Candidate evaluation metrics
 
 NOUS OS should not only score task output. It should score the loop.
 
@@ -177,7 +198,7 @@ Possible metrics:
 - Transfer: can the learned pattern apply to a new task or domain?
 - Outcome Quality Delta: did later evidence show better results?
 
-## 9. Practical experiments
+## 10. Practical experiments
 
 The theory should be grounded by experiments.
 
@@ -205,7 +226,7 @@ Question:
 
 This tests memory decay, taste, identity, calibrated trust, and long-horizon reflection.
 
-## 10. Design principle
+## 11. Design principle
 
 When NOUS OS faces a product or engineering choice, ask:
 

@@ -2,13 +2,20 @@
 
 This document defines the product protocol behind Student Sandbox v1. It is the stable workflow that the web UI, backend, NOUS Guide, Claude handoffs, and future agent skills must follow.
 
-The preference is:
+The preference is **skill-first, harness-second**:
 
-1. Encode the learning/research protocol as deterministic software first.
-2. Let AI agents operate inside that protocol.
-3. Extract repeatable agent behaviors into skills only after the protocol is stable.
+1. Capture exploratory agent judgment as skills while the co-evolution protocol is still being learned.
+2. Observe which steps repeat across real sessions.
+3. Promote stable, high-frequency, machine-checkable steps into deterministic software workflow, tests, and harness gates.
+4. Keep agents operating inside the deterministic protocol once the protocol exists.
 
-The reason is practical: students, parents, and teachers need a predictable session. AI can help with language, critique, questions, and summaries, but the product must preserve a clear structure, privacy boundary, source check, and human responsibility.
+The reason is practical and philosophical: NOUS OS is still discovering what good human-AI co-evolution looks like, so early hard-coding can freeze the wrong behavior. But students, parents, and teachers still need a predictable session. Therefore skills preserve evolving judgment, while deterministic workflow preserves structure, privacy boundary, source check, evidence capture, and human responsibility.
+
+A useful split:
+
+- **Skill** answers: in this situation, what is a good judgment, challenge, coaching move, or exception handling path?
+- **Deterministic workflow** answers: what must always be generated, checked, redacted, stored, and reviewed?
+- **Harness/eval** answers: did the artifact meet the minimum contract, and can drift be detected?
 
 ## Workflow State Machine
 
@@ -79,7 +86,14 @@ Disallowed agent behaviors:
 
 ## Skills Layer
 
-Skills should be small playbooks that sit above this deterministic workflow. They are useful when a repeated agent behavior becomes stable enough to reuse.
+Skills sit above this deterministic workflow. They are the first home for evolving agent judgment and the long-term home for exception handling, coaching style, challenge heuristics, and review interpretation.
+
+Use skills before software when the workflow is still exploratory. Promote from skills into deterministic software only when the step is:
+
+1. repeated across multiple real or dry-run sessions;
+2. low-discretion enough to encode as a field, state, check, or script;
+3. valuable to verify automatically;
+4. safe to standardize without suppressing human agency.
 
 Candidate skills:
 

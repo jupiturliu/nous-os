@@ -219,6 +219,141 @@ Challenge or decay:
 - temporary portfolio state;
 - one-off emotional reactions.
 
+## Operational memory protocol
+
+Before any durable memory is written or reused, classify it with this protocol.
+
+### Step 1: Classify
+
+Ask which class the candidate belongs to:
+
+```text
+fact / preference / lesson / boundary / value / hypothesis / mistake / unresolved_question / artifact / private_data
+```
+
+If it is private data, stop: redact or refuse storage.
+
+### Step 2: Assign confidence
+
+Use simple confidence labels instead of false precision:
+
+| Confidence | Meaning | Default action |
+|---|---|---|
+| verified | human-confirmed and evidence-backed | remember or promote |
+| observed | seen in one or more interactions but not fully verified | remember lightly or keep as hypothesis |
+| tentative | plausible but unproven | store only as hypothesis or question |
+| stale | may have been true but time/context changed | challenge or decay |
+| contradicted | later evidence disputes it | forget, replace, or preserve only as cautionary history |
+
+### Step 3: Choose action
+
+Pick one:
+
+```text
+remember / challenge / decay / forget
+```
+
+The action must be justified in one sentence:
+
+```text
+This should be remembered/challenged/decayed/forgotten because ______.
+```
+
+### Step 4: Attach evidence
+
+A durable memory should point to at least one of:
+
+- human statement;
+- review note;
+- artifact path;
+- test result;
+- outcome ledger;
+- repeated correction;
+- source document.
+
+If there is no evidence, keep it as a hypothesis or unresolved question.
+
+### Step 5: Define review trigger
+
+Every non-boundary memory should have a review trigger:
+
+- time-based: review after N weeks/months;
+- evidence-based: review when contradicted by outcome;
+- context-based: review when entering a new domain;
+- human-based: review when the human corrects it.
+
+Boundaries can persist strongly, but even boundary wording can be refined after review.
+
+## Memory lifecycle table
+
+| Memory type | Remember | Challenge | Decay | Forget |
+|---|---|---|---|---|
+| Stable path / repo convention | yes | when repo moves | rarely | if obsolete |
+| User preference | yes | when current request differs | if unused or contradicted | if user revokes |
+| Workflow lesson | after repeated evidence | when context changes | if not used | if harmful/stale |
+| Student learning pattern | as strategy, not identity | when it narrows growth | after trial window | if private/labeling |
+| Trading lesson | only evidence-linked | when market regime changes | as outcome evidence ages | if disproven |
+| Emotional state | generally no | n/a | quickly | usually |
+| Hypothesis | as tentative | always | if unreviewed | if contradicted |
+| Boundary | strongly | only to clarify wording | rarely | only if human revises |
+
+## Memory review ritual
+
+A monthly or phase-end memory review should ask:
+
+1. Which memories improved judgment this cycle?
+2. Which memories caused stale assumptions or over-personalization?
+3. Which repeated corrections should become durable lessons?
+4. Which stored lessons need evidence links?
+5. Which hypotheses should graduate, remain tentative, or be forgotten?
+6. Which private or identity-capturing details should be removed?
+7. Which memories helped the human become more capable without AI?
+
+This ritual turns memory from passive storage into co-evolution governance.
+
+## Student Sandbox memory packet
+
+A safe Student Sandbox memory packet should store process, not identity:
+
+```yaml
+learning_strategy_used: "source checklist before drafting"
+boundary_selected: "facts"
+student_reflection_summary: "AI helped decompose; student verified author/date; responsibility remains with student"
+next_learning_move: "ask for counterarguments before thesis"
+private_data_stored: false
+review_trigger: "after next student-adjacent trial"
+```
+
+It should not store:
+
+```yaml
+student_name: ...
+school_name: ...
+raw_prompt: ...
+family_context: ...
+identity_label: "bad at research"
+```
+
+## Trading-agent memory packet
+
+A safe trading memory packet should be evidence-linked and risk-aware:
+
+```yaml
+lesson: "Target-reached exit signals require mandatory trim/trailing-stop review before same-symbol add signals."
+evidence: "reviewed outcome / reconciliation artifact path"
+boundary: "no natural-language capital authorization"
+review_trigger: "when same-symbol buy/add appears after target-reached exit"
+action: "remember strongly; challenge any conflicting buy signal"
+```
+
+It should not store temporary state as durable memory:
+
+```yaml
+current_position_size: ...
+today_signal_status: ...
+short_lived_alert: ...
+```
+
 ## Design rule
 
 The memory question is not:

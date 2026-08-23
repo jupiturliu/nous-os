@@ -69,6 +69,24 @@ What confused the student?
 - Did the student preserve their own judgment before drafting?
 - Was any safety/privacy instruction unclear?
 
+## Self-Evolution Metrics Snapshot
+
+Use `docs/student-sandbox-self-evolution-metrics-map.md` when filling this section.
+
+| Group | Strongest evidence | Weakest evidence | Next-run change |
+|---|---|---|---|
+| Human capability |  |  |  |
+| Agent adaptation |  |  |  |
+| Relationship calibration |  |  |  |
+| Boundary integrity |  |  |  |
+| Outcome / transfer |  |  |  |
+
+Conclusion:
+
+```text
+Did this trial make the human-agent pair wiser, more capable, more reflective, or more responsible? Why?
+```
+
 ## Outcome classification
 
 Choose one:
