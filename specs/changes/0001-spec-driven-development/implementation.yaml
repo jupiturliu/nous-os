@@ -1,0 +1,54 @@
+schema_version: 1
+change_id: 0001-spec-driven-development
+affected_paths:
+  - src/nous_os/specs/
+  - src/nous_os/cli.py
+  - tests/
+  - config/spec-policy.yaml
+  - .githooks/
+  - .github/workflows/ci.yml
+  - .github/CODEOWNERS
+  - CONTEXT.md
+  - AGENTS.md
+  - docs/adr/0003-spec-driven-development.md
+  - docs/harness/
+  - docs/getting-started.md
+  - README.md
+requirement_mapping:
+  - requirement_id: R1
+    paths: [src/nous_os/specs/, config/spec-policy.yaml]
+  - requirement_id: R2
+    paths: [src/nous_os/specs/, .githooks/]
+  - requirement_id: R3
+    paths: [src/nous_os/specs/, .githooks/, .github/workflows/ci.yml]
+  - requirement_id: R4
+    paths: [src/nous_os/specs/, tests/]
+  - requirement_id: R5
+    paths: [src/nous_os/specs/, tests/]
+  - requirement_id: R6
+    paths: [src/nous_os/cli.py, tests/, docs/harness/]
+checks:
+  - id: spec-module-tests
+    kind: unittest
+    target: tests.test_spec_driven_development
+  - id: harness-validation
+    kind: harness
+  - id: profile-validation
+    kind: profiles
+  - id: contract-validation
+    kind: contracts
+  - id: site-validation
+    kind: site
+  - id: full-test-suite
+    kind: unittest
+    target: discover:tests
+compatibility:
+  - Keep all existing nous-os contract commands unchanged.
+  - Keep Profile loading and public HTTP route Interfaces unchanged.
+migration:
+  - Existing history is grandfathered before the activation commit.
+  - New behavior-changing commits carry a Spec-Ref trailer and a matching VerificationReport before push or merge.
+rollback:
+  - Revert the activation and implementation commits together; existing Harness commands remain independent.
+residual_risks:
+  - Local approval records identity as asserted by the operator; repository review remains the authoritative social control.

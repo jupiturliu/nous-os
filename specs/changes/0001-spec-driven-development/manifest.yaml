@@ -1,0 +1,8 @@
+schema_version: 1
+change_id: 0001-spec-driven-development
+title: NOUS OS Spec-Driven Development v1
+owners:
+  - liyao
+status: draft
+created_at: 2026-08-23
+supersedes: []

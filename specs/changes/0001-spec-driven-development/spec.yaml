@@ -1,0 +1,56 @@
+schema_version: 1
+change_id: 0001-spec-driven-development
+intent: >-
+  Make behavior-changing repository work traceable from an independently approved
+  Software Change Spec through implementation, deterministic verification, and
+  Evidence Events without replacing the Domain Compilation Module.
+requirements:
+  - id: R1
+    text: Define strict, versioned YAML artifacts for a Software Change Spec and Implementation Plan.
+  - id: R2
+    text: Require an approval that predates behavior-changing implementation and is invalidated by Spec or Plan edits.
+  - id: R3
+    text: Gate protected changes in local Git hooks and CI using one Spec-Ref commit trailer.
+  - id: R4
+    text: Restrict verification to named unittest or built-in checks and reject arbitrary shell execution.
+  - id: R5
+    text: Produce a tracked JSON VerificationReport and mirror it into the Artifact and Evidence Event plane.
+  - id: R6
+    text: Preserve existing Harness, Profile, Domain Compilation, website route, and test behavior.
+constraints:
+  - Python 3.11 remains the supported runtime.
+  - PyYAML remains the only schema parsing dependency.
+  - Pure documentation and repository metadata changes remain exempt except AGENTS.md and CONTEXT.md.
+  - There is no emergency or silent bypass for protected changes.
+acceptance_criteria:
+  - id: AC1
+    text: Strict validation rejects malformed packages, unsafe paths, dangling check references, and duplicate identifiers.
+    checks: [spec-module-tests]
+  - id: AC2
+    text: Gates reject missing, same-commit, stale, out-of-plan, failed, or mismatched Spec evidence.
+    checks: [spec-module-tests]
+  - id: AC3
+    text: Successful verification writes both tracked and runtime evidence with matching hashes.
+    checks: [spec-module-tests]
+  - id: AC4
+    text: Existing repository contracts and public routes remain compatible.
+    checks: [harness-validation, profile-validation, contract-validation, site-validation, full-test-suite]
+out_of_scope:
+  - A universal domain specification language.
+  - Retroactive specifications for commits before activation.
+  - Automated merging or mutation of GitHub branch protection settings.
+assumptions:
+  - Git history is available to local hooks and CI with full fetch depth.
+  - GitHub CODEOWNERS and branch protection can require human review for Spec packages.
+risks:
+  - Immediate enforcement may expose existing automated workflows that need explicit documentation-only exemptions.
+  - Verification reports can become stale after rebases and must be regenerated.
+authority:
+  human_decisions:
+    - approve or reject the Software Change Spec before implementation
+    - accept residual risk before merge
+  automated_decisions:
+    - schema validation
+    - path coverage
+    - deterministic check execution
+    - verification hash and Git-history consistency
