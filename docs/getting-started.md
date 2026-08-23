@@ -124,6 +124,23 @@ The cross-repo release gate is read-only. It reports repo existence, dirty state
 
 ---
 
+## Developing a behavior change
+
+NOUS OS uses approval-before-implementation Spec-Driven Development for protected repository paths. Start with a committed YAML Spec and Implementation Plan, obtain a separate human Approval, add `Spec-Ref: <change-id>` to implementation commits, and finish with a JSON VerificationReport:
+
+```bash
+nous-os spec init 0002-short-change-name --title "Short change title"
+nous-os spec validate 0002-short-change-name
+# Commit and review the Spec before implementation.
+nous-os spec approve 0002-short-change-name --by github-login --reason "Approved"
+# Commit Approval separately, then implement with a Spec-Ref trailer.
+nous-os spec verify 0002-short-change-name
+```
+
+See [Spec-Driven Development](./harness/spec-driven-development.md) for the lifecycle, protected scope, GitHub review channel, and gate behavior.
+
+---
+
 ## How the Flywheel Self-Improves
 
 | Run | Memory State | Quality | Time |

@@ -14,6 +14,15 @@ from nous_os.contracts.domain_compilation import validate_contract_bundle, valid
 from nous_os.contracts.harness_inventory import validate_inventory
 from nous_os.core import EvidenceEvent, EventStore, Harness, HarnessContext, RuntimePaths, load_profile
 from nous_os.core.project import find_project_root
+from nous_os.specs import (
+    approve_change,
+    gate_range,
+    gate_staged,
+    initialize_change,
+    status_change,
+    validate_change,
+    verify_change,
+)
 from nous_os.web import serve
 
 
@@ -77,6 +86,36 @@ def _parser() -> argparse.ArgumentParser:
     contract_generate = contract_commands.add_parser("generate")
     contract_generate.add_argument("destination", type=Path)
     contract_generate.set_defaults(function=_contract_generate)
+
+    spec = commands.add_parser("spec")
+    spec_commands = spec.add_subparsers(dest="spec_action", required=True)
+    spec_init = spec_commands.add_parser("init")
+    spec_init.add_argument("change_id")
+    spec_init.add_argument("--title", required=True)
+    spec_init.set_defaults(function=_spec_init)
+    spec_validate = spec_commands.add_parser("validate")
+    spec_validate.add_argument("change_id")
+    spec_validate.set_defaults(function=_spec_validate)
+    spec_approve = spec_commands.add_parser("approve")
+    spec_approve.add_argument("change_id")
+    spec_approve.add_argument("--by", dest="approver", required=True)
+    spec_approve.add_argument("--reason", required=True)
+    spec_approve.add_argument("--channel", choices=("local", "pull-request"), default="local")
+    spec_approve.add_argument("--reference")
+    spec_approve.set_defaults(function=_spec_approve)
+    spec_status = spec_commands.add_parser("status")
+    spec_status.add_argument("change_id")
+    spec_status.set_defaults(function=_spec_status)
+    spec_verify = spec_commands.add_parser("verify")
+    spec_verify.add_argument("change_id")
+    spec_verify.set_defaults(function=_spec_verify)
+    spec_gate = spec_commands.add_parser("gate")
+    gate_source = spec_gate.add_mutually_exclusive_group(required=True)
+    gate_source.add_argument("--staged", action="store_true")
+    gate_source.add_argument("--range", dest="revision_range")
+    spec_gate.add_argument("--message-file", type=Path)
+    spec_gate.add_argument("--require-remote-approval", action="store_true")
+    spec_gate.set_defaults(function=_spec_gate)
 
     publish = commands.add_parser("publish-site-data")
     _profile_argument(publish, "research")
@@ -224,6 +263,51 @@ def _contract_generate(args) -> int:
         shutil.copy2(source, destination / source.name)
     print(destination)
     return 0
+
+
+def _spec_init(args) -> int:
+    print(initialize_change(_root(), args.change_id, args.title))
+    return 0
+
+
+def _spec_validate(args) -> int:
+    result = validate_change(_root(), args.change_id)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["ok"] else 1
+
+
+def _spec_approve(args) -> int:
+    result = approve_change(
+        _root(), args.change_id, approver=args.approver, reason=args.reason,
+        channel=args.channel, reference=args.reference, runtime_home=args.runtime_home,
+    )
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _spec_status(args) -> int:
+    result = status_change(_root(), args.change_id)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["valid"] else 1
+
+
+def _spec_verify(args) -> int:
+    result = verify_change(_root(), args.change_id, runtime_home=args.runtime_home)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["verdict"] == "pass" else 1
+
+
+def _spec_gate(args) -> int:
+    if args.staged:
+        if not args.message_file:
+            raise ValueError("--staged requires --message-file")
+        result = gate_staged(_root(), args.message_file)
+    else:
+        if args.message_file:
+            raise ValueError("--message-file is only valid with --staged")
+        result = gate_range(_root(), args.revision_range, require_remote_approval=args.require_remote_approval)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["ok"] else 1
 
 
 def _publish(args) -> int:

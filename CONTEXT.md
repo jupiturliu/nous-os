@@ -15,3 +15,8 @@
 - **Research Line** — the research intake and synthesis workflow.
 - **Heartbeat** — the orchestration workflow that evaluates a run, records evidence, and refreshes runtime projections.
 - **Trading Proof** — the read-only vertical evaluator used to demonstrate evidence-backed domain evaluation.
+- **Software Change** — a behavior-changing repository modification governed by one approved Spec and its Implementation Plan.
+- **Spec** — a versioned YAML statement of Software Change intent, requirements, constraints, acceptance criteria, risks, and human authority.
+- **Implementation Plan** — the approved YAML mapping from Spec requirements to affected repository paths and named safe checks.
+- **Approval** — an explicit human decision recorded as JSON against immutable SHA-256 hashes of a Spec and Implementation Plan before implementation begins.
+- **VerificationReport** — the final JSON result binding a committed Software Change to changed paths, named check outcomes, residual risks, and immutable input hashes.

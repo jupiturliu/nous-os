@@ -63,6 +63,7 @@ Current as of 2026-08-23:
 | Dashboard | ✅ Python Web composition + Cloudflare edge Adapter | `nous-os serve web --profile student`, `apps/web` |
 | Benchmark | ✅ Public Q/C/E/R + CLS projection | `docs/benchmark-spec.md`, `$NOUS_OS_HOME/projections/dashboard-data.json` |
 | CI / deploy | ✅ Unit tests and Cloudflare Worker workflow | `.github/workflows/ci.yml`, `.github/workflows/cloudflare.yml` |
+| Spec-Driven Development | ✅ Approval-before-implementation, path gates, safe verification, and evidence write-back | `src/nous_os/specs`, `specs/changes`, `docs/harness/spec-driven-development.md` |
 
 Remaining work is product hardening: wire production runtime Adapters, replace remaining demo-quality scoring with domain evaluators, and automate releases for upstream TrustMem/Synapse repos.
 
@@ -89,6 +90,7 @@ Remaining work is product hardening: wire production runtime Adapters, replace r
 - [docs/benchmark-spec.md](./docs/benchmark-spec.md) — How NOUS OS improvement is measured
 - [docs/domain-evaluator-interface.md](./docs/domain-evaluator-interface.md) — Domain evaluator contract for CLS v2
 - [docs/harness/README.md](./docs/harness/README.md) — Harness engineering context, boundaries, and verification commands
+- [docs/harness/spec-driven-development.md](./docs/harness/spec-driven-development.md) — Software Change Spec lifecycle and repository gates
 - [docs/cross-repo-release-gate.md](./docs/cross-repo-release-gate.md) — Read-only release readiness gate across NOUS OS repos
 
 ---

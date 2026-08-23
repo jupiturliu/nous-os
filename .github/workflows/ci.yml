@@ -17,14 +17,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
+      - name: Install package
+        run: python -m pip install -e .
+
+      - name: Enforce Software Change Specs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${GITHUB_BASE_REF}"
+          else
+            BASE="${{ github.event.before }}"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="HEAD^"
+            fi
+          fi
+          nous-os spec gate --range "${BASE}..HEAD" --require-remote-approval
+
+      - name: Validate Harness contracts
+        run: |
+          nous-os validate harness
+          nous-os validate contracts
+          nous-os validate profile --profile student
+          nous-os validate profile --profile research
+          nous-os validate profile --profile trading-proof
+          nous-os site stage --destination _site/ci
+
       - name: Run unit tests
         run: |
-          python -m pip install -e .
           NOUS_OS_HOME="${RUNNER_TEMP}/nous-os" python -m unittest discover -s tests -v
           git diff --exit-code

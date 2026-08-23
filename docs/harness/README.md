@@ -62,6 +62,7 @@ Forbidden by default:
 | Public release smoke docs | `docs/getting-started.md`, `docs/heartbeat-demo.md` | Demo/release verification path |
 | Student Sandbox v1 | `src/nous_os/workflows/student_sandbox_v1.py` | Local-only 20-minute high-school research learning loop + privacy-first study protocol |
 | Domain compilation prototype | `docs/harness/domain-compilation-contract-map.md`, `src/nous_os/contracts/domain_compilation.py` | Narrow SpecIR/TargetDescription/PlatformConfig/VerificationReport contract and deterministic verifier |
+| Software Change Spec Module | `docs/harness/spec-driven-development.md`, `src/nous_os/specs`, `specs/changes` | Approval-before-implementation lifecycle, repository gates, safe checks, and evidence-backed VerificationReports |
 
 ## Standard Verification
 
@@ -69,6 +70,7 @@ Forbidden by default:
 cd /Users/liyao/nousos/nous-os
 python3 -m unittest discover -s tests -v
 nous-os validate harness
+nous-os spec validate 0001-spec-driven-development
 python3 scripts/check_cross_repo_release_gate.py --workspace /Users/liyao/nousos --json
 ```
 

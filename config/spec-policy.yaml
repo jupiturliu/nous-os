@@ -1,0 +1,25 @@
+schema_version: 1
+protected_paths:
+  - src/
+  - tests/
+  - config/
+  - contracts/
+  - apps/
+  - deploy/
+  - scripts/
+  - .github/workflows/
+  - .github/CODEOWNERS
+  - .githooks/
+  - pyproject.toml
+  - package.json
+  - package-lock.json
+  - wrangler.toml
+  - AGENTS.md
+  - CONTEXT.md
+exempt_paths:
+  - docs/
+  - README.md
+  - ARCHITECTURE.md
+  - LICENSE
+  - .gitignore
+  - specs/changes/

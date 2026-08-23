@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+PYTHONPATH=src python3 -m nous_os spec gate --staged --message-file "$1"
