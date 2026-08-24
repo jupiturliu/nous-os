@@ -1,0 +1,14 @@
+{
+  "approved_at": "2026-08-24T03:46:57.260483Z",
+  "approver": "liyao",
+  "change_id": "0003-harness-verification-loop",
+  "channel": "local",
+  "hashes": {
+    "implementation_sha256": "17e188573a35814f99485fbd53254998b393e38f981c821e823c30d53100eb6f",
+    "spec_sha256": "1055f7533550c3a3b9b5c3589b746555ccc31ee73166e56d2959aee33ee89941"
+  },
+  "reason": "同意统一 Gate、真实 Profile replay、隐私安全快照和可选夜间真实集成验证方案。",
+  "reference": null,
+  "schema_version": 1,
+  "spec_commit": "72c0493edeaea7f576050b49d3b9376de2b5bbbc"
+}
