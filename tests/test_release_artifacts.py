@@ -66,8 +66,8 @@ class ReleaseArtifactTests(unittest.TestCase):
                     return subprocess.CompletedProcess(command, 0, stdout=output, stderr="")
                 if command[1:4] == ("-m", "build", "--no-isolation"):
                     destination = Path(command[command.index("--outdir") + 1])
-                    destination.joinpath("nous_os-0.2.0-py3-none-any.whl").write_bytes(b"wheel")
-                    destination.joinpath("nous_os-0.2.0.tar.gz").write_bytes(b"sdist")
+                    self._wheel(destination / "nous_os-0.2.0-py3-none-any.whl")
+                    self._sdist(destination / "nous_os-0.2.0.tar.gz")
                     return subprocess.CompletedProcess(command, 0, stdout="built\n", stderr="")
                 self.fail(f"unexpected command: {command}")
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import io
 import json
@@ -12,6 +13,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 import venv
 import zipfile
 from email.parser import BytesParser
@@ -74,6 +76,7 @@ def build_release(
                 env=environment,
                 runner=runner,
             )
+            _normalize_built_archives(artifacts, source_date_epoch)
             builds.append(_artifact_facts(artifacts))
         if builds[0] != builds[1]:
             raise ReleaseError("normalized builds are not byte-for-byte reproducible")
@@ -340,6 +343,56 @@ def _artifact_facts(directory: Path) -> tuple[dict, ...]:
     if len(facts) != 2:
         raise ReleaseError("build must produce exactly one wheel and one sdist")
     return facts
+
+
+def _normalize_built_archives(directory: Path, source_date_epoch: int) -> None:
+    for path in sorted(directory.iterdir()):
+        if path.suffix == ".whl":
+            _normalize_wheel(path, source_date_epoch)
+        elif path.name.endswith(".tar.gz"):
+            _normalize_sdist(path, source_date_epoch)
+        elif path.is_file():
+            raise ReleaseError(f"build produced an unsupported artifact: {path.name}")
+
+
+def _normalize_wheel(path: Path, source_date_epoch: int) -> None:
+    timestamp = time.gmtime(max(source_date_epoch, 315532800))[:6]
+    with zipfile.ZipFile(path) as source:
+        entries = tuple((info.filename, info.is_dir(), source.read(info) if not info.is_dir() else b"")
+                        for info in source.infolist())
+    temporary = path.with_suffix(path.suffix + ".normalized")
+    with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as destination:
+        for name, is_directory, payload in sorted(entries):
+            info = zipfile.ZipInfo(name, date_time=timestamp)
+            info.create_system = 3
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = ((0o40755 if is_directory else 0o100644) << 16) | (0x10 if is_directory else 0)
+            destination.writestr(info, payload)
+    temporary.replace(path)
+
+
+def _normalize_sdist(path: Path, source_date_epoch: int) -> None:
+    entries = []
+    with tarfile.open(path, "r:gz") as source:
+        for member in source.getmembers():
+            if member.issym() or member.islnk():
+                raise ReleaseError(f"build produced an archive link: {member.name}")
+            extracted = source.extractfile(member) if member.isfile() else None
+            entries.append((member.name, member.isdir(), extracted.read() if extracted is not None else b""))
+    temporary = path.with_suffix(path.suffix + ".normalized")
+    with temporary.open("wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", compresslevel=9, fileobj=raw, mtime=source_date_epoch) as compressed:
+            with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as destination:
+                for name, is_directory, payload in sorted(entries):
+                    info = tarfile.TarInfo(name)
+                    info.type = tarfile.DIRTYPE if is_directory else tarfile.REGTYPE
+                    info.mode = 0o755 if is_directory else 0o644
+                    info.uid = info.gid = 0
+                    info.uname = info.gname = ""
+                    info.mtime = source_date_epoch
+                    info.size = 0 if is_directory else len(payload)
+                    destination.addfile(info, None if is_directory else io.BytesIO(payload))
+    temporary.replace(path)
 
 
 def _file_fact(path: Path) -> dict:
