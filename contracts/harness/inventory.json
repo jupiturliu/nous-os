@@ -277,6 +277,30 @@
       "verification": "python3 -m unittest tests.test_harness_web.HarnessWebTests -v"
     },
     {
+      "id": "runtime_assurance",
+      "path": "src/nous_os/assurance",
+      "kind": "runtime_invariant_registry",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_runtime_assurance -v"
+    },
+    {
+      "id": "credential_provider",
+      "path": "src/nous_os/security",
+      "kind": "runtime_permission_and_credential_interfaces",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_runtime_assurance tests.test_notifications -v"
+    },
+    {
+      "id": "operational_telemetry",
+      "path": "src/nous_os/telemetry",
+      "kind": "privacy_safe_runtime_telemetry",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_runtime_assurance -v"
+    },
+    {
       "id": "static_site_manifest",
       "path": "apps/web/site-manifest.yaml",
       "kind": "deployment_manifest",

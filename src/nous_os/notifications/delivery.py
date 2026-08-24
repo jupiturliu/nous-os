@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Callable, Protocol
 
 from nous_os.core import EvidenceEvent, HarnessContext
+from nous_os.security import CredentialProvider, CredentialRef
 
 
 RESEARCH_LINE_COMPLETED = "research-line.capture-completed"
@@ -20,6 +21,10 @@ ALLOWED_PAYLOAD_FIELDS = frozenset({"event_type", "capture_date", "status"})
 
 class NotificationAdapter(Protocol):
     def deliver(self, payload: dict[str, str]) -> int: ...
+
+
+class NotificationNotConfigured(RuntimeError):
+    """The referenced channel has no value for this operation."""
 
 
 @dataclass(frozen=True)
@@ -69,6 +74,36 @@ class WebhookNotificationAdapter:
             return int(response.status)
 
 
+class CredentialNotificationAdapter:
+    """Resolve the webhook reference per delivery so rotation needs no restart."""
+
+    def __init__(
+        self,
+        provider: CredentialProvider,
+        reference: CredentialRef,
+        *,
+        timeout_seconds: float = 5.0,
+        adapter_factory: Callable[..., NotificationAdapter] = WebhookNotificationAdapter,
+    ):
+        self._provider = provider
+        self._reference = reference
+        self._timeout_seconds = timeout_seconds
+        self._adapter_factory = adapter_factory
+
+    def __repr__(self) -> str:
+        return (
+            "CredentialNotificationAdapter(credential_ref="
+            f"{self._reference.name!r}, value='[redacted]', timeout_seconds={self._timeout_seconds!r})"
+        )
+
+    def deliver(self, payload: dict[str, str]) -> int:
+        resolved = self._provider.resolve(self._reference)
+        if resolved is None:
+            raise NotificationNotConfigured("notification credential is not configured")
+        adapter = self._adapter_factory(resolved.value, timeout_seconds=self._timeout_seconds)
+        return adapter.deliver(payload)
+
+
 class NotificationCenter:
     """Own delivery isolation, privacy invariants, outcomes, and Evidence Events."""
 
@@ -92,6 +127,8 @@ class NotificationCenter:
                 result = DeliveryResult("failed", RESEARCH_LINE_COMPLETED, capture_date, "http_status")
             else:
                 result = DeliveryResult("delivered", RESEARCH_LINE_COMPLETED, capture_date)
+        except NotificationNotConfigured:
+            result = DeliveryResult("skipped", RESEARCH_LINE_COMPLETED, capture_date, "not_configured")
         except Exception as error:  # Notification failures must never fail Research Line.
             result = DeliveryResult("failed", RESEARCH_LINE_COMPLETED, capture_date, _failure_kind(error))
         self._record(result)

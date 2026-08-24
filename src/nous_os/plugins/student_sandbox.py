@@ -12,6 +12,7 @@ class StudentSandboxPlugin:
     id = "student-sandbox"
     requires = ("evidence-store",)
     provides = ("student-sandbox",)
+    effects = ("filesystem-read", "filesystem-write")
 
     def start(self, context: HarnessContext, config: dict[str, Any]) -> None:
         context.register("student-sandbox", StudentSandboxStore(context))

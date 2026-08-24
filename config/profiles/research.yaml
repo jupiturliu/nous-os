@@ -1,12 +1,26 @@
-schema_version: 1
+schema_version: 2
 name: research
+allowed_effects:
+  - filesystem-read
+  - filesystem-write
+  - network-egress
 plugins:
+  - id: permission-policy
+    module: nous_os.plugins.permission_policy
+  - id: assurance
+    module: nous_os.plugins.assurance
+  - id: credentials
+    module: nous_os.plugins.credentials
+  - id: telemetry
+    module: nous_os.plugins.telemetry
+    config:
+      mode: disabled
   - id: evidence
     module: nous_os.plugins.evidence
   - id: notifications
     module: nous_os.plugins.notifications
     config:
-      webhook_env: NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL
+      webhook_ref: NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL
       timeout_seconds: 5
   - id: research-line
     module: nous_os.plugins.research_line

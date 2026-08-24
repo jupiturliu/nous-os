@@ -10,6 +10,7 @@ import uuid
 from pathlib import Path
 
 from nous_os.artifacts import publish_site_data, stage_site
+from nous_os.assurance import InvariantViolation
 from nous_os.checks import CHECK_MODES, run_check
 from nous_os.contracts.domain_compilation import validate_contract_bundle, validate_full_contract_bundle
 from nous_os.contracts.harness_inventory import validate_inventory
@@ -24,6 +25,7 @@ from nous_os.specs import (
     validate_change,
     verify_change,
 )
+from nous_os.security import PermissionDenied
 from nous_os.web import serve
 
 
@@ -63,6 +65,11 @@ def _parser() -> argparse.ArgumentParser:
     research.add_argument("--max-age-days", type=int, default=2)
     research.add_argument("--dry-run", action="store_true")
     research.set_defaults(function=_run_research_line)
+
+    diagnose = commands.add_parser("diagnose")
+    _profile_argument(diagnose, "student")
+    diagnose.add_argument("--json", action="store_true", dest="json_output")
+    diagnose.set_defaults(function=_diagnose)
 
     serve_parser = commands.add_parser("serve")
     serve_commands = serve_parser.add_subparsers(dest="composition", required=True)
@@ -198,6 +205,7 @@ def _run_heartbeat(args) -> int:
             override_kind=args.override_kind,
             demo_mode=args.demo_mode,
         )
+        harness.check()
     finally:
         harness.stop()
     print(json.dumps(snapshot["metrics"], ensure_ascii=False, indent=2))
@@ -219,6 +227,7 @@ def _run_research_line(args) -> int:
             print(markdown)
         else:
             print(module.write_inbox_file(capture_date, markdown))
+        harness.check()
     finally:
         harness.stop()
     return 0
@@ -237,6 +246,70 @@ def _serve_web(args) -> int:
     finally:
         harness.stop()
     return 0
+
+
+def _diagnose(args) -> int:
+    profile = _profile(args.profile)
+    context = HarnessContext(profile_name=profile.name, paths=_paths(args))
+    harness = Harness(profile, context)
+    try:
+        harness.start()
+    except PermissionDenied as error:
+        return _print_diagnose_failure(args, profile.name, {
+            "code": error.code,
+            "plugin": error.plugin_id,
+            "denied_effects": list(error.denied_effects),
+        })
+    except InvariantViolation as error:
+        return _print_diagnose_failure(args, profile.name, {
+            "code": error.code,
+            "owner": error.owner,
+            "invariant": error.invariant,
+            "phase": error.phase,
+        })
+    try:
+        report = harness.diagnose()
+        _print_diagnose_report(args, report)
+    finally:
+        harness.stop()
+    return 0 if report["readiness"]["ready"] else 1
+
+
+def _print_diagnose_failure(args, profile_name: str, failure: dict) -> int:
+    report = {
+        "schema_version": 1,
+        "profile": {"name": profile_name},
+        "readiness": {
+            "ready": False,
+            "status": "failed",
+            "reasons": [failure["code"]],
+            "profile": profile_name,
+        },
+        "failure": failure,
+    }
+    _print_diagnose_report(args, report)
+    return 1
+
+
+def _print_diagnose_report(args, report: dict) -> None:
+    if args.json_output:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return
+    profile = report["profile"]
+    schema = f" schema={profile['schema_version']}" if "schema_version" in profile else ""
+    telemetry = f" telemetry={report['telemetry']['mode']}" if "telemetry" in report else ""
+    print(f"profile={profile['name']}{schema}")
+    print(f"readiness={report['readiness']['status']}{telemetry}")
+    if "plugin_order" in report:
+        print(f"plugins={','.join(item['id'] for item in report['plugin_order'])}")
+        print(f"capabilities={','.join(report['capabilities'])}")
+        for credential in report["credentials"]:
+            print(
+                f"credential={credential['reference']} configured={str(credential['configured']).lower()} "
+                f"source={credential['source'] or 'none'} writable={str(credential['writable']).lower()}"
+            )
+    if "failure" in report:
+        print(f"failure={report['failure']['code']}")
 
 
 def _validate_profile(args) -> int:

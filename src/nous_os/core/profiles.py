@@ -8,6 +8,8 @@ from typing import Any
 
 import yaml
 
+from nous_os.security.permissions import ProfilePermissionPolicy
+
 
 @dataclass(frozen=True)
 class PluginConfig:
@@ -23,6 +25,7 @@ class Profile:
     plugins: tuple[PluginConfig, ...]
     workflows: tuple[str, ...] = ()
     web: dict[str, Any] = field(default_factory=dict)
+    allowed_effects: tuple[str, ...] = ()
 
 
 def load_profile(path: str | Path) -> Profile:
@@ -30,12 +33,14 @@ def load_profile(path: str | Path) -> Profile:
     raw = yaml.safe_load(source.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
         raise ValueError("profile must be a YAML mapping")
-    allowed = {"schema_version", "name", "plugins", "workflows", "web"}
+    allowed = {"schema_version", "name", "plugins", "workflows", "web", "allowed_effects"}
     unknown = set(raw) - allowed
     if unknown:
         raise ValueError(f"unknown profile fields: {', '.join(sorted(unknown))}")
-    if raw.get("schema_version") != 1:
-        raise ValueError("profile schema_version must be 1")
+    if raw.get("schema_version") == 1:
+        raise ValueError("Profile schema_version 1 must migrate: add allowed_effects and set schema_version to 2")
+    if raw.get("schema_version") != 2:
+        raise ValueError("profile schema_version must be 2")
     name = raw.get("name")
     if not isinstance(name, str) or not name.strip():
         raise ValueError("profile name must be a non-empty string")
@@ -58,4 +63,8 @@ def load_profile(path: str | Path) -> Profile:
     web = raw.get("web", {})
     if not isinstance(web, dict):
         raise ValueError("profile web must be a mapping")
-    return Profile(1, name.strip(), tuple(plugins), tuple(workflows), web)
+    allowed_effects = raw.get("allowed_effects")
+    if not isinstance(allowed_effects, list) or not all(isinstance(item, str) for item in allowed_effects):
+        raise ValueError("profile allowed_effects must be a list of strings")
+    policy = ProfilePermissionPolicy(allowed_effects)
+    return Profile(2, name.strip(), tuple(plugins), tuple(workflows), web, policy.allowed_effects)

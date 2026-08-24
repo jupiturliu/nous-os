@@ -65,6 +65,9 @@ def _handler_type(context: HarnessContext, static_root: Path):
                     "route": "web-backend-to-hermes-gateway",
                     "profile": context.profile_name,
                 })
+            elif path == "/api/ready":
+                readiness = context.readiness()
+                self._json(HTTPStatus.OK if readiness["ready"] else HTTPStatus.SERVICE_UNAVAILABLE, readiness)
             elif path == "/api/dashboard-data":
                 source = context.paths.projections / "dashboard-data.json"
                 if not source.exists():
@@ -94,6 +97,8 @@ def _handler_type(context: HarnessContext, static_root: Path):
                     override_kind=body.get("override_kind") or None,
                     demo_mode=body.get("demo_mode") or None,
                 )
+                if not self._check_workflow_invariants():
+                    return
                 self._json(HTTPStatus.CREATED, snapshot)
             elif path == "/api/hermes-student-agent":
                 try:
@@ -109,6 +114,8 @@ def _handler_type(context: HarnessContext, static_root: Path):
                     self._json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": "Student Sandbox is not enabled by this Profile."})
                     return
                 record = context.resolve("student-sandbox").save(body)
+                if not self._check_workflow_invariants():
+                    return
                 self._json(HTTPStatus.OK, {
                     "status": "saved",
                     "session_id": record["session_id"],
@@ -118,6 +125,20 @@ def _handler_type(context: HarnessContext, static_root: Path):
                 })
             else:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
+
+        def _check_workflow_invariants(self) -> bool:
+            try:
+                context.run_invariants("workflow-complete")
+            except Exception as error:
+                context.mark_unready(f"invariant:{type(error).__name__}")
+                context.emit_telemetry("invariant", "run", "failed", error_class=type(error).__name__)
+                self._json(HTTPStatus.SERVICE_UNAVAILABLE, {
+                    "error": "runtime invariant failed",
+                    "error_class": type(error).__name__,
+                })
+                return False
+            context.emit_telemetry("invariant", "run", "passed")
+            return True
 
         def _get_student_session(self) -> None:
             if not context.has("student-sandbox"):

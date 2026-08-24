@@ -14,10 +14,11 @@ from nous_os.workflows.student_sandbox import StudentSandboxStore
 
 
 class _FakePlugin:
-    def __init__(self, plugin_id, *, requires=(), provides=(), trace=None):
+    def __init__(self, plugin_id, *, requires=(), provides=(), effects=(), trace=None):
         self.id = plugin_id
         self.requires = tuple(requires)
         self.provides = tuple(provides)
+        self.effects = tuple(effects)
         self.trace = trace if trace is not None else []
 
     def start(self, context, config):
@@ -58,7 +59,7 @@ class HarnessKernelTests(unittest.TestCase):
         trace = []
         self._module("test.provider", _FakePlugin("provider", provides=("clock",), trace=trace))
         self._module("test.consumer", _FakePlugin("consumer", requires=("clock",), provides=("workflow",), trace=trace))
-        profile = Profile(1, "test", (
+        profile = Profile(2, "test", (
             PluginConfig("consumer", "test.consumer"),
             PluginConfig("provider", "test.provider"),
         ))
@@ -73,17 +74,17 @@ class HarnessKernelTests(unittest.TestCase):
         self._module("test.missing", _FakePlugin("missing", requires=("absent",)))
         context = HarnessContext(profile_name="test", paths=self.paths)
         with self.assertRaisesRegex(ValueError, "missing capability"):
-            Harness(Profile(1, "test", (PluginConfig("missing", "test.missing"),)), context).start()
+            Harness(Profile(2, "test", (PluginConfig("missing", "test.missing"),)), context).start()
 
         self._module("test.a", _FakePlugin("a", requires=("b-cap",), provides=("a-cap",)))
         self._module("test.b", _FakePlugin("b", requires=("a-cap",), provides=("b-cap",)))
-        cycle = Profile(1, "test", (PluginConfig("a", "test.a"), PluginConfig("b", "test.b")))
+        cycle = Profile(2, "test", (PluginConfig("a", "test.a"), PluginConfig("b", "test.b")))
         with self.assertRaisesRegex(ValueError, "cycle"):
             Harness(cycle, context).start()
 
         self._module("test.c", _FakePlugin("c", provides=("same",)))
         self._module("test.d", _FakePlugin("d", provides=("same",)))
-        duplicate = Profile(1, "test", (PluginConfig("c", "test.c"), PluginConfig("d", "test.d")))
+        duplicate = Profile(2, "test", (PluginConfig("c", "test.c"), PluginConfig("d", "test.d")))
         with self.assertRaisesRegex(ValueError, "duplicate capability"):
             Harness(duplicate, context).start()
 

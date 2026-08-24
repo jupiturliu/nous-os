@@ -5,11 +5,13 @@ NOUS OS is an evidence-backed Harness for human-AI co-evolution workflows. It co
 ## Runtime composition
 
 ```text
-YAML Profile
+YAML Profile v2 ── explicit Effect allowlist
     │
     ▼
-Python Harness kernel ── loads Plugins in dependency order
+Python Harness kernel ── authorizes Effects, loads Plugins in dependency order
     │
+    ├── Permission Policy + Invariant Registry
+    ├── Credential Provider + Telemetry Sink Adapters
     ├── Student Sandbox workflow ── Hermes Gateway Adapter
     ├── Research Line workflow
     ├── Heartbeat workflow ──────── installed Synapse or local Adapter
@@ -25,7 +27,9 @@ Deterministic runtime Projections
 Public website snapshots
 ```
 
-The kernel's small Interface owns Profile validation, dependency ordering, capability registration, failure handling, and reverse teardown. This Depth provides Leverage to every workflow and keeps lifecycle knowledge local.
+The kernel's small Interface owns Profile validation, Effect authorization, dependency ordering, Capability registration, phased Invariants, readiness, failure handling, and robust reverse teardown. This Depth provides Leverage to every workflow and keeps lifecycle knowledge local. Plugin start is fail closed: unauthorized Effects are rejected before any Plugin starts. Stop continues after individual failures, removes every provided Capability, and reports attributable aggregate errors.
+
+Credential values stay outside tracked composition. Profiles contain only Credential References; the Credential Provider resolves the current value once per operation. Operational Telemetry uses a closed record vocabulary, is disabled by default, and contains Sink failure so diagnostic Implementation details cannot change workflow success.
 
 ## Source and artifact planes
 
@@ -51,12 +55,15 @@ Every durable workflow result is represented by a versioned append-only Evidence
 The Python Web Module owns the stable local route Interface:
 
 - `GET /api/health`
+- `GET /api/ready`
 - `POST /api/hermes-student-agent`
 - `GET|POST /api/student-sandbox-session`
 - `GET /api/dashboard-data`
 - `POST /api/run-heartbeat`
 
 Cloudflare Worker Static Assets serves the public website and forwards `/api/*` to the Python origin. Browser code never receives Hermes or model-provider credentials.
+
+`/api/health` answers process liveness. `/api/ready` reports whether Harness startup and after-start Invariants succeeded, using only safe failure reasons.
 
 ## Human-AI flywheel
 

@@ -1,6 +1,6 @@
 {
   "artifacts": [],
-  "cli_output": "profile ok name=research plugins=4",
+  "cli_output": "profile ok name=research plugins=8",
   "events": [
     {
       "event_type": "notification.skipped",

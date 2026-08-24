@@ -1,6 +1,6 @@
 {
   "artifacts": [],
-  "cli_output": "profile ok name=trading-proof plugins=3",
+  "cli_output": "profile ok name=trading-proof plugins=7",
   "events": [],
   "profile": "trading-proof",
   "projections": [],

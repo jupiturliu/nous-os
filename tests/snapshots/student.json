@@ -8,7 +8,7 @@
       "sha256": "<sha256>"
     }
   ],
-  "cli_output": "profile ok name=student plugins=3",
+  "cli_output": "profile ok name=student plugins=7",
   "events": [
     {
       "event_type": "student-sandbox.session-saved",

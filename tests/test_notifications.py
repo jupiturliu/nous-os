@@ -8,7 +8,9 @@ from pathlib import Path
 
 from nous_os.core import HarnessContext, RuntimePaths
 from nous_os.notifications import NotificationCenter, WebhookNotificationAdapter
+from nous_os.notifications.delivery import CredentialNotificationAdapter
 from nous_os.plugins.research_line import ResearchLineRunner
+from nous_os.security import CredentialRef, EnvironmentCredentialProvider
 
 
 class _RecordingAdapter:
@@ -120,6 +122,40 @@ class NotificationCenterTests(unittest.TestCase):
                 "status": "completed",
                 "markdown": "private",
             })
+
+    def test_credential_adapter_observes_rotation_without_restart(self):
+        environment = {"NOTIFY_URL": "https://notify.example/first"}
+        endpoints = []
+
+        class Adapter:
+            def __init__(self, endpoint, *, timeout_seconds):
+                endpoints.append((endpoint, timeout_seconds))
+
+            def deliver(self, payload):
+                return 204
+
+        adapter = CredentialNotificationAdapter(
+            EnvironmentCredentialProvider(environment),
+            CredentialRef("NOTIFY_URL"),
+            timeout_seconds=2,
+            adapter_factory=Adapter,
+        )
+        adapter.deliver({
+            "event_type": "research-line.capture-completed",
+            "capture_date": "2026-08-23",
+            "status": "completed",
+        })
+        environment["NOTIFY_URL"] = "https://notify.example/rotated"
+        adapter.deliver({
+            "event_type": "research-line.capture-completed",
+            "capture_date": "2026-08-24",
+            "status": "completed",
+        })
+        self.assertEqual([item[0] for item in endpoints], [
+            "https://notify.example/first",
+            "https://notify.example/rotated",
+        ])
+        self.assertNotIn("notify.example", repr(adapter))
 
 
 class ResearchLineNotificationTests(unittest.TestCase):

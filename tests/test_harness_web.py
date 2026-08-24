@@ -22,6 +22,7 @@ class HarnessWebTests(unittest.TestCase):
         (self.static / "index.html").write_text("<h1>NOUS OS</h1>")
         self.context = HarnessContext(profile_name="student", paths=self.paths)
         self.context.register("student-sandbox", StudentSandboxStore(self.context))
+        self.context.mark_ready()
         self.server = create_server(self.context, static_root=self.static, port=0)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -50,6 +51,18 @@ class HarnessWebTests(unittest.TestCase):
         self.assertEqual((status, body), (200, b"<h1>NOUS OS</h1>"))
         status, _, _ = self.request("GET", "/api/dashboard-data")
         self.assertEqual(status, 404)
+
+    def test_readiness_is_distinct_from_liveness_and_uses_safe_reasons(self):
+        status, _, body = self.request("GET", "/api/ready")
+        self.assertEqual(status, 200)
+        self.assertTrue(json.loads(body)["ready"])
+        self.context.mark_unready("secret webhook https://private.invalid")
+        status, _, body = self.request("GET", "/api/ready")
+        self.assertEqual(status, 503)
+        report = json.loads(body)
+        self.assertEqual(report["reasons"], ["runtime-assurance-failure"])
+        status, _, _ = self.request("GET", "/api/health")
+        self.assertEqual(status, 200)
 
     def test_student_session_route_is_event_backed(self):
         status, _, body = self.request("POST", "/api/student-sandbox-session", {

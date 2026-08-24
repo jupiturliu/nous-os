@@ -64,6 +64,7 @@ Forbidden by default:
 | Domain compilation prototype | `docs/harness/domain-compilation-contract-map.md`, `src/nous_os/contracts/domain_compilation.py` | Narrow SpecIR/TargetDescription/PlatformConfig/VerificationReport contract and deterministic verifier |
 | Software Change Spec Module | `docs/harness/spec-driven-development.md`, `src/nous_os/specs`, `specs/changes` | Approval-before-implementation lifecycle, repository gates, safe checks, and evidence-backed VerificationReports |
 | Harness verification loop | `docs/harness/verification-loop.md`, `src/nous_os/checks`, `src/nous_os/scenarios` | Declarative Gate graphs, real-Profile replay, privacy-safe snapshots, and optional synthetic live smoke |
+| Runtime assurance | `docs/harness/runtime-assurance.md`, `src/nous_os/assurance`, `src/nous_os/security`, `src/nous_os/telemetry` | Profile v2 Effect permissions, phased Invariants, safe credentials, readiness, diagnose, and best-effort Telemetry |
 
 ## Standard Verification
 

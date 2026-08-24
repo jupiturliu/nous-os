@@ -13,6 +13,7 @@ class TradingEvaluatorPlugin:
     id = "trading-evaluator"
     requires = ("evidence-store",)
     provides = ("domain-evaluator-factory",)
+    effects = ("filesystem-read",)
 
     def start(self, context: HarnessContext, config: dict[str, Any]) -> None:
         workspace = config.get("workspace")

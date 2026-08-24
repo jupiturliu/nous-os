@@ -2,7 +2,7 @@
 
 from .context import HarnessContext
 from .events import ArtifactRef, EvidenceEvent, EventStore
-from .plugins import Harness, Plugin
+from .plugins import Harness, HarnessStopError, LifecycleFailure, Plugin
 from .profiles import PluginConfig, Profile, load_profile
 from .runtime import RuntimePaths
 
@@ -12,6 +12,8 @@ __all__ = [
     "EventStore",
     "Harness",
     "HarnessContext",
+    "HarnessStopError",
+    "LifecycleFailure",
     "Plugin",
     "PluginConfig",
     "Profile",

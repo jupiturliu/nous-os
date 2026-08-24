@@ -1,6 +1,19 @@
-schema_version: 1
+schema_version: 2
 name: student
+allowed_effects:
+  - filesystem-read
+  - filesystem-write
 plugins:
+  - id: permission-policy
+    module: nous_os.plugins.permission_policy
+  - id: assurance
+    module: nous_os.plugins.assurance
+  - id: credentials
+    module: nous_os.plugins.credentials
+  - id: telemetry
+    module: nous_os.plugins.telemetry
+    config:
+      mode: disabled
   - id: evidence
     module: nous_os.plugins.evidence
   - id: student-sandbox

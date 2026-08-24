@@ -25,3 +25,10 @@
 - **Gate** — a named, dependency-aware repository check with a stable passed, failed, or skipped outcome, executed locally and in CI through the same Harness verification Interface.
 - **Scenario Replay** — a keyless execution that starts a real Profile through the shipping Harness entry path, substitutes only nondeterministic external Adapters, and verifies persisted world state.
 - **Scenario Snapshot** — a reviewed, privacy-safe record of normalized CLI output, Evidence Event facts, Artifact metadata, Projections, and externally re-read scenario results.
+- **Invariant** — a named, Plugin-owned assertion over authoritative runtime facts, selected and executed by lifecycle phase with attributable failure.
+- **Effect** — a closed-vocabulary declaration of runtime authority requested by a Plugin and explicitly allowed by Profile v2.
+- **Permission Policy** — the fail-closed Interface that authorizes every Plugin Effect before any Plugin starts.
+- **Credential Reference** — a validated non-secret name stored in a Profile; its current value is resolved once per operation by a Credential Provider.
+- **Credential Provider** — the Interface for resolving a Credential Reference and describing configuration facts without exposing its value.
+- **Readiness** — the Harness lifecycle state after startup and after-start Invariants succeed; distinct from process liveness.
+- **Operational Telemetry** — privacy-allowlisted lifecycle facts sent best-effort to a disabled or local JSONL Telemetry Sink.

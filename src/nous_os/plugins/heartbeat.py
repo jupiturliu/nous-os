@@ -26,6 +26,7 @@ class HeartbeatPlugin:
     id = "heartbeat"
     requires = ("evidence-store",)
     provides = ("heartbeat",)
+    effects = ("filesystem-read", "filesystem-write")
 
     def start(self, context: HarnessContext, config: dict[str, Any]) -> None:
         context.register("heartbeat", HeartbeatRunner(context))

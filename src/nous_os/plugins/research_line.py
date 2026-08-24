@@ -27,6 +27,7 @@ class ResearchLinePlugin:
     id = "research-line"
     requires = ("evidence-store", "notifications")
     provides = ("research-line",)
+    effects = ("filesystem-write", "network-egress")
 
     def start(self, context: HarnessContext, config: dict[str, Any]) -> None:
         context.register("research-line", ResearchLineRunner(context))
