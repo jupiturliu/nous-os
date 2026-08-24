@@ -1,0 +1,158 @@
+schema_version: 1
+change_id: 0004-runtime-assurance-safety
+affected_paths:
+  - src/nous_os/assurance/
+  - src/nous_os/security/
+  - src/nous_os/telemetry/
+  - src/nous_os/core/context.py
+  - src/nous_os/core/plugins.py
+  - src/nous_os/core/profiles.py
+  - src/nous_os/core/__init__.py
+  - src/nous_os/plugins/
+  - src/nous_os/notifications/delivery.py
+  - src/nous_os/cli.py
+  - src/nous_os/web/server.py
+  - config/profiles/
+  - contracts/harness/inventory.json
+  - tests/test_runtime_assurance.py
+  - tests/test_harness_kernel.py
+  - tests/test_harness_web.py
+  - tests/test_notifications.py
+  - tests/test_scenario_replay.py
+  - tests/snapshots/
+  - CONTEXT.md
+  - ARCHITECTURE.md
+  - docs/harness/runtime-assurance.md
+  - docs/harness/README.md
+requirement_mapping:
+  - requirement_id: R1
+    paths:
+      - src/nous_os/assurance/
+      - src/nous_os/core/context.py
+      - src/nous_os/core/plugins.py
+      - src/nous_os/plugins/
+      - tests/test_runtime_assurance.py
+      - CONTEXT.md
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R2
+    paths:
+      - src/nous_os/core/context.py
+      - src/nous_os/core/plugins.py
+      - tests/test_runtime_assurance.py
+      - tests/test_harness_kernel.py
+      - ARCHITECTURE.md
+  - requirement_id: R3
+    paths:
+      - src/nous_os/assurance/
+      - src/nous_os/security/
+      - src/nous_os/telemetry/
+      - src/nous_os/cli.py
+      - tests/test_runtime_assurance.py
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R4
+    paths:
+      - src/nous_os/assurance/
+      - src/nous_os/core/context.py
+      - src/nous_os/core/plugins.py
+      - src/nous_os/web/server.py
+      - tests/test_runtime_assurance.py
+      - tests/test_harness_web.py
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R5
+    paths:
+      - src/nous_os/security/
+      - src/nous_os/plugins/
+      - tests/test_runtime_assurance.py
+      - CONTEXT.md
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R6
+    paths:
+      - src/nous_os/security/
+      - src/nous_os/core/plugins.py
+      - src/nous_os/core/profiles.py
+      - src/nous_os/core/__init__.py
+      - src/nous_os/plugins/
+      - config/profiles/
+      - tests/test_runtime_assurance.py
+      - tests/test_harness_kernel.py
+      - tests/test_scenario_replay.py
+      - tests/snapshots/
+      - CONTEXT.md
+      - ARCHITECTURE.md
+  - requirement_id: R7
+    paths:
+      - src/nous_os/telemetry/
+      - src/nous_os/core/context.py
+      - src/nous_os/core/plugins.py
+      - src/nous_os/plugins/
+      - config/profiles/
+      - tests/test_runtime_assurance.py
+      - tests/test_scenario_replay.py
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R8
+    paths:
+      - src/nous_os/security/
+      - src/nous_os/plugins/
+      - src/nous_os/notifications/delivery.py
+      - config/profiles/
+      - tests/test_runtime_assurance.py
+      - tests/test_notifications.py
+      - tests/snapshots/
+      - docs/harness/runtime-assurance.md
+  - requirement_id: R9
+    paths:
+      - src/nous_os/core/context.py
+      - src/nous_os/core/plugins.py
+      - src/nous_os/core/profiles.py
+      - src/nous_os/cli.py
+      - src/nous_os/web/server.py
+      - config/profiles/
+      - contracts/harness/inventory.json
+      - tests/test_harness_kernel.py
+      - tests/test_harness_web.py
+      - tests/test_notifications.py
+      - tests/test_scenario_replay.py
+      - tests/snapshots/
+      - ARCHITECTURE.md
+      - docs/harness/README.md
+checks:
+  - id: runtime-assurance-tests
+    kind: unittest
+    target: tests.test_runtime_assurance
+  - id: harness-kernel-tests
+    kind: unittest
+    target: tests.test_harness_kernel
+  - id: notification-tests
+    kind: unittest
+    target: tests.test_notifications
+  - id: web-tests
+    kind: unittest
+    target: tests.test_harness_web
+  - id: scenario-replay-tests
+    kind: unittest
+    target: tests.test_scenario_replay
+  - id: profile-validation
+    kind: profiles
+  - id: full-test-suite
+    kind: unittest
+    target: discover:tests
+compatibility:
+  - Preserve existing workflow, publication, validation, Spec, and check command behavior outside the new diagnose command and lifecycle failure detail.
+  - Preserve Evidence Event, Artifact, Projection, Public Snapshot, notification payload, and existing public route response formats.
+  - Preserve GET /api/health as liveness and add GET /api/ready without changing existing route meanings.
+  - Continue keyless scenario replay and update only the reviewed Profile plugin-count snapshot fields required by explicit assurance Plugins.
+migration:
+  - Change shipped Profiles from schema_version 1 to 2 and add an explicit allowed_effects list containing only effects needed by their declared Plugins.
+  - Add assurance, environment-credential, permission-policy, and disabled-telemetry Plugins to shipped Profiles in dependency-valid order.
+  - Replace notification webhook_env configuration with webhook_ref using the same NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL environment reference.
+  - Make Profile v1 loading fail with a direct instruction to add allowed_effects and set schema_version 2.
+rollback:
+  - Revert shipped Profiles and loader to schema version 1 together with the Plugin effect contract.
+  - Restore notification environment resolution inside its Plugin if the Credential Provider is removed.
+  - Remove /api/ready and diagnose while preserving /api/health and existing commands.
+  - Keep Evidence and Artifact files unchanged because this change introduces no durable format migration.
+residual_risks:
+  - Effect declarations are statically reviewed assertions and cannot detect every hidden side effect in arbitrary Python code.
+  - Environment credential values remain protected by operating-system and deployment controls outside NOUS OS.
+  - Disabled or local-only telemetry does not provide centralized alerting or delivery guarantees.
+  - External Profile v1 files require a manual schema migration.

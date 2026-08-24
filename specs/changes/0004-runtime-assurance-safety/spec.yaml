@@ -1,0 +1,119 @@
+schema_version: 1
+change_id: 0004-runtime-assurance-safety
+intent: >-
+  Make every assembled Harness fail closed on undeclared authority, expose
+  attributable runtime invariant and readiness results, resolve credentials
+  without placing values in configuration, and emit privacy-allowlisted
+  operational telemetry without letting diagnostics disrupt workflows.
+requirements:
+  - id: R1
+    text: >-
+      A lifecycle-owned Invariant Registry must let an owning Plugin register
+      named checks for after-start, workflow-complete, and before-stop phases;
+      violations must fail with a stable code, phase, invariant name, and owner.
+  - id: R2
+    text: >-
+      Harness startup failure and shutdown must attempt reverse-order cleanup of
+      every started Plugin, continue after individual stop failures, remove all
+      provided Capabilities, remain idempotent, and report aggregated attributable
+      cleanup errors without hiding the original startup failure.
+  - id: R3
+    text: >-
+      The CLI must expose nous-os diagnose --profile NAME with human and JSON
+      output covering Profile schema, Plugin order, declared effects,
+      Capabilities, Invariants, Runtime Home readiness, and external dependency
+      configuration status without returning credential values.
+  - id: R4
+    text: >-
+      GET /api/health must remain a liveness check and GET /api/ready must return
+      ready only after Harness startup and after-start invariants succeed; failed
+      readiness must contain safe reasons and use a non-success HTTP status.
+  - id: R5
+    text: >-
+      A Credential Provider Interface must resolve validated credential references
+      once per operation and describe configured source and writability without
+      exposing the value; the initial environment Adapter must treat empty values
+      as absent and support rotation without restart.
+  - id: R6
+    text: >-
+      Every Plugin must declare its runtime effects and Profile schema version 2
+      must explicitly allow required effects; Harness startup must reject an
+      undeclared, unknown, or unauthorized effect before the affected Plugin
+      starts.
+  - id: R7
+    text: >-
+      A Telemetry Sink Interface must accept only an allowlisted operational
+      record vocabulary, default to a disabled Adapter, optionally write a local
+      Runtime Home JSONL stream, normalize machine paths, and contain all sink
+      errors so telemetry never changes workflow success or teardown.
+  - id: R8
+    text: >-
+      Notification webhook resolution must move from direct environment access
+      to the Credential Provider while preserving HTTPS-only validation,
+      best-effort delivery, privacy allowlists, and Research Line success semantics.
+  - id: R9
+    text: >-
+      Existing command behavior, Evidence and Artifact formats, public routes,
+      scenario privacy guarantees, and the verified Harness Gate graph must remain
+      compatible except for the documented Profile schema migration and new
+      diagnose/readiness Interfaces.
+constraints:
+  - Runtime authority and Software Change Approval are separate; repository approval never grants a Plugin runtime effect.
+  - Invariants assert authoritative events and mutable-data relationships, not method or attribute presence.
+  - Permission evaluation occurs before an affected Plugin start and is fail closed.
+  - Credential values may not appear in Profile YAML, diagnostics, exceptions, logs, telemetry, Evidence Events, Artifacts, snapshots, or VerificationReports.
+  - Telemetry records may contain event kind, phase, outcome, duration, Profile name, Plugin id, and stable error class only.
+  - Telemetry and readiness never export private workflow payloads or Artifact bodies.
+  - No asynchronous lifecycle, arbitrary code execution, container sandbox, native sandbox, OAuth flow, centralized secret store, or multi-tenant identity model is introduced.
+  - Python 3.11 and standard-library runtime dependencies remain sufficient.
+acceptance_criteria:
+  - id: AC1
+    text: Invariant registration, phase selection, duplicate detection, filtering, attribution, and failure behavior are deterministic through the registry Interface.
+    checks: [runtime-assurance-tests]
+  - id: AC2
+    text: Partial startup and multiple shutdown failures still clean every started Plugin in reverse order and leave no provided Capabilities registered.
+    checks: [runtime-assurance-tests, harness-kernel-tests]
+  - id: AC3
+    text: Diagnose and readiness distinguish liveness, ready, invariant failure, unauthorized effects, missing credentials, and disabled telemetry without secret disclosure.
+    checks: [runtime-assurance-tests, web-tests]
+  - id: AC4
+    text: Profile v2 validates explicit effects for all shipped compositions and Profile v1 produces a clear migration error.
+    checks: [runtime-assurance-tests, profile-validation]
+  - id: AC5
+    text: Credential rotation reaches the next notification operation while blank, malformed, or missing references remain safe and observable.
+    checks: [runtime-assurance-tests, notification-tests]
+  - id: AC6
+    text: Telemetry receives only allowlisted facts, normalizes paths, and cannot fail a successful workflow or Harness teardown.
+    checks: [runtime-assurance-tests, scenario-replay-tests]
+  - id: AC7
+    text: Existing Harness scenarios, public routes, notification semantics, and complete repository checks remain compatible.
+    checks: [notification-tests, web-tests, scenario-replay-tests, full-test-suite]
+out_of_scope:
+  - Landlock, containers, remote sandboxes, shell execution, or arbitrary untrusted code execution.
+  - OAuth authorization flows, UI credential editing, encrypted vaults, or managed cloud secret storage.
+  - OpenTelemetry SDK integration, remote telemetry export, delivery guarantees, retention, dashboards, or alerting.
+  - Multi-user or multi-tenant authorization and identity.
+  - Async Plugin start or stop methods and background task supervision.
+  - Schema migration machinery for Evidence Events, Artifacts, or other durable formats.
+assumptions:
+  - Local-first execution with constrained GitHub jobs and Web origin remains the target deployment shape.
+  - Environment references are the only credential source required in this stage.
+  - The local JSONL telemetry Adapter is for operator diagnostics and remains disabled in shipped Profiles unless explicitly enabled.
+  - All existing Profiles can enumerate their current effects without changing user-visible workflow behavior.
+risks:
+  - Incorrectly declared effects can block a previously working Profile until its explicit policy is corrected.
+  - Lifecycle aggregation changes which error a caller receives when both work and cleanup fail.
+  - Operational telemetry could leak sensitive context if the allowlist is widened carelessly.
+  - Profile schema version 1 files outside the repository require a manual migration to version 2.
+authority:
+  human_decisions:
+    - Approve the closed effect vocabulary and permissions assigned to each shipped Profile.
+    - Enable or disable local telemetry in a deployment Profile.
+    - Select credential references in Profile configuration and supply their environment values.
+    - Review readiness and invariant failures before restoring a deployment.
+  automated_decisions:
+    - Reject unknown or unauthorized effects before Plugin start.
+    - Resolve current credential values for an operation without caching them.
+    - Run selected invariants and attribute violations.
+    - Filter telemetry records and contain telemetry delivery failures.
+    - Compute readiness from lifecycle and invariant state.
