@@ -1,0 +1,14 @@
+{
+  "approved_at": "2026-08-24T01:41:01.474271Z",
+  "approver": "liyao",
+  "change_id": "0002-research-line-notifications",
+  "channel": "local",
+  "hashes": {
+    "implementation_sha256": "0a1dbfd9b90e796e07b51e739bed6e90282beba0e58734400bd77c702f1a9808",
+    "spec_sha256": "8cf14ab0fac323b8ab74d1febff781e63724dc69df4a9aff975ae069ca752969"
+  },
+  "reason": "同意 HTTPS webhook 方案、隐私约束和 best-effort 交付语义。",
+  "reference": null,
+  "schema_version": 1,
+  "spec_commit": "54a89273cfa137883a5d3f09d258b9e8ccd0ab89"
+}
