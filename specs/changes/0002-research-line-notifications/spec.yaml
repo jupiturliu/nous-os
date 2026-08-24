@@ -1,0 +1,83 @@
+schema_version: 1
+change_id: 0002-research-line-notifications
+intent: >-
+  Notify the configured operator after a Research Line capture has been
+  persisted successfully, without disclosing captured research content and
+  without allowing notification delivery failures to fail the capture.
+requirements:
+  - id: R1
+    text: >-
+      A non-dry-run Research Line command must make exactly one notification
+      delivery attempt after its inbox file has been written successfully.
+  - id: R2
+    text: >-
+      The notification payload must contain only an allowlisted event type,
+      capture date, and completion status; it must not contain captured
+      markdown, feed metadata, source titles, links, summaries, filesystem
+      paths, credentials, or endpoint identifiers.
+  - id: R3
+    text: >-
+      Notification delivery timeout or failure must leave the persisted inbox
+      file intact, keep the Research Line command successful, and record a
+      redacted notification.delivery-failed Evidence Event.
+  - id: R4
+    text: >-
+      Successful delivery must record a notification.delivered Evidence Event
+      containing delivery status and safe notification metadata only.
+  - id: R5
+    text: >-
+      Dry-run capture must not perform external notification delivery, and an
+      unconfigured notification channel must remain deterministic and
+      observable without making a network request.
+  - id: R6
+    text: >-
+      Existing Research Line parsing, filtering, markdown, CLI output-file,
+      Profile, Evidence Event, and scheduled pull-request behavior must remain
+      compatible.
+constraints:
+  - Notification delivery is best-effort and occurs only after successful inbox persistence.
+  - The v1 delivery Adapter uses an HTTPS webhook with a bounded timeout and Python standard-library networking only.
+  - The webhook URL is read from an environment variable and is never stored in Profiles, source, logs, Artifacts, Evidence Events, or VerificationReports.
+  - No captured Research Line content may cross the Notification Adapter seam.
+  - Notification configuration or delivery errors must never change a successful Research Line command into a failure.
+  - Existing website URLs and /api/* route contracts remain unchanged.
+acceptance_criteria:
+  - id: AC1
+    text: A successfully persisted capture invokes the configured Notification Adapter exactly once after the file exists.
+    checks: [notification-tests, research-line-tests]
+  - id: AC2
+    text: Notification payload and notification Evidence Events contain only explicitly allowed non-private fields.
+    checks: [notification-tests]
+  - id: AC3
+    text: Timeout, transport error, and non-success HTTP response leave the inbox file intact and the Research Line command successful while recording redacted failure evidence.
+    checks: [notification-tests, research-line-tests]
+  - id: AC4
+    text: Dry-run and unconfigured execution make no notification network request and expose an observable skipped outcome.
+    checks: [notification-tests]
+  - id: AC5
+    text: Existing Harness, Profile, Research Line, scheduled workflow, and full repository tests remain compatible.
+    checks: [profile-validation, research-line-tests, full-test-suite]
+out_of_scope:
+  - Native mobile push notifications.
+  - Email, SMS, or an in-product notification inbox.
+  - Notification preferences or recipient-management UI.
+  - Delivery retries, queues, escalation policies, and guaranteed delivery.
+  - Including captured entries, summaries, links, counts, or generated files in the notification.
+assumptions:
+  - The first real delivery channel is a configurable generic HTTPS webhook so Slack, Discord, or another operator-owned relay can sit behind the Adapter without channel-specific code.
+  - The deployment operator supplies the webhook URL through a repository or runtime secret named NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL.
+  - A missing webhook configuration is a skipped notification rather than a Research Line failure.
+risks:
+  - A configured third-party webhook provider learns that a Research Line capture completed on a particular date.
+  - Best-effort delivery can lose notifications during provider or network outages.
+  - Re-running a capture for the same date can produce another notification because deduplication is outside v1.
+authority:
+  human_decisions:
+    - Approve the HTTPS webhook as the v1 delivery channel.
+    - Select and configure the external webhook recipient.
+    - Accept third-party visibility of capture date and completion status.
+  automated_decisions:
+    - Determine whether notification configuration is present.
+    - Enforce the outbound payload allowlist.
+    - Classify delivery as delivered, failed, or skipped.
+    - Record redacted notification Evidence Events.

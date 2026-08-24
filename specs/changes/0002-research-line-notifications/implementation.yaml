@@ -1,0 +1,79 @@
+schema_version: 1
+change_id: 0002-research-line-notifications
+affected_paths:
+  - src/nous_os/notifications/
+  - src/nous_os/plugins/notifications.py
+  - src/nous_os/plugins/research_line.py
+  - src/nous_os/workflows/research_line.py
+  - src/nous_os/cli.py
+  - config/profiles/research.yaml
+  - .github/workflows/research-line-capture.yml
+  - tests/test_notifications.py
+  - tests/test_research_line_capture.py
+  - CONTEXT.md
+  - docs/harness/notifications.md
+requirement_mapping:
+  - requirement_id: R1
+    paths:
+      - src/nous_os/notifications/
+      - src/nous_os/plugins/notifications.py
+      - src/nous_os/plugins/research_line.py
+      - src/nous_os/cli.py
+      - tests/test_notifications.py
+  - requirement_id: R2
+    paths:
+      - src/nous_os/notifications/
+      - tests/test_notifications.py
+  - requirement_id: R3
+    paths:
+      - src/nous_os/notifications/
+      - src/nous_os/plugins/research_line.py
+      - src/nous_os/cli.py
+      - tests/test_notifications.py
+      - tests/test_research_line_capture.py
+  - requirement_id: R4
+    paths:
+      - src/nous_os/notifications/
+      - src/nous_os/plugins/notifications.py
+      - tests/test_notifications.py
+  - requirement_id: R5
+    paths:
+      - src/nous_os/notifications/
+      - src/nous_os/cli.py
+      - config/profiles/research.yaml
+      - tests/test_notifications.py
+  - requirement_id: R6
+    paths:
+      - src/nous_os/workflows/research_line.py
+      - src/nous_os/cli.py
+      - config/profiles/research.yaml
+      - .github/workflows/research-line-capture.yml
+      - tests/test_research_line_capture.py
+      - CONTEXT.md
+      - docs/harness/notifications.md
+checks:
+  - id: notification-tests
+    kind: unittest
+    target: tests.test_notifications
+  - id: research-line-tests
+    kind: unittest
+    target: tests.test_research_line_capture
+  - id: profile-validation
+    kind: profiles
+  - id: full-test-suite
+    kind: unittest
+    target: discover:tests
+compatibility:
+  - Preserve the existing nous-os run research-line arguments and successful output-file behavior.
+  - Preserve Research Line feed parsing, filtering, markdown format, and scheduled pull-request flow.
+  - Preserve existing Profile loading and public HTTP route Interfaces.
+migration:
+  - Add the Notification Plugin to the research Profile with webhook delivery disabled when its environment secret is absent.
+  - Configure NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL in each environment that should deliver notifications.
+rollback:
+  - Remove the Notification Plugin from the research Profile; Research Line capture remains independently runnable.
+  - Remove the webhook secret to disable external delivery without changing code or tracked configuration.
+residual_risks:
+  - Best-effort notification delivery is not durable and does not retry.
+  - The webhook provider observes capture date and completion status.
+  - Duplicate manual or scheduled captures can produce duplicate notifications.
