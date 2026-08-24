@@ -1,0 +1,90 @@
+schema_version: 1
+change_id: 0003-harness-verification-loop
+intent: >-
+  Establish one deterministic verification Interface that proves the assembled
+  NOUS OS Harness works through real Profile and CLI entry paths, while keeping
+  gate scheduling, replay normalization, diagnostics, and privacy enforcement
+  local to reusable Modules.
+requirements:
+  - id: R1
+    text: >-
+      The nous-os CLI must expose a check command with quick, full, ci, and
+      release modes backed by a declarative Gate registry rather than duplicated
+      command lists in CI and local scripts.
+  - id: R2
+    text: >-
+      Gate execution must validate dependency references, run independent gates
+      with bounded concurrency, skip dependents whose prerequisites fail, and
+      report stable status, duration, exit information, and diagnostics in both
+      human-readable and JSON forms.
+  - id: R3
+    text: >-
+      Keyless scenario replay must start the real student, research, and
+      trading-proof Profiles through the shipping Harness entry path, replace
+      only nondeterministic external Adapters, and compare normalized observable
+      output with reviewed snapshots.
+  - id: R4
+    text: >-
+      Scenario snapshots must cover CLI output, ordered Evidence Event facts,
+      Artifact metadata, and public-safe Projections without storing private
+      research content, credentials, local absolute paths, timestamps, random
+      identifiers, or webhook endpoints.
+  - id: R5
+    text: >-
+      Pull-request CI must use the same ci mode as local verification, while an
+      optional scheduled or manually dispatched lane may exercise configured
+      real external Interfaces with synthetic non-private input and must report
+      missing credentials as skipped rather than passed.
+  - id: R6
+    text: >-
+      Existing CLI commands, Profile composition, Evidence and Artifact formats,
+      public routes, Software Change gates, and full repository tests must remain
+      compatible.
+constraints:
+  - Python 3.11 and the standard library remain sufficient for Gate scheduling and snapshot replay.
+  - The Gate Module owns orchestration; CI configuration only selects a named mode.
+  - Replay must verify the world by reading persisted files and events after execution rather than trusting workflow self-reports.
+  - Snapshot recording is an explicit local action; CI only compares reviewed snapshots and never rewrites them.
+  - Network, wall clock, UUIDs, and temporary roots are the only allowed replay substitutions.
+  - No fixture or report may contain private Research Line text, secret-like values, or machine-specific absolute paths.
+  - Release mode in this change verifies the current source installation and entry path; packaged wheel verification belongs to a later approved Software Change.
+acceptance_criteria:
+  - id: AC1
+    text: Every check mode resolves to a validated Gate graph and produces equivalent human and JSON results.
+    checks: [verification-loop-tests]
+  - id: AC2
+    text: A failed prerequisite skips only dependent Gates while independent Gates continue, with deterministic result ordering.
+    checks: [verification-loop-tests]
+  - id: AC3
+    text: Reviewed keyless scenarios boot real Profiles and reproduce their normalized snapshots from isolated Runtime Homes.
+    checks: [scenario-replay-tests, profile-validation]
+  - id: AC4
+    text: Snapshot privacy validation rejects secrets, private payload fields, webhook endpoints, and absolute local paths.
+    checks: [scenario-replay-tests]
+  - id: AC5
+    text: CI invokes the named ci mode and the complete repository remains green and clean after verification.
+    checks: [verification-loop-tests, full-test-suite]
+out_of_scope:
+  - Runtime permission, credential, invariant, readiness, and telemetry Interfaces.
+  - Wheel, sdist, registry publication, SBOM, provenance, or dependency-license generation.
+  - Mobile Push, arbitrary untrusted code execution, container isolation, or Landlock.
+  - Multi-tenant hosted execution or expansion beyond Python 3.11.
+  - Live external tests that use real student or private research content.
+assumptions:
+  - Local-first execution is the primary product shape, with GitHub scheduled tasks and a constrained Web origin as hosted entry paths.
+  - Ordinary pull requests remain completely keyless and deterministic.
+  - Optional live checks use only synthetic allowlisted data and operator-provided CI credentials.
+risks:
+  - Snapshots can become noisy if normalization does not fully own nondeterministic fields.
+  - A central Gate graph can lengthen local checks if modes are not kept intentionally scoped.
+  - Real Profile replay can expose existing lifecycle defects that unit tests did not exercise.
+authority:
+  human_decisions:
+    - Approve the four named Gate modes and which checks block pull requests.
+    - Review and accept every changed scenario snapshot.
+    - Configure or withhold credentials for optional live Interface checks.
+  automated_decisions:
+    - Resolve Gate dependencies and bounded scheduling.
+    - Normalize allowed nondeterministic values.
+    - Reject unsafe snapshot content.
+    - Classify Gate results as passed, failed, or skipped.

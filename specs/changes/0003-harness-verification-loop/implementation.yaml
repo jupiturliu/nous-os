@@ -1,0 +1,83 @@
+schema_version: 1
+change_id: 0003-harness-verification-loop
+affected_paths:
+  - src/nous_os/checks/
+  - src/nous_os/scenarios/
+  - src/nous_os/cli.py
+  - tests/test_harness_checks.py
+  - tests/test_scenario_replay.py
+  - tests/snapshots/
+  - .github/workflows/ci.yml
+  - .github/workflows/live-interface-smoke.yml
+  - CONTEXT.md
+  - docs/harness/verification-loop.md
+  - docs/harness/README.md
+requirement_mapping:
+  - requirement_id: R1
+    paths:
+      - src/nous_os/checks/
+      - src/nous_os/cli.py
+      - tests/test_harness_checks.py
+      - .github/workflows/ci.yml
+      - CONTEXT.md
+      - docs/harness/verification-loop.md
+      - docs/harness/README.md
+  - requirement_id: R2
+    paths:
+      - src/nous_os/checks/
+      - tests/test_harness_checks.py
+      - docs/harness/verification-loop.md
+  - requirement_id: R3
+    paths:
+      - src/nous_os/scenarios/
+      - tests/test_scenario_replay.py
+      - tests/snapshots/
+      - docs/harness/verification-loop.md
+  - requirement_id: R4
+    paths:
+      - src/nous_os/scenarios/
+      - tests/test_scenario_replay.py
+      - tests/snapshots/
+      - docs/harness/verification-loop.md
+  - requirement_id: R5
+    paths:
+      - src/nous_os/checks/
+      - .github/workflows/ci.yml
+      - .github/workflows/live-interface-smoke.yml
+      - tests/test_harness_checks.py
+      - docs/harness/verification-loop.md
+  - requirement_id: R6
+    paths:
+      - src/nous_os/cli.py
+      - .github/workflows/ci.yml
+      - tests/test_harness_checks.py
+      - tests/test_scenario_replay.py
+      - docs/harness/README.md
+checks:
+  - id: verification-loop-tests
+    kind: unittest
+    target: tests.test_harness_checks
+  - id: scenario-replay-tests
+    kind: unittest
+    target: tests.test_scenario_replay
+  - id: profile-validation
+    kind: profiles
+  - id: full-test-suite
+    kind: unittest
+    target: discover:tests
+compatibility:
+  - Preserve all existing nous-os command names, arguments, output contracts, and exit behavior outside the new check command.
+  - Preserve Profile schema version 1 and existing Plugin composition.
+  - Preserve Evidence Event, Artifact, Projection, Public Snapshot, and public HTTP route formats.
+  - Keep existing Software Change commit and push gates effective while CI delegates verification checks to the Gate Module.
+migration:
+  - Add the new check command without changing existing commands.
+  - Replace duplicated CI validation and unit-test steps with one invocation of nous-os check --mode ci after equivalence tests pass.
+  - Record the initial privacy-safe snapshots through the explicit scenario recording Interface and review them before commit.
+rollback:
+  - Restore explicit CI validation and unittest commands while retaining the standalone tests.
+  - Remove the new check and scenario Modules and their snapshots; existing Harness commands remain independently runnable.
+residual_risks:
+  - Offline replay cannot prove availability or behavior of an external provider.
+  - Optional live checks do not block pull requests and may be skipped when credentials are absent.
+  - Snapshot review remains a human responsibility when intentionally visible behavior changes.
