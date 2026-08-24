@@ -2,5 +2,15 @@ include LICENSE
 include README.md
 include THIRD_PARTY_NOTICES.md
 recursive-include src/nous_os/resources/profiles *.yaml
+prune .github
+prune apps
+prune config
+prune contracts
+prune deploy
+prune docs
+prune requirements
+prune scripts
+prune specs
+prune tests
 global-exclude *.py[cod]
 global-exclude .DS_Store

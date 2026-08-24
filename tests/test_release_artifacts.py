@@ -107,6 +107,25 @@ class ReleaseArtifactTests(unittest.TestCase):
             with self.subTest(name), self.assertRaises(ReleaseError):
                 assert_release_payload_safe(name, payload)
 
+    def test_inspector_rejects_runtime_data_hidden_below_package_namespace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            release = Path(directory)
+            wheel = release / "nous_os-0.2.0-py3-none-any.whl"
+            self._wheel(wheel)
+            with zipfile.ZipFile(wheel, "a") as archive:
+                archive.writestr("nous_os/artifacts/private.json", '{"private":true}')
+            sdist = release / "nous_os-0.2.0.tar.gz"
+            self._sdist(sdist)
+            (release / MANIFEST_NAME).write_text(json.dumps({
+                "schema_version": 1,
+                "project": "nous-os",
+                "source_commit": "a" * 40,
+                "reproducible": True,
+                "artifacts": [self._fact(path) for path in (wheel, sdist)],
+            }), encoding="utf-8")
+            with self.assertRaisesRegex(ReleaseError, "unexpected wheel file type"):
+                inspect_release(ROOT, release)
+
     def _wheel(self, path):
         with zipfile.ZipFile(path, "w") as archive:
             for name in PROFILE_NAMES:

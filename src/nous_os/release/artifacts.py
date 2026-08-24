@@ -216,6 +216,8 @@ def _inspect_wheel(root: Path, path: Path) -> dict:
                 raise ReleaseError(f"unexpected wheel member: {name}")
             if _forbidden_member(name):
                 raise ReleaseError(f"forbidden wheel member: {name}")
+            if not info.is_dir() and not _allowed_wheel_file(name, dist_info):
+                raise ReleaseError(f"unexpected wheel file type: {name}")
             mode = (info.external_attr >> 16) & 0o777
             if not info.is_dir() and mode & 0o111:
                 raise ReleaseError(f"unexpected executable wheel member: {name}")
@@ -244,6 +246,8 @@ def _inspect_sdist(root: Path, path: Path) -> dict:
                 raise ReleaseError(f"sdist links are not allowed: {name}")
             if not _allowed_sdist_member(relative) or _forbidden_member(relative):
                 raise ReleaseError(f"unexpected sdist member: {relative}")
+            if member.isfile() and not _allowed_sdist_file(relative):
+                raise ReleaseError(f"unexpected sdist file type: {relative}")
             if member.isfile() and member.mode & 0o111:
                 raise ReleaseError(f"unexpected executable sdist member: {relative}")
             if member.isfile():
@@ -312,10 +316,42 @@ def _allowed_sdist_member(name: str) -> bool:
     )
 
 
+def _allowed_sdist_file(name: str) -> bool:
+    roots = {"LICENSE", "MANIFEST.in", "PKG-INFO", "README.md", "THIRD_PARTY_NOTICES.md", "pyproject.toml", "setup.cfg"}
+    if name in roots:
+        return True
+    if name.startswith("src/nous_os.egg-info/"):
+        return PurePosixPath(name).name in {
+            "PKG-INFO", "SOURCES.txt", "dependency_links.txt", "entry_points.txt", "requires.txt", "top_level.txt",
+        }
+    if name.startswith("src/nous_os/") and Path(name).suffix == ".py":
+        return True
+    return name.startswith("src/nous_os/resources/profiles/") and Path(name).suffix == ".yaml"
+
+
+def _allowed_wheel_file(name: str, dist_info: str) -> bool:
+    if name.startswith("nous_os/") and Path(name).suffix == ".py":
+        return True
+    if name.startswith("nous_os/resources/profiles/") and Path(name).suffix == ".yaml":
+        return True
+    if name.startswith("nous_os/"):
+        return False
+    relative = PurePosixPath(name).relative_to(dist_info).as_posix()
+    return relative in {
+        "METADATA", "RECORD", "WHEEL", "entry_points.txt", "top_level.txt",
+        "licenses/LICENSE", "licenses/THIRD_PARTY_NOTICES.md",
+    }
+
+
 def _forbidden_member(name: str) -> bool:
-    parts = {part.lower() for part in PurePosixPath(name).parts}
-    forbidden = {".env", ".git", "__pycache__", "artifacts", "events", "projections", "tests", "_site"}
-    return bool(parts & forbidden) or name.endswith((".pyc", ".pyo"))
+    parts = tuple(part.lower() for part in PurePosixPath(name).parts)
+    forbidden_anywhere = {".env", ".git", ".nous-os", "__pycache__", "tests", "_site"}
+    runtime_roots = {"artifacts", "events", "projections", "state", "cache", "telemetry"}
+    return (
+        bool(set(parts) & forbidden_anywhere)
+        or bool(parts and parts[0] in runtime_roots)
+        or name.endswith((".pyc", ".pyo"))
+    )
 
 
 def _wheel_dist_info(names: Iterable[str]) -> str:
