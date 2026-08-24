@@ -22,3 +22,6 @@
 - **VerificationReport** — the final JSON result binding a committed Software Change to changed paths, named check outcomes, residual risks, and immutable input hashes.
 - **Notification** — a privacy-allowlisted, best-effort signal that a workflow milestone occurred; notification failure never reverses a successfully completed workflow action.
 - **Notification Adapter** — the configured delivery implementation for a Notification, initially an HTTPS webhook whose secret endpoint remains outside tracked source and evidence.
+- **Gate** — a named, dependency-aware repository check with a stable passed, failed, or skipped outcome, executed locally and in CI through the same Harness verification Interface.
+- **Scenario Replay** — a keyless execution that starts a real Profile through the shipping Harness entry path, substitutes only nondeterministic external Adapters, and verifies persisted world state.
+- **Scenario Snapshot** — a reviewed, privacy-safe record of normalized CLI output, Evidence Event facts, Artifact metadata, Projections, and externally re-read scenario results.

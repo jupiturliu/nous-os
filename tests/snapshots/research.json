@@ -1,0 +1,27 @@
+{
+  "artifacts": [],
+  "cli_output": "profile ok name=research plugins=4",
+  "events": [
+    {
+      "event_type": "notification.skipped",
+      "payload": {
+        "capture_date": "2026-01-02",
+        "delivery_status": "skipped",
+        "failure_kind": "not_configured",
+        "notification_type": "research-line.capture-completed"
+      },
+      "privacy": "internal",
+      "producer": "notification-center",
+      "profile": "research"
+    }
+  ],
+  "profile": "research",
+  "projections": [],
+  "schema_version": 1,
+  "world": {
+    "capture_date": "2026-01-02",
+    "inbox_exists": true,
+    "inbox_file": "state/scenario-inbox/2026-01-02.md",
+    "notification_status": "skipped"
+  }
+}

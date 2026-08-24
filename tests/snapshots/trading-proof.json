@@ -1,0 +1,14 @@
+{
+  "artifacts": [],
+  "cli_output": "profile ok name=trading-proof plugins=3",
+  "events": [],
+  "profile": "trading-proof",
+  "projections": [],
+  "schema_version": 1,
+  "world": {
+    "all_components_zero": true,
+    "evidence_refs": [
+      "missing:trading_agent_workspace"
+    ]
+  }
+}

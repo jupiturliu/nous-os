@@ -10,6 +10,7 @@ import uuid
 from pathlib import Path
 
 from nous_os.artifacts import publish_site_data, stage_site
+from nous_os.checks import CHECK_MODES, run_check
 from nous_os.contracts.domain_compilation import validate_contract_bundle, validate_full_contract_bundle
 from nous_os.contracts.harness_inventory import validate_inventory
 from nous_os.core import EvidenceEvent, EventStore, Harness, HarnessContext, RuntimePaths, load_profile
@@ -40,6 +41,13 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="nous-os", description="NOUS OS evidence-backed Harness")
     parser.add_argument("--runtime-home", help="override NOUS_OS_HOME")
     commands = parser.add_subparsers(dest="command", required=True)
+
+    check = commands.add_parser("check")
+    check.add_argument("--mode", choices=CHECK_MODES, default="quick")
+    check.add_argument("--json", action="store_true", dest="json_output")
+    check.add_argument("--max-workers", type=int)
+    check.add_argument("--record-snapshots", action="store_true")
+    check.set_defaults(function=_check)
 
     run = commands.add_parser("run")
     run_commands = run.add_subparsers(dest="workflow", required=True)
@@ -139,6 +147,30 @@ def _parser() -> argparse.ArgumentParser:
 
 def _profile_argument(parser: argparse.ArgumentParser, default: str) -> None:
     parser.add_argument("--profile", default=default, help="Profile name or YAML path")
+
+
+def _check(args) -> int:
+    report = run_check(
+        _root(),
+        args.mode,
+        max_workers=args.max_workers,
+        record_snapshots=args.record_snapshots,
+        runtime_home=args.runtime_home,
+    )
+    if args.json_output:
+        print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2))
+    else:
+        for result in report.results:
+            suffix = f" ({result.duration_ms} ms)"
+            if result.skipped_because:
+                suffix += f" needs={','.join(result.skipped_because)}"
+            print(f"[{result.status.upper():7}] {result.gate_id}: {result.label}{suffix}")
+            if result.status == "failed":
+                for diagnostic in (result.error, result.stderr.strip(), result.stdout.strip()):
+                    if diagnostic:
+                        print(diagnostic, file=sys.stderr)
+        print(f"check {report.mode}: {report.status} ({report.duration_ms} ms)")
+    return 0 if report.ok else 1
 
 
 def _root() -> Path:

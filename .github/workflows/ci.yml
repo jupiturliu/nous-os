@@ -42,16 +42,5 @@ jobs:
           fi
           nous-os spec gate --range "${BASE}..HEAD" --require-remote-approval
 
-      - name: Validate Harness contracts
-        run: |
-          nous-os validate harness
-          nous-os validate contracts
-          nous-os validate profile --profile student
-          nous-os validate profile --profile research
-          nous-os validate profile --profile trading-proof
-          nous-os site stage --destination _site/ci
-
-      - name: Run unit tests
-        run: |
-          NOUS_OS_HOME="${RUNNER_TEMP}/nous-os" python -m unittest discover -s tests -v
-          git diff --exit-code
+      - name: Run canonical CI Gate graph
+        run: nous-os --runtime-home "${RUNNER_TEMP}/nous-os" check --mode ci

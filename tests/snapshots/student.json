@@ -1,0 +1,51 @@
+{
+  "artifacts": [
+    {
+      "exists": true,
+      "kind": "student-sessions",
+      "mode": "600",
+      "path": "artifacts/student-sessions/<artifact-id>.json",
+      "sha256": "<sha256>"
+    }
+  ],
+  "cli_output": "profile ok name=student plugins=3",
+  "events": [
+    {
+      "event_type": "student-sandbox.session-saved",
+      "payload": {
+        "private_pattern_detected": false,
+        "readiness": {
+          "observer_check_count": 0,
+          "ready_for_first_pass": true,
+          "ready_for_review": false,
+          "ready_for_second_pass": true,
+          "reflection_fields_complete": 4,
+          "source_cards_complete": 1
+        },
+        "research_signals": {
+          "accepted_sources": 1,
+          "chat_turns_total": 0,
+          "has_human_boundary": true,
+          "has_revised_plan": true,
+          "observer_check_count": 0,
+          "reflection_fields_complete": 4,
+          "source_cards_complete": 1,
+          "source_cards_total": 1
+        },
+        "saved_at": "<timestamp>",
+        "session_id": "scenario-student-001"
+      },
+      "privacy": "private-redacted",
+      "producer": "student-sandbox",
+      "profile": "student"
+    }
+  ],
+  "profile": "student",
+  "projections": [],
+  "schema_version": 1,
+  "world": {
+    "ready_for_second_pass": true,
+    "redaction_detected": false,
+    "saved_session": "scenario-student-001"
+  }
+}
