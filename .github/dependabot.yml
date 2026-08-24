@@ -1,0 +1,30 @@
+version: 2
+
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      python-build-tools:
+        patterns:
+          - build
+          - packaging
+          - pyproject-hooks
+          - setuptools
+          - wheel
+    labels:
+      - "kind/dependency"
+      - "area/infra"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "kind/dependency"
+      - "area/infra"

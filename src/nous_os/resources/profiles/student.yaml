@@ -1,0 +1,28 @@
+schema_version: 2
+name: student
+allowed_effects:
+  - filesystem-read
+  - filesystem-write
+plugins:
+  - id: permission-policy
+    module: nous_os.plugins.permission_policy
+  - id: assurance
+    module: nous_os.plugins.assurance
+  - id: credentials
+    module: nous_os.plugins.credentials
+  - id: telemetry
+    module: nous_os.plugins.telemetry
+    config:
+      mode: disabled
+  - id: evidence
+    module: nous_os.plugins.evidence
+  - id: student-sandbox
+    module: nous_os.plugins.student_sandbox
+  - id: heartbeat
+    module: nous_os.plugins.heartbeat
+workflows:
+  - student-sandbox
+  - heartbeat
+web:
+  host: 127.0.0.1
+  port: 8787

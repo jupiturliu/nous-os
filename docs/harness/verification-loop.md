@@ -12,7 +12,7 @@ behind `nous-os check`.
 | `quick` | Fast local feedback | Harness inventory, domain contracts, static site staging, all Profiles |
 | `full` | Before an implementation commit | `quick`, assembled scenario replay, full unit suite |
 | `ci` | Pull requests and pushes | `full`, then verify that tests changed no tracked source |
-| `release` | Current source entry-path smoke | `ci`, then the installed `nous-os` entry path |
+| `release` | Reproducible Python artifact verification | `ci`, then double build, archive/provenance inspection, and isolated installed-wheel smoke |
 
 Run a mode in human-readable or machine-readable form:
 

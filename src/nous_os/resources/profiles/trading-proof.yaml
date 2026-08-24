@@ -1,0 +1,27 @@
+schema_version: 2
+name: trading-proof
+allowed_effects:
+  - filesystem-read
+  - filesystem-write
+plugins:
+  - id: permission-policy
+    module: nous_os.plugins.permission_policy
+  - id: assurance
+    module: nous_os.plugins.assurance
+  - id: credentials
+    module: nous_os.plugins.credentials
+  - id: telemetry
+    module: nous_os.plugins.telemetry
+    config:
+      mode: disabled
+  - id: evidence
+    module: nous_os.plugins.evidence
+  - id: trading-evaluator
+    module: nous_os.plugins.trading_evaluator
+  - id: heartbeat
+    module: nous_os.plugins.heartbeat
+workflows:
+  - heartbeat
+web:
+  host: 127.0.0.1
+  port: 8787

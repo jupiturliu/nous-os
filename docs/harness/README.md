@@ -65,6 +65,7 @@ Forbidden by default:
 | Software Change Spec Module | `docs/harness/spec-driven-development.md`, `src/nous_os/specs`, `specs/changes` | Approval-before-implementation lifecycle, repository gates, safe checks, and evidence-backed VerificationReports |
 | Harness verification loop | `docs/harness/verification-loop.md`, `src/nous_os/checks`, `src/nous_os/scenarios` | Declarative Gate graphs, real-Profile replay, privacy-safe snapshots, and optional synthetic live smoke |
 | Runtime assurance | `docs/harness/runtime-assurance.md`, `src/nous_os/assurance`, `src/nous_os/security`, `src/nous_os/telemetry` | Profile v2 Effect permissions, phased Invariants, safe credentials, readiness, diagnose, and best-effort Telemetry |
+| Reproducible Python release | `docs/harness/reproducible-release.md`, `src/nous_os/release`, `requirements/build.lock` | Clean-commit double build, archive allowlist, provenance manifest, dependency notices, and installed-wheel smoke without publication authority |
 
 ## Standard Verification
 

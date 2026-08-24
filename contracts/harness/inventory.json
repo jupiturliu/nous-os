@@ -301,6 +301,22 @@
       "verification": "python3 -m unittest tests.test_runtime_assurance -v"
     },
     {
+      "id": "reproducible_python_release",
+      "path": "src/nous_os/release",
+      "kind": "release_artifact_pipeline",
+      "owner": "repo",
+      "published": false,
+      "verification": "nous-os check --mode release"
+    },
+    {
+      "id": "release_dependency_contract",
+      "path": "contracts/release/runtime-dependencies.json",
+      "kind": "runtime_dependency_allowlist",
+      "owner": "repo",
+      "published": false,
+      "verification": "python3 -m unittest tests.test_release_artifacts -v"
+    },
+    {
       "id": "static_site_manifest",
       "path": "apps/web/site-manifest.yaml",
       "kind": "deployment_manifest",

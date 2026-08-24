@@ -41,8 +41,17 @@ Credential values stay outside tracked composition. Profiles contain only Creden
 | Web source | `apps/web/` | Static source, staging manifest and Cloudflare Adapter |
 | Runtime artifacts | `$NOUS_OS_HOME` | Events, Artifacts, Projections, state and cache |
 | Staged deploy | `_site/` | Generated Cloudflare static asset tree |
+| Python release artifacts | external temporary directory | Reproducible wheel, sdist, and Release Manifest; never written into tracked source |
 
 Mutable runtime data never belongs in the source plane. `$NOUS_OS_HOME` defaults to `~/.nous-os`; tests always provide an isolated temporary directory.
+
+## Release composition
+
+The Release Builder Module exports the exact clean Git commit twice, normalizes both builds with the commit epoch, and accepts them only when wheel and sdist bytes match. Its small `build / inspect / smoke` Interface keeps archive rules, dependency closure, Profile packaging, provenance, and temporary-environment cleanup local to one Implementation.
+
+Canonical Profile YAML lives under `src/nous_os/resources/profiles`; `config/profiles` is a checkout mirror verified byte-for-byte. Named Profile resolution uses the packaged resource Seam, so an installed wheel does not depend on repository paths. The installed-wheel Adapter runs outside the checkout with no `PYTHONPATH` and synthetic non-private input.
+
+The release workflow uploads verified artifacts for review but has read-only repository permission and no package-registry authority. Publishing, version choice, tags, and signing remain human decisions.
 
 ## Evidence model
 

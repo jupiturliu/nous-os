@@ -159,14 +159,31 @@ def gates_for_mode(mode: str, *, record_snapshots: bool = False) -> tuple[Gate, 
     if mode == "ci":
         return ci
 
-    release_needs = (ci[-1].id,)
-    entrypoint = Gate(
-        "entrypoint",
-        "Installed CLI entry path",
-        ("nous-os", "--help"),
-        needs=release_needs,
+    release_build = Gate(
+        "release-build",
+        "Reproducible Python artifacts",
+        (
+            python, "-m", "nous_os.release", "build", "--root", "{project_root}",
+            "--output", "{runtime_home}/release",
+        ),
+        needs=(ci[-1].id,),
     )
-    return (*ci, entrypoint)
+    release_inspect = Gate(
+        "release-inspect",
+        "Release archive and provenance inspection",
+        (
+            python, "-m", "nous_os.release", "inspect", "--root", "{project_root}",
+            "--directory", "{runtime_home}/release",
+        ),
+        needs=(release_build.id,),
+    )
+    installed_smoke = Gate(
+        "installed-wheel",
+        "Isolated installed-wheel smoke",
+        (python, "-m", "nous_os.release", "smoke", "--directory", "{runtime_home}/release"),
+        needs=(release_inspect.id,),
+    )
+    return (*ci, release_build, release_inspect, installed_smoke)
 
 
 def run_check(

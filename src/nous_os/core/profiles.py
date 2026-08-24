@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +31,20 @@ class Profile:
 
 def load_profile(path: str | Path) -> Profile:
     source = Path(path)
-    raw = yaml.safe_load(source.read_text(encoding="utf-8"))
+    return _load_profile_text(source.read_text(encoding="utf-8"))
+
+
+def load_named_profile(name: str) -> Profile:
+    if not isinstance(name, str) or not name or name != name.strip() or any(character in name for character in "/\\"):
+        raise ValueError("Profile name must be non-empty and contain no path separators")
+    source = resources.files("nous_os.resources.profiles").joinpath(f"{name}.yaml")
+    if not source.is_file():
+        raise FileNotFoundError(f"unknown packaged Profile: {name}")
+    return _load_profile_text(source.read_text(encoding="utf-8"))
+
+
+def _load_profile_text(text: str) -> Profile:
+    raw = yaml.safe_load(text)
     if not isinstance(raw, dict):
         raise ValueError("profile must be a YAML mapping")
     allowed = {"schema_version", "name", "plugins", "workflows", "web", "allowed_effects"}

@@ -1,0 +1,1 @@
+"""Canonical packaged runtime resources."""

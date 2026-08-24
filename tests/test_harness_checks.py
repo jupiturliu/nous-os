@@ -18,7 +18,10 @@ class GateGraphTests(unittest.TestCase):
             "quick": {"harness", "contracts", "site", "profile-student", "profile-research", "profile-trading-proof"},
             "full": {"harness", "contracts", "site", "profile-student", "profile-research", "profile-trading-proof", "scenarios", "unit-tests"},
             "ci": {"harness", "contracts", "site", "profile-student", "profile-research", "profile-trading-proof", "scenarios", "unit-tests", "source-clean"},
-            "release": {"harness", "contracts", "site", "profile-student", "profile-research", "profile-trading-proof", "scenarios", "unit-tests", "source-clean", "entrypoint"},
+            "release": {
+                "harness", "contracts", "site", "profile-student", "profile-research", "profile-trading-proof",
+                "scenarios", "unit-tests", "source-clean", "release-build", "release-inspect", "installed-wheel",
+            },
         }
         for mode, ids in expected.items():
             gates = gates_for_mode(mode)
@@ -26,6 +29,13 @@ class GateGraphTests(unittest.TestCase):
             results = run_gates(gates, lambda _: ProcessOutcome(0), max_workers=3)
             self.assertEqual([result.gate_id for result in results], [gate.id for gate in gates])
             self.assertTrue(all(result.status == "passed" for result in results))
+
+    def test_release_gates_form_one_serial_artifact_chain_after_ci(self):
+        by_id = {gate.id: gate for gate in gates_for_mode("release")}
+        self.assertEqual(by_id["release-build"].needs, ("source-clean",))
+        self.assertEqual(by_id["release-inspect"].needs, ("release-build",))
+        self.assertEqual(by_id["installed-wheel"].needs, ("release-inspect",))
+        self.assertIn("{runtime_home}/release", by_id["release-build"].command)
 
     def test_invalid_dependencies_duplicates_and_cycles_fail_before_execution(self):
         invalid_graphs = (

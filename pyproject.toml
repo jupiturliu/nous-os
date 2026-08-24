@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools==84.0.0", "wheel==0.48.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,12 +7,15 @@ name = "nous-os"
 version = "0.2.0"
 description = "Evidence-backed harness for human-AI co-evolution workflows"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 requires-python = ">=3.11"
-dependencies = ["PyYAML>=6,<7"]
+dependencies = ["PyYAML>=6.0,<7.0"]
 
 [project.scripts]
 nous-os = "nous_os.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"nous_os.resources.profiles" = ["*.yaml"]

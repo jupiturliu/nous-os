@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "dependencies": [
+    {
+      "name": "PyYAML",
+      "requirement": "PyYAML>=6.0,<7.0",
+      "license": "MIT",
+      "notice_heading": "## PyYAML"
+    }
+  ]
+}

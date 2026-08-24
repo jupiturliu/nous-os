@@ -16,6 +16,7 @@ from nous_os.contracts.domain_compilation import validate_contract_bundle, valid
 from nous_os.contracts.harness_inventory import validate_inventory
 from nous_os.core import EvidenceEvent, EventStore, Harness, HarnessContext, RuntimePaths, load_profile
 from nous_os.core.project import find_project_root
+from nous_os.core.profiles import load_named_profile
 from nous_os.specs import (
     approve_change,
     gate_range,
@@ -186,9 +187,7 @@ def _root() -> Path:
 
 def _profile(value: str):
     candidate = Path(value)
-    if not candidate.exists():
-        candidate = _root() / "config" / "profiles" / f"{value}.yaml"
-    return load_profile(candidate)
+    return load_profile(candidate) if candidate.exists() else load_named_profile(value)
 
 
 def _paths(args) -> RuntimePaths:

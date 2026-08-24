@@ -32,3 +32,6 @@
 - **Credential Provider** — the Interface for resolving a Credential Reference and describing configuration facts without exposing its value.
 - **Readiness** — the Harness lifecycle state after startup and after-start Invariants succeed; distinct from process liveness.
 - **Operational Telemetry** — privacy-allowlisted lifecycle facts sent best-effort to a disabled or local JSONL Telemetry Sink.
+- **Release Artifact** — an allowlisted Python wheel or sdist built twice from one clean source commit and accepted only when the normalized bytes match.
+- **Release Manifest** — a machine-readable provenance record binding Release Artifact names, sizes, SHA-256 values, source commit, source epoch, Python version, and pinned build tools.
+- **Installed Smoke** — a keyless scenario run from a temporary wheel-only environment outside the source checkout to prove packaged resources and entry paths work.
