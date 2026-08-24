@@ -1,0 +1,14 @@
+{
+  "approved_at": "2026-08-24T04:02:23.846781Z",
+  "approver": "liyao",
+  "change_id": "0004-runtime-assurance-safety",
+  "channel": "local",
+  "hashes": {
+    "implementation_sha256": "f4a2e19832e473d32bbf14e431c401fea154c7b92bc58bcaae06c747da1c9c11",
+    "spec_sha256": "6f0207484a1cf0e57c86b974c1793b9ffe6f7b4d12efd5e70e4b4ddb9f345334"
+  },
+  "reason": "同意 Profile v2 effect 权限、运行时 Invariant、Credential Provider、readiness/diagnose 和隐私安全 Telemetry 方案。",
+  "reference": null,
+  "schema_version": 1,
+  "spec_commit": "48353047301f035a7dce09ba4a16bd6d3bf47f2b"
+}
