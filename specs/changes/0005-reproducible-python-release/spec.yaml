@@ -1,0 +1,110 @@
+schema_version: 1
+change_id: 0005-reproducible-python-release
+intent: >-
+  Turn the source-only release smoke into a reproducible and auditable Python
+  artifact pipeline that builds the exact commit, validates installed behavior
+  outside the checkout, records artifact hashes and dependency notices, and
+  keeps publication as a separate human-authorized action.
+requirements:
+  - id: R1
+    text: >-
+      One Release Builder Module must create an sdist and wheel from a clean
+      source commit with pinned build tooling, SOURCE_DATE_EPOCH normalization,
+      isolated output paths, and a machine-readable manifest binding artifact
+      SHA-256 values to the source commit and Python/build-tool versions.
+  - id: R2
+    text: >-
+      The release verifier must reject archives containing Runtime Home data,
+      tests, local paths, credentials, private research content, unexpected
+      top-level files, or executable file modes outside an explicit allowlist.
+  - id: R3
+    text: >-
+      Canonical Profile YAML and other required non-Python runtime resources must
+      ship inside both artifacts and named Profile resolution must work from an
+      installed wheel without a repository checkout or sibling repositories.
+  - id: R4
+    text: >-
+      A clean temporary virtual environment must install only the built wheel and
+      its declared dependencies, then exercise the installed nous-os entry point,
+      validate all shipped Profiles, run diagnose without secrets or machine
+      paths, and execute a keyless packaged smoke scenario.
+  - id: R5
+    text: >-
+      Release metadata must declare the supported Python version, exact runtime
+      dependency bounds, license, README, package data, and console entry point;
+      an allowlisted third-party notice must be generated and checked against the
+      resolved runtime dependency closure.
+  - id: R6
+    text: >-
+      The existing release Gate mode must depend on the ci graph and add build,
+      archive inspection, reproducibility, and installed-wheel checks with stable
+      human and JSON diagnostics through the same Gate Interface.
+  - id: R7
+    text: >-
+      GitHub Actions must build and verify artifacts using the canonical release
+      Gate, upload immutable workflow artifacts and the provenance manifest, and
+      grant no package-registry write permission.
+  - id: R8
+    text: >-
+      Dependency update configuration must cover Python build/runtime dependencies
+      and GitHub Actions with conservative grouping and review labels while
+      preserving Spec Approval for behavior-changing updates.
+  - id: R9
+    text: >-
+      Existing editable-install development, Profile behavior, CLI output,
+      Evidence and Artifact formats, public routes, runtime assurance, scenario
+      snapshots, and Spec verification must remain compatible.
+constraints:
+  - Artifact construction is deterministic and keyless; release verification never requires registry credentials.
+  - Publication, tag creation, version selection, and signing remain explicit human decisions outside this Software Change.
+  - The artifact manifest records repository-relative names and normalized tool facts, never workstation paths, environment values, private content, or credentials.
+  - Build and verification occur in disposable directories and may not mutate tracked source or the operator Runtime Home.
+  - Package content is allowlisted; adding a new shipped resource requires a reviewed manifest change and regression test.
+  - Runtime dependencies remain minimal and Python 3.11 remains the minimum supported interpreter.
+  - No Docker image, native binary, npm package, registry upload, Sigstore signing, or hosted release promotion is introduced.
+acceptance_criteria:
+  - id: AC1
+    text: Two normalized builds of the same clean commit produce identical artifact bytes and identical provenance manifests.
+    checks: [release-artifact-tests, release-gate-tests]
+  - id: AC2
+    text: Archive inspection proves only allowlisted source and runtime resources ship and rejects synthetic private, secret, path, and Runtime Home payloads.
+    checks: [release-artifact-tests]
+  - id: AC3
+    text: An isolated installed wheel resolves every canonical Profile and passes entry-point, diagnose, Profile, and keyless scenario smoke checks outside the checkout.
+    checks: [release-artifact-tests, profile-validation]
+  - id: AC4
+    text: Runtime dependency metadata and third-party notices match the resolved dependency closure and carry valid license identifiers.
+    checks: [release-artifact-tests, full-test-suite]
+  - id: AC5
+    text: Release mode and CI use the same dependency-valid Gate graph and leave the source checkout unchanged.
+    checks: [release-gate-tests, full-test-suite]
+  - id: AC6
+    text: Existing source and editable-install workflows, scenarios, runtime assurance, and public Interfaces remain green.
+    checks: [scenario-replay-tests, full-test-suite]
+out_of_scope:
+  - Publishing to PyPI, GitHub Releases, another registry, or a package index.
+  - Choosing or incrementing a production version, creating a Git tag, or maintaining release branches.
+  - Artifact signing, keyless Sigstore attestations, SLSA certification, or external transparency logs.
+  - Docker/OCI images, standalone executables, native extensions, npm artifacts, or operating-system installers.
+  - Supporting Python versions below 3.11 or adding a multi-platform binary matrix.
+  - Vulnerability SLA, automated dependency merging, or license-policy decisions beyond the explicit runtime allowlist.
+assumptions:
+  - PyPI-compatible sdist and wheel remain the only required Python distribution formats.
+  - The package version continues to be sourced from pyproject.toml for this stage.
+  - GitHub-hosted Linux with Python 3.11 is the reference artifact builder.
+  - The current runtime dependency closure contains only PyYAML plus the Python standard library.
+risks:
+  - Build backends or archive tooling can embed timestamps or permissions that break byte-for-byte reproducibility.
+  - Moving canonical Profiles into package resources can accidentally create two divergent configuration sources.
+  - Installed-wheel smoke may pass while an untested optional platform behavior remains broken.
+  - Dependency metadata and third-party notices can drift if the closure check is incomplete.
+authority:
+  human_decisions:
+    - Approve the package content allowlist, build-tool pins, dependency bounds, and third-party license notice.
+    - Choose the release version, source commit, tag, signing policy, and whether any verified artifact is published.
+    - Review dependency update pull requests and approve behavior-changing updates through a separate Spec when required.
+  automated_decisions:
+    - Build normalized artifacts from the selected clean commit.
+    - Inspect archive contents, modes, metadata, dependency closure, and privacy constraints.
+    - Compare repeated builds and classify the release Gate outcome.
+    - Upload verified CI artifacts without publishing them to a registry.

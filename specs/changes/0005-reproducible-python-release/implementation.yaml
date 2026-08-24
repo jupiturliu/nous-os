@@ -1,0 +1,131 @@
+schema_version: 1
+change_id: 0005-reproducible-python-release
+affected_paths:
+  - pyproject.toml
+  - MANIFEST.in
+  - THIRD_PARTY_NOTICES.md
+  - requirements/
+  - src/nous_os/resources/
+  - src/nous_os/core/project.py
+  - src/nous_os/core/profiles.py
+  - src/nous_os/cli.py
+  - src/nous_os/checks/
+  - src/nous_os/release/
+  - scripts/build_release.py
+  - contracts/release/
+  - contracts/harness/inventory.json
+  - tests/test_release_artifacts.py
+  - tests/test_harness_checks.py
+  - tests/test_scenario_replay.py
+  - .github/workflows/release-artifacts.yml
+  - .github/dependabot.yml
+  - docs/harness/reproducible-release.md
+  - docs/harness/verification-loop.md
+  - docs/harness/README.md
+  - ARCHITECTURE.md
+  - CONTEXT.md
+requirement_mapping:
+  - requirement_id: R1
+    paths:
+      - pyproject.toml
+      - requirements/
+      - src/nous_os/release/
+      - scripts/build_release.py
+      - contracts/release/
+      - tests/test_release_artifacts.py
+      - docs/harness/reproducible-release.md
+  - requirement_id: R2
+    paths:
+      - src/nous_os/release/
+      - contracts/release/
+      - tests/test_release_artifacts.py
+      - docs/harness/reproducible-release.md
+  - requirement_id: R3
+    paths:
+      - pyproject.toml
+      - MANIFEST.in
+      - src/nous_os/resources/
+      - src/nous_os/core/project.py
+      - src/nous_os/core/profiles.py
+      - src/nous_os/cli.py
+      - tests/test_release_artifacts.py
+      - ARCHITECTURE.md
+  - requirement_id: R4
+    paths:
+      - src/nous_os/release/
+      - scripts/build_release.py
+      - tests/test_release_artifacts.py
+      - tests/test_scenario_replay.py
+      - docs/harness/reproducible-release.md
+  - requirement_id: R5
+    paths:
+      - pyproject.toml
+      - MANIFEST.in
+      - THIRD_PARTY_NOTICES.md
+      - requirements/
+      - src/nous_os/release/
+      - contracts/release/
+      - tests/test_release_artifacts.py
+      - CONTEXT.md
+  - requirement_id: R6
+    paths:
+      - src/nous_os/checks/
+      - scripts/build_release.py
+      - tests/test_harness_checks.py
+      - docs/harness/verification-loop.md
+  - requirement_id: R7
+    paths:
+      - .github/workflows/release-artifacts.yml
+      - scripts/build_release.py
+      - docs/harness/reproducible-release.md
+  - requirement_id: R8
+    paths:
+      - .github/dependabot.yml
+      - requirements/
+      - docs/harness/reproducible-release.md
+  - requirement_id: R9
+    paths:
+      - src/nous_os/core/project.py
+      - src/nous_os/core/profiles.py
+      - src/nous_os/cli.py
+      - src/nous_os/checks/
+      - tests/test_harness_checks.py
+      - tests/test_scenario_replay.py
+      - contracts/harness/inventory.json
+      - docs/harness/README.md
+      - ARCHITECTURE.md
+checks:
+  - id: release-artifact-tests
+    kind: unittest
+    target: tests.test_release_artifacts
+  - id: release-gate-tests
+    kind: unittest
+    target: tests.test_harness_checks
+  - id: scenario-replay-tests
+    kind: unittest
+    target: tests.test_scenario_replay
+  - id: profile-validation
+    kind: profiles
+  - id: full-test-suite
+    kind: unittest
+    target: discover:tests
+compatibility:
+  - Preserve `pip install -e .` and the existing `nous-os` console entry point for source development.
+  - Preserve named and explicit-path Profile selection; named Profiles gain an installed-resource fallback only when no checkout file exists.
+  - Preserve all existing CLI commands, JSON schemas, Evidence and Artifact formats, public routes, snapshots, and Spec lifecycle behavior.
+  - Keep release mode keyless and leave CI, quick, and full Gate mode meanings unchanged.
+migration:
+  - Establish one canonical packaged Profile resource tree and make repository Profile files generated or checked mirrors so they cannot drift.
+  - Add pinned build-only tooling separately from the runtime dependency declaration.
+  - Replace the source-entry-only release Gate with normalized build, inspection, reproducibility, and isolated-install Gates.
+  - Add dependency-update metadata and a checked third-party notice for the runtime closure.
+rollback:
+  - Restore release mode to the current source entry-path smoke and remove artifact-only Gates.
+  - Restore named Profile resolution to repository config files while retaining explicit path selection.
+  - Remove build/provenance Modules and the artifact workflow; no registry artifact needs deletion because publication is out of scope.
+  - Restore the prior package-data configuration and dependency-update policy together.
+residual_risks:
+  - Reproducibility is established only for the declared Linux/Python 3.11 reference builder.
+  - Workflow artifact retention and GitHub infrastructure are outside repository control.
+  - Hash manifests prove artifact identity but not publisher identity or source authenticity without later signing.
+  - License verification covers the declared runtime closure, not operating-system or hosted-runner components.
