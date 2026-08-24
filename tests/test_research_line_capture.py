@@ -229,6 +229,9 @@ class CronWorkflowExistsTests(unittest.TestCase):
         self.assertIn("gh pr create", workflow)
         # Must NOT auto-merge.
         self.assertNotIn("gh pr merge", workflow)
+        # Notification secret is injected at runtime, never committed as a URL.
+        self.assertIn("secrets.NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL", workflow)
+        self.assertNotIn("https://notify", workflow)
 
 
 if __name__ == "__main__":

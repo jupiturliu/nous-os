@@ -20,3 +20,5 @@
 - **Implementation Plan** — the approved YAML mapping from Spec requirements to affected repository paths and named safe checks.
 - **Approval** — an explicit human decision recorded as JSON against immutable SHA-256 hashes of a Spec and Implementation Plan before implementation begins.
 - **VerificationReport** — the final JSON result binding a committed Software Change to changed paths, named check outcomes, residual risks, and immutable input hashes.
+- **Notification** — a privacy-allowlisted, best-effort signal that a workflow milestone occurred; notification failure never reverses a successfully completed workflow action.
+- **Notification Adapter** — the configured delivery implementation for a Notification, initially an HTTPS webhook whose secret endpoint remains outside tracked source and evidence.

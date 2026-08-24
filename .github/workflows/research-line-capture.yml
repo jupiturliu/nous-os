@@ -36,6 +36,8 @@ jobs:
 
       - name: Run capture script
         id: capture
+        env:
+          NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL: ${{ secrets.NOUS_OS_RESEARCH_NOTIFICATION_WEBHOOK_URL }}
         run: |
           set -euo pipefail
           python -m pip install -e .
