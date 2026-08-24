@@ -1,0 +1,14 @@
+{
+  "approved_at": "2026-08-24T04:27:53.568823Z",
+  "approver": "liyao",
+  "change_id": "0005-reproducible-python-release",
+  "channel": "local",
+  "hashes": {
+    "implementation_sha256": "527ad586e277145231132d48a938cfaf3894c00e3f08ccdcab41be7ccdb5490c",
+    "spec_sha256": "39a00bf5c5f83a4f0ef0bd29c3d47b125ebfbe126fc6e78158368529702f1423"
+  },
+  "reason": "同意可复现 Python 构建、artifact 检查、安装包 smoke、依赖许可证清单和非发布型 CI 方案。",
+  "reference": null,
+  "schema_version": 1,
+  "spec_commit": "9e9ca305140c0efdeac3cf6402fd89549a1380e4"
+}
